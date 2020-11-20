@@ -18,34 +18,38 @@
 #include <stdbool.h>
 #include <machine.h>
 #include <basicio.h>
+#include "easy68k/easy68k.h"
 
 #ifdef PERFORM_LINKAGE_CHECK
 #include "linkcheck.h"
 #endif
 
-extern void easy68k_example();
+//extern void easy68k_example();
 
-static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
-static char readline_buf[1024];
+//static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
+//static char readline_buf[1024];
 
 noreturn void kmain() {
-  print("\033[2J");
-  println("Hello, World from the \"kernel\"!");
+  println("Kernel started");
 
 #ifdef PERFORM_LINKAGE_CHECK
   checkLinkage();
 #endif
 
+  const unsigned int *ticks = (const unsigned int *)0x40C;
+  for(;;) {
+    e68DisplayNumUnsigned(*ticks, 10);
+    e68Println("");
+  }
+
   //easy68k_example();
 
-  println("Now going into readline/echo loop");
-
-  while (true) {
-    *(mfp_gpdr) ^= 2;
-
-    if (readline(readline_buf, 1024) > 0) {
-      println(readline_buf);
-    }
-  }
+  //while (true) {
+  //  *(mfp_gpdr) ^= 2;
+  //
+  //  if (readline(readline_buf, 1024) > 0) {
+  //    println(readline_buf);
+  //  }
+  //}
 }
 
