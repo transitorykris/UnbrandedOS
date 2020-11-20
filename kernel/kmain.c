@@ -36,7 +36,7 @@ noreturn void kmain() {
   checkLinkage();
 #endif
 
-  easy68k_example();
+  //easy68k_example();
 
   println("Now going into readline/echo loop");
 
