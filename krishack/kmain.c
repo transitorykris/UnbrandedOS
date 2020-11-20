@@ -21,10 +21,50 @@ SOFTWARE.
 
 */
 
+#include <basicio.h>
 #include <stdio.h>
 
-void kmain() {
-    printf("Hello, world!\r\n");
+typedef struct {
+    int pid;
+} process;
 
-    // We should never return from here
+void process_a();
+void process_b();
+
+void kmain() {
+    //printf("username: ");
+    //char username[16];
+    //readline(username, 16);
+    //printf("Logging in %s\r\n", username);
+
+    // - figure out how to catch timer interrupts?
+    // - how does the stack look?
+    // - how do I give each process it's own memory space?
+    
+    process procs[2];
+    procs[0].pid = 0;
+    procs[1].pid = 1;
+    procs[2].pid = 2;
+
+    printf("Process 0 PID is %d\r\n", procs[0].pid);
+    printf("Process A PID is %d\r\n", procs[1].pid);
+    printf("Process B PID is %d\r\n", procs[2].pid);
+
+    process_a();
+    
+    // Kernel goes to sleep
+    printf("Resetting system\r\n");
+    //for(;;);
+}
+
+void process_a() {
+    //for(;;) {
+        printf("A\r\n");
+    //}
+}
+
+void process_b() {
+    for (;;) {
+        printf("B\r\n");
+    }
 }
