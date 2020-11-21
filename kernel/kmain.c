@@ -24,10 +24,10 @@
 #include "linkcheck.h"
 #endif
 
-//extern void easy68k_example();
+#define SYS_TICKS 0x40C
+typedef unsigned int tick;
 
-//static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
-//static char readline_buf[1024];
+unsigned int get_ticks();
 
 noreturn void kmain() {
   println("Kernel started");
@@ -36,20 +36,15 @@ noreturn void kmain() {
   checkLinkage();
 #endif
 
-  const unsigned int *ticks = (const unsigned int *)0x40C;
   for(;;) {
-    e68DisplayNumUnsigned(*ticks, 10);
+    e68DisplayNumUnsigned(get_ticks(), 10);
     e68Println("");
   }
-
-  //easy68k_example();
-
-  //while (true) {
-  //  *(mfp_gpdr) ^= 2;
-  //
-  //  if (readline(readline_buf, 1024) > 0) {
-  //    println(readline_buf);
-  //  }
-  //}
 }
 
+/*
+  Returns the number of ticks since the system started
+*/
+tick get_ticks() {
+  return *(unsigned int *)SYS_TICKS;
+}
