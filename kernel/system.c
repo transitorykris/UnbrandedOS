@@ -19,14 +19,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "easy68k/easy68k.h"
 #include "system.h"
 
-noreturn void kmain() {
-  e68Println("Kernel started");
-
-  for(;;) {
-    e68DisplayNumUnsigned(get_ticks(), 10);
-    e68Println("");
-  }
+/*
+Returns the number of ticks since the system started
+*/
+tick get_ticks() {
+  return *(unsigned int *)SYS_TICKS;
 }

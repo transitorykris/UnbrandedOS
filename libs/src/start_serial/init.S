@@ -22,7 +22,7 @@
 ; All of this is depending on a bit of linker magic - see rosco_m68k_kernel.ld
 ; to see how that works.
 ;------------------------------------------------------------
-    include "../../shared/equates.S"
+    include "../shared/equates.S"
 
     section .init
 

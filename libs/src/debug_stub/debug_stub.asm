@@ -32,7 +32,7 @@
 ; a debug_stub exception handler which will print CPU state at the time of the
 ; crash on the default output device, and then warm-reset back to the loader.
 
-                include "../../shared/equates.S"
+                include "../shared/equates.S"
 
                 section .text.debug_stub,text
                 align  2

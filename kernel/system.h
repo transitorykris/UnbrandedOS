@@ -1,5 +1,4 @@
-/* kmain.c - Kris68k OS
-
+/*
 Copyright 2020 Kris Foster
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -18,53 +17,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 */
 
-#include <basicio.h>
-#include <stdio.h>
+#ifndef SYSTEM_H
+#define SYSTEM_H
 
-typedef struct {
-    int pid;
-} process;
+#define SYS_TICKS 0x40C
 
-void process_a();
-void process_b();
+typedef unsigned int tick;
 
-void kmain() {
-    //printf("username: ");
-    //char username[16];
-    //readline(username, 16);
-    //printf("Logging in %s\r\n", username);
+unsigned int get_ticks();
 
-    // - figure out how to catch timer interrupts?
-    // - how does the stack look?
-    // - how do I give each process it's own memory space?
-    
-    process procs[2];
-    procs[0].pid = 0;
-    procs[1].pid = 1;
-    procs[2].pid = 2;
-
-    printf("Process 0 PID is %d\r\n", procs[0].pid);
-    printf("Process A PID is %d\r\n", procs[1].pid);
-    printf("Process B PID is %d\r\n", procs[2].pid);
-
-    process_a();
-    
-    // Kernel goes to sleep
-    printf("Resetting system\r\n");
-    //for(;;);
-}
-
-void process_a() {
-    //for(;;) {
-        printf("A\r\n");
-    //}
-}
-
-void process_b() {
-    for (;;) {
-        printf("B\r\n");
-    }
-}
+#endif

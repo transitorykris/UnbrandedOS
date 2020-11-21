@@ -8,10 +8,10 @@ SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lmachine -leasy68k -lstart_serial
 DEFINES=-DROSCO_M68K
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror	\
+				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010	\
 				-mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_kernel.ld -L $(SYSLIBDIR)  \
+LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_kernel.ld -L $(SYSLIBDIR)	\
 				-Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -29,11 +29,7 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=easy68k.o kmain.o
-
-ifeq ($(LINKCHECK),true)
-include linkcheck/include.mk
-endif
+OBJECTS=system.o kmain.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
