@@ -22,11 +22,25 @@ SOFTWARE.
 #include "easy68k/easy68k.h"
 #include "system.h"
 
+#define uint16 unsigned short
+
+uint16 get_status_register();
+
 noreturn void kmain() {
   e68Println("Kernel started");
 
+  e68DisplayNumUnsigned(get_ticks(), 10);
+  e68Println("");
   for(;;) {
-    e68DisplayNumUnsigned(get_ticks(), 10);
+    e68DisplayNumUnsigned(get_status_register(), 16);
     e68Println("");
   }
+}
+
+uint16 get_status_register() {
+  uint16 sr;
+  __asm__ __volatile__ (
+    "move.w %%sr,%0": "=r" (sr)
+  );
+  return sr;
 }
