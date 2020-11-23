@@ -2,4 +2,6 @@
 *.o
 *.map
 
+*.zip
+
 .DS_Store
