@@ -4,9 +4,9 @@
 # See LICENSE
 
 DEFINES=
-BASE_CFLAGS=-std=c11 -ffreestanding -Ifat_io_lib -Wno-unused-parameter     \
-       -Wall -Werror -Wpedantic -Wno-unused-function              				 \
-			 -Iinclude -I../include -mcpu=68010 -march=68010 -mtune=68010   		 \
+BASE_CFLAGS=-std=c11 -ffreestanding -Ifat_io_lib -Wno-unused-parameter		\
+       -Wall -Werror -Wpedantic -Wno-unused-function						\
+			 -Iinclude -I../include -mcpu=68010 -march=68010 -mtune=68010	\
 			 -mno-align-int -mno-strict-align $(DEFINES)
 EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9

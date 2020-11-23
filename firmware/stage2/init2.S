@@ -10,7 +10,7 @@
 ;
 ; This is the initialization code for stage 2. 
 ;------------------------------------------------------------
-    include "../../../shared/equates.S"
+    include "../../shared/equates.S"
 
     section .text.init
     org     $2000
