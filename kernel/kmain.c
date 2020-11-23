@@ -22,10 +22,15 @@ SOFTWARE.
 #include "easy68k/easy68k.h"
 #include "system.h"
 
+#define PTR (*((volatile unsigned long *)) 0x45)
+
 uint16_t get_status_register();
+void tick_handler();
 
 noreturn void kmain() {
   e68Println("Kernel started");
+
+  PTR = tick_handler;
 
   e68DisplayNumUnsigned(get_ticks(), 10);
   e68Println("");
@@ -41,4 +46,8 @@ uint16_t get_status_register() {
     "move.w %%sr,%0": "=r" (sr)
   );
   return sr;
+}
+
+void tick_handler() {
+
 }
