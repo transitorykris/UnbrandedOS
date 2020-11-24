@@ -19,28 +19,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "easy68k/easy68k.h"
-#include "system.h"
-#include "mfp.h"
+#ifndef MFP_H
+#define MFP_H
 
-typedef void (*fptr)();
+#define MFP_TIMER_C 0x114
+#define CLEAR_MFP_ISRB()  __asm__ __volatile__ ("move.b #0xdf,0xf80011")
 
-void tick_handler();
-
-noreturn void kmain() {
-  fptr *handler = (fptr *)MFP_TIMER_C;
-  *handler = &tick_handler;
-
-  e68Println("Kernel started");
-
-  for(;;){
-    e68DisplayNumUnsigned(get_ticks(), 16);
-    e68Println("");
-  }
-}
-
-void __attribute__ ((interrupt)) tick_handler() {
-  uint32_t *ticks = (uint32_t *)SYS_TICKS;
-  (*ticks)++;
-  CLEAR_MFP_ISRB();
-}
+#endif
