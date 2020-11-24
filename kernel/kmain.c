@@ -22,15 +22,14 @@ SOFTWARE.
 #include "easy68k/easy68k.h"
 #include "system.h"
 
-#define TICK_HANDLER 0x114
+#define MFP_TIMER_C 0x114
 
 typedef void (*fptr)();
 
-uint16_t get_status_register();
 void tick_handler();
 
 noreturn void kmain() {
-  fptr *handler = (fptr *)0x114;
+  fptr *handler = (fptr *)MFP_TIMER_C;
   *handler = &tick_handler;
 
   e68Println("Kernel started");
@@ -41,21 +40,10 @@ noreturn void kmain() {
   }
 }
 
-uint16_t get_status_register() {
-  uint16_t sr;
-  __asm__ __volatile__ (
-    "move.w %%sr,%0": "=r" (sr)
-  );
-  return sr;
-}
-
 void __attribute__ ((interrupt)) tick_handler() {
+  uint32_t *ticks = (uint32_t *)SYS_TICKS;
+  (*ticks)++;
   __asm__ __volatile__ (
-    "move.l %d0,-(%a7)\n\t"
-    "move.l 0x40C,%d0\n\t"
-    "add.l  #1,%d0\n\t"
-    "move.l %d0,0x40C\n\t"
-    "move.l (%a7)+,%d0\n\t"
-    "move.b #0xdf,0xf80011"
+    "move.b #0xdf,0xf80011" // Clear MFP_ISRB interrupt-in-service
   );
 }

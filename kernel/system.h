@@ -24,8 +24,11 @@ SOFTWARE.
 
 #define SYS_TICKS 0x40C
 
+#include "easy68k/easy68k.h"
+
 typedef unsigned int tick;
 
 unsigned int get_ticks();
+uint16_t get_status_register();
 
 #endif
