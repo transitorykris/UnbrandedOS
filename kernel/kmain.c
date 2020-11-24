@@ -33,9 +33,9 @@ noreturn void kmain() {
   e68Println("Kernel started");
 
   for(;;) {
-    e68MoveXY(0, 1);
     e68Print("Ticks: ");
     e68DisplayNumUnsigned(get_ticks(), 16);
+    e68Println("");
   }
 }
 
