@@ -39,8 +39,12 @@ noreturn void kmain() {
   }
 }
 
+/*
+Interrupt handler for counting every time Timer C fires
+*/
 void __attribute__ ((interrupt)) tick_handler() {
   uint32_t *ticks = (uint32_t *)SYS_TICKS;
   (*ticks)++;
-  CLEAR_MFP_ISRB();
+  uint8_t *mfp_isrb = (uint8_t *)MFP_ISRB;
+  *mfp_isrb = ~0x20;    // Clear interrupt-in-service
 }

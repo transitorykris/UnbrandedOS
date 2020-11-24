@@ -23,6 +23,6 @@ SOFTWARE.
 #define MFP_H
 
 #define MFP_TIMER_C 0x114
-#define CLEAR_MFP_ISRB()  __asm__ __volatile__ ("move.b #0xdf,0xf80011")
+#define MFP_ISRB    0xf80011
 
 #endif
