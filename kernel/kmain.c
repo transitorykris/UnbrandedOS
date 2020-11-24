@@ -44,6 +44,7 @@ noreturn void kmain() {
 Interrupt handler for counting every time Timer C fires
 */
 void __attribute__ ((interrupt)) tick_handler() {
+  // Count the ticks of the timer
   uint32_t *ticks = (uint32_t *)SYS_TICKS;
   (*ticks)++;
 
