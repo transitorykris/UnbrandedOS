@@ -32,11 +32,10 @@ noreturn void kmain() {
   e68ClearScr();
   e68Println("Kernel started");
 
-  for(;;){
+  for(;;) {
     e68MoveXY(0, 1);
     e68Print("Ticks: ");
     e68DisplayNumUnsigned(get_ticks(), 16);
-    //e68Println("");
   }
 }
 
@@ -44,9 +43,6 @@ noreturn void kmain() {
 Interrupt handler for counting every time Timer C fires
 */
 void __attribute__ ((interrupt)) tick_handler() {
-  // Count the ticks of the timer
-  uint32_t *ticks = (uint32_t *)SYS_TICKS;
-  (*ticks)++;
-
+  INC_LONG(SYS_TICKS);        // Count the ticks of the timer
   SET_BYTE(~0x20, MFP_ISRB);  // Clear interrupt-in-service
 }

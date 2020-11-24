@@ -52,4 +52,22 @@ typedef void (*fptr)();
 #define GET_WORD(l) *(unsigned int *)l
 #define GET_LONG(l) *(unsigned long *)l
 
+#define INC_BYTE(l) \
+{\
+    uint8_t *v = (uint8_t *)l;\
+    (*v)++;\
+}
+
+#define INC_WORD(l) \
+{\
+    uint16_t *v = (uint16_t *)l;\
+    (*v)++;\
+}
+
+#define INC_LONG(l) \
+{\
+    uint32_t *v = (uint32_t *)l;\
+    (*v)++;\
+}
+
 #endif
