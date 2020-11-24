@@ -40,4 +40,8 @@ SOFTWARE.
     *p = v;\
 }
 
+#define GET_BYTE(l) *(unsigned char *)l
+#define GET_WORD(l) *(unsigned int *)l
+#define GET_LONG(l) *(unsigned long *)l
+
 #endif

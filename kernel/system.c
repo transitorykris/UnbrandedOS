@@ -19,13 +19,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "helpers.h"
 #include "system.h"
 
 /*
 Returns the number of ticks since the system started
 */
 tick get_ticks() {
-  return *(unsigned int *)SYS_TICKS;
+  return GET_LONG(SYS_TICKS);
 }
 
 /*
