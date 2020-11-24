@@ -24,19 +24,19 @@ SOFTWARE.
 #include "system.h"
 #include "mfp.h"
 
-typedef void (*fptr)();
-
 void tick_handler();
 
 noreturn void kmain() {
-  fptr *handler = (fptr *)MFP_TIMER_C;
-  *handler = &tick_handler;
+  SET_VECTOR(tick_handler, MFP_TIMER_C);
 
+  e68ClearScr();
   e68Println("Kernel started");
 
   for(;;){
+    e68MoveXY(0, 1);
+    e68Print("Ticks: ");
     e68DisplayNumUnsigned(get_ticks(), 16);
-    e68Println("");
+    //e68Println("");
   }
 }
 

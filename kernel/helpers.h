@@ -22,6 +22,8 @@ SOFTWARE.
 #ifndef HELPERS_H
 #define HELPERS_H
 
+typedef void (*fptr)();
+
 #define SET_BYTE(v,l) \
 {\
     uint8_t *p = (uint8_t *)l;\
@@ -38,6 +40,12 @@ SOFTWARE.
 {\
     uint32_t *p = (uint32_t *)l;\
     *p = v;\
+}
+
+#define SET_VECTOR(h,l) \
+{\
+    fptr *handler = (fptr *)l;\
+    *handler = &h;\
 }
 
 #define GET_BYTE(l) *(unsigned char *)l
