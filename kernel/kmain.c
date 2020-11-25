@@ -26,17 +26,19 @@ SOFTWARE.
 
 void tick_handler();
 
+void user_routine_a();
+void user_routine_b();
+
 noreturn void kmain() {
   SET_VECTOR(tick_handler, MFP_TIMER_C);
 
   e68ClearScr();
   e68Println("Kernel started");
 
-  for(;;) {
-    e68Print("Ticks: ");
-    e68DisplayNumUnsigned(get_ticks(), 16);
-    e68Println("");
-  }
+  disable_supervisor();
+  user_routine_a();
+
+  for(;;);
 }
 
 /*
@@ -45,4 +47,23 @@ Interrupt handler for counting every time Timer C fires
 void __attribute__ ((interrupt)) tick_handler() {
   INC_LONG(SYS_TICKS);        // Count the ticks of the timer
   SET_BYTE(~0x20, MFP_ISRB);  // Clear interrupt-in-service
+}
+
+/*
+User space routine that doesn't do too much
+*/
+void user_routine_a() {
+  for (;;) {
+    e68Println("A");
+  }
+}
+
+/*
+User space routine that doesn't do too much
+Same as the first
+*/
+void user_routine_b() {
+  for (;;) {
+    e68Println("B");
+  }
 }

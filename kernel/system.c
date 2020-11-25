@@ -26,16 +26,16 @@ SOFTWARE.
 Returns the number of ticks since the system started
 */
 tick get_ticks() {
-  return GET_LONG(SYS_TICKS);
+    return GET_LONG(SYS_TICKS);
 }
 
 /*
 Returns the value of the status register
 */
 uint16_t get_status_register() {
-  uint16_t sr;
-  __asm__ __volatile__ (
-    "move.w %%sr,%0": "=r" (sr)
-  );
-  return sr;
+    uint16_t sr;
+    __asm__ __volatile__ (
+        "move.w %%sr,%0": "=r" (sr)
+    );
+    return sr;
 }

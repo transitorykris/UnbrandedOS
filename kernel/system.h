@@ -26,6 +26,14 @@ SOFTWARE.
 
 #include "easy68k/easy68k.h"
 
+/*
+Disable supervisor bit
+*/
+#define disable_supervisor() \
+{\
+    __asm__ __volatile__ ("andi.w #0xdfff,%sr");\
+}
+
 typedef unsigned int tick;
 
 unsigned int get_ticks();
