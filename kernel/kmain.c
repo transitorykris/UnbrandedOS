@@ -26,42 +26,33 @@ SOFTWARE.
 #include "helpers.h"
 #include "system.h"
 #include "mfp.h"
-#include "scheduler.h"
+
+typedef struct {
+    uint32_t usp;       // User stack pointer
+    uint32_t pc;        // Program counter
+    uint16_t sr;        // Status register (and really just CCR)
+    uint32_t a[8];      // Address registers, 8 is usp
+    uint32_t d[8];      // Data registers
+} context;
+
+typedef struct {
+    uint16_t pid;       // Process ID
+    context context;
+} process;
 
 void tick_handler();
 
 void user_routine_a();
 void user_routine_b();
 
-struct process_item {
-    process* process;
-    struct process_item* next;
-} process_item;
-
-struct process_item *process_list;
 
 noreturn void kmain() {
+  for (int i=0;i<50000;i++) {/* do nothing for a while */}
+
   SET_VECTOR(tick_handler, MFP_TIMER_C);
 
   e68ClearScr();
   e68Println("Kernel started");
-
-  // Rig up our process list by hand. Sorry.
-  
-  // Create the first process and process list entry
-  process_list = (struct process_item*)malloc(sizeof(process_item));
-  process process_a = {.pid=0, .context= {.usp=0, .pc=0, .sr=0}};
-  process_list->process = &process_a;
-  
-  // Create a second process and process list entry
-  struct process_item *process_list_b = \
-    (struct process_item*)malloc(sizeof(process_item));
-  process process_b = {.pid=1, .context= {.usp=0, .pc=0, .sr=0}};
-  process_list_b->process = &process_b;
-  
-  // We'll round robin these two processes
-  process_list_b->next = process_list;
-  process_list->next = process_list_b;
 
   disable_supervisor();
   user_routine_a();
@@ -75,9 +66,7 @@ Interrupt handler for counting every time Timer C fires
 void __attribute__ ((interrupt)) tick_handler() {
   INC_LONG(SYS_TICKS);        // Count the ticks of the timer
 
-  process_list = process_list->next;
-  e68PrintNumSignedWidth(process_list->process->pid, 10);
-  e68Println("");
+  e68Println("T");
 
   // Scheduler
   // 1. Save PC (4B) and SR (2B) from stack into the old process context
