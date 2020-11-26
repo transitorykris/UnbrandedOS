@@ -47,19 +47,20 @@ noreturn void kmain() {
   e68Println("Kernel started");
 
   // Rig up our process list by hand. Sorry.
-  process process_a = {.pid=0, .context= {.usp=0, .pc=0, .sr=0}};
-  process process_b = {.pid=1, .context= {.usp=0, .pc=0, .sr=0}};
   
+  // Create the first process and process list entry
   process_list = (struct process_item*)malloc(sizeof(process_item));
-
+  process process_a = {.pid=0, .context= {.usp=0, .pc=0, .sr=0}};
   process_list->process = &process_a;
   
+  // Create a second process and process list entry
   struct process_item *process_list_b = \
     (struct process_item*)malloc(sizeof(process_item));
-
+  process process_b = {.pid=1, .context= {.usp=0, .pc=0, .sr=0}};
   process_list_b->process = &process_b;
-  process_list_b->next = process_list;
   
+  // We'll round robin these two processes
+  process_list_b->next = process_list;
   process_list->next = process_list_b;
 
   disable_supervisor();
