@@ -19,21 +19,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdlib.h>
+
 #include "easy68k/easy68k.h"
+
 #include "helpers.h"
 #include "system.h"
 #include "mfp.h"
+#include "scheduler.h"
 
 void tick_handler();
 
 void user_routine_a();
 void user_routine_b();
 
+struct process_item {
+    process* process;
+    struct process_item* next;
+} process_item;
+
+struct process_item *process_list;
+
 noreturn void kmain() {
   SET_VECTOR(tick_handler, MFP_TIMER_C);
 
   e68ClearScr();
   e68Println("Kernel started");
+
+  // Rig up our process list by hand. Sorry.
+  process process_a = {.pid=0, .context= {.usp=0, .pc=0, .sr=0}};
+  process process_b = {.pid=1, .context= {.usp=0, .pc=0, .sr=0}};
+  
+  process_list->process = &process_a;
+  
+  struct process_item *process_list_b = \
+    (struct process_item*)malloc(sizeof(process_item));
+
+  process_list_b->process = &process_b;
+  process_list_b->next = process_list;
+  
+  process_list->next = process_list_b;
 
   disable_supervisor();
   user_routine_a();
@@ -46,6 +71,10 @@ Interrupt handler for counting every time Timer C fires
 */
 void __attribute__ ((interrupt)) tick_handler() {
   INC_LONG(SYS_TICKS);        // Count the ticks of the timer
+
+  process_list = process_list->next;
+  e68PrintNumSignedWidth(process_list->process->pid, 16);
+  e68Println("");
 
   // Scheduler
   // 1. Save PC (4B) and SR (2B) from stack into the old process context
