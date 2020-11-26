@@ -56,3 +56,18 @@ void* calloc(size_t num , size_t size)
 	memset(ptr, 0, bsize);
 	return ptr;
 }
+
+unsigned int __mulsi3(unsigned int a, unsigned int b) {
+    unsigned int r = 0;
+
+    while (a) {
+        if (a & 1) {
+            r += b;
+        }
+
+        a >>= 1;
+        b <<= 1;
+    }
+
+    return r;
+}
