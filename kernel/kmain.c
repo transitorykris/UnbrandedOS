@@ -50,6 +50,8 @@ noreturn void kmain() {
   process process_a = {.pid=0, .context= {.usp=0, .pc=0, .sr=0}};
   process process_b = {.pid=1, .context= {.usp=0, .pc=0, .sr=0}};
   
+  process_list = (struct process_item*)malloc(sizeof(process_item));
+
   process_list->process = &process_a;
   
   struct process_item *process_list_b = \
@@ -73,7 +75,7 @@ void __attribute__ ((interrupt)) tick_handler() {
   INC_LONG(SYS_TICKS);        // Count the ticks of the timer
 
   process_list = process_list->next;
-  e68PrintNumSignedWidth(process_list->process->pid, 16);
+  e68PrintNumSignedWidth(process_list->process->pid, 10);
   e68Println("");
 
   // Scheduler
