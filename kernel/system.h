@@ -34,6 +34,11 @@ Disable supervisor bit
     __asm__ __volatile__ ("andi.w #0xdfff,%sr");\
 }
 
+/*
+Sleep... forever
+*/
+#define sleep() for(;;);
+
 typedef unsigned int tick;
 
 unsigned int get_ticks();

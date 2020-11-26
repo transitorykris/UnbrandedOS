@@ -57,7 +57,7 @@ noreturn void kmain() {
   disable_supervisor();
   user_routine_a();
 
-  for(;;);
+  sleep();
 }
 
 /*
