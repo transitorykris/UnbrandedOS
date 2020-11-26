@@ -46,6 +46,17 @@ Interrupt handler for counting every time Timer C fires
 */
 void __attribute__ ((interrupt)) tick_handler() {
   INC_LONG(SYS_TICKS);        // Count the ticks of the timer
+
+  // Scheduler
+  // 1. Save PC (4B) and SR (2B) from stack into the old process context
+  // 2. Save USP to old process context
+  // 3. Save Address and Data registers to old process context
+  // 4. Replace PC and SR on stack w/ new process's values
+  // 5. Move new USP into USP
+  // 6. Restore the A, D registers
+  // 7. Clear interrupt-in-service
+  // 8. RTE
+
   SET_BYTE(~0x20, MFP_ISRB);  // Clear interrupt-in-service
 }
 
