@@ -39,7 +39,7 @@ Sleep... forever
 */
 #define sleep() for(;;);
 
-typedef unsigned int tick;
+typedef unsigned int tick_t;
 
 unsigned int get_ticks();
 uint16_t get_status_register();

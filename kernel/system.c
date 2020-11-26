@@ -25,7 +25,7 @@ SOFTWARE.
 /*
 Returns the number of ticks since the system started
 */
-tick get_ticks() {
+tick_t get_ticks() {
     return GET_LONG(SYS_TICKS);
 }
 
