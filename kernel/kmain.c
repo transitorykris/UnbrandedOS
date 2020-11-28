@@ -33,12 +33,12 @@ typedef struct {
     uint16_t sr;        // Status register (and really just CCR)
     uint32_t a[8];      // Address registers, 8 is usp
     uint32_t d[8];      // Data registers
-} context;
+} context_t;
 
 typedef struct {
     uint16_t pid;       // Process ID
-    context context;
-} process;
+    context_t context;
+} process_t;
 
 void tick_handler();
 
@@ -58,7 +58,12 @@ noreturn void kmain() {
 
   for (int i=0;i<50000;i++) {/* do nothing for a while */}
 
-  set_usp(0x4000);
+  context_t process_a = {
+    .usp = 0x4000,
+    .pc = (uint32_t)user_routine_a,
+    .sr = 0x0
+  };
+  set_usp(process_a.usp);
   disable_supervisor();
   user_routine_a();
 

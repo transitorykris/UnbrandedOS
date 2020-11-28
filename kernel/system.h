@@ -35,18 +35,6 @@ Disable supervisor bit
 }
 
 /*
-Set the user stack pointer
-*/
-#define set_usp(l) \
-{\
-    __asm__ __volatile__ ( \
-        "move.w %0,%%a0\n\t" \
-        "move %%a0,%%usp" \
-        : : "i" (l) : \
-  ); \
-}
-
-/*
 Sleep... forever
 */
 #define sleep() for(;;);
@@ -55,5 +43,6 @@ typedef unsigned int tick_t;
 
 unsigned int get_ticks();
 uint16_t get_status_register();
+__attribute__((gnu_inline)) void inline set_usp(uint32_t usp);
 
 #endif

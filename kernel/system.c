@@ -39,3 +39,14 @@ uint16_t get_status_register() {
     );
     return sr;
 }
+
+/*
+Set the user stack pointer
+*/
+__attribute__((gnu_inline)) void inline set_usp(uint32_t usp) {
+    register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
+    a0 = (uint32_t *)usp;
+    __asm__ __volatile__ (
+        "move %%a0,%%usp":::"a0"
+    );
+}
