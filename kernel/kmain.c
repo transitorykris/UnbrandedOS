@@ -58,10 +58,7 @@ noreturn void kmain() {
 
   for (int i=0;i<50000;i++) {/* do nothing for a while */}
 
-  __asm__ __volatile__ (
-    "move #0x4000,%a0\n\t"
-    "move %a0,%usp"
-  );
+  set_usp(0x4000);
   disable_supervisor();
   user_routine_a();
 

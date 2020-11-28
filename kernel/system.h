@@ -35,6 +35,18 @@ Disable supervisor bit
 }
 
 /*
+Set the user stack pointer
+*/
+#define set_usp(l) \
+{\
+    __asm__ __volatile__ ( \
+        "move.w %0,%%a0\n\t" \
+        "move %%a0,%%usp" \
+        : : "i" (l) : \
+  ); \
+}
+
+/*
 Sleep... forever
 */
 #define sleep() for(;;);
