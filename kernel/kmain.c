@@ -20,8 +20,8 @@ SOFTWARE.
 */
 
 #include <stdlib.h>
-
-#include "easy68k/easy68k.h"
+#include <debug_stub.h>
+#include <easy68k/easy68k.h>
 
 #include "helpers.h"
 #include "system.h"
@@ -47,12 +47,16 @@ void user_routine_b();
 
 
 noreturn void kmain() {
+  debug_stub();
+
   for (int i=0;i<50000;i++) {/* do nothing for a while */}
 
   SET_VECTOR(tick_handler, MFP_TIMER_C);
 
   e68ClearScr();
   e68Println("Kernel started");
+
+  for (int i=0;i<50000;i++) {/* do nothing for a while */}
 
   disable_supervisor();
   user_routine_a();
@@ -86,7 +90,7 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
   for (;;) {
-    e68Println("A");
+    //e68Println("A");
   }
 }
 

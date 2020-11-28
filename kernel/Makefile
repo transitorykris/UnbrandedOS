@@ -6,7 +6,7 @@
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lmachine -leasy68k -lcstdlib -lstart_serial
+LIBS=-lmachine -leasy68k -lcstdlib -lstart_serial -ldebug_stub
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror	\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010	\
