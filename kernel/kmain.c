@@ -33,10 +33,13 @@ typedef uint8_t state;
 
 typedef struct {
     uint32_t usp;       // User stack pointer
-    uint32_t pc;        // Program counter
+    //uint32_t pc;        // Program counter
+    uint16_t pc_low;
+    uint16_t pc_high;
     uint16_t sr;        // Status register (and really just CCR)
-    uint32_t a[8];      // Address registers, 8 is usp
+    uint16_t empty;
     uint32_t d[8];      // Data registers
+    uint32_t a[8];      // Address registers, 8 is usp
     bool running;       // temporary process state
 } context_t;
 
@@ -53,7 +56,7 @@ context_t *process_b;
 void tick_handler();
 
 void user_routine_a();
-void user_routine_b();
+void pid0();
 
 noreturn void kmain() {
   debug_stub();
@@ -65,7 +68,7 @@ noreturn void kmain() {
 
   for (int i=0;i<50000;i++) {/* do nothing for a while */}
 
-  context_t context_a = {
+  /*context_t context_a = {
     .usp = 0x4000,
     .pc = (uint32_t)user_routine_a,
     .sr = 0x0,
@@ -73,22 +76,38 @@ noreturn void kmain() {
     .d = {0,0,0,0,0,0,0,0},
     .running = false
   };
-  process_a = &context_a;
+  process_a = &context_a;*/
 
-  context_t context_b = {
+  for (int i=0;i<50000;i++) {/* do nothing for a while */}
+  
+  // We need a process always running and we need to keep track of it
+  // I guess this is like process 0 in Unix?
+  // This will be populated by the scheduler's first context switch
+  context_t pid0_context = {
     .usp = 0x6000,
-    .pc = (uint32_t)user_routine_b,
+    .pc_low = 0x0,
+    .pc_high = 0x0,
     .sr = 0x0,
-    .a = {0,0,0,0,0,0,0,0},
     .d = {0,0,0,0,0,0,0,0},
-    .running = false
+    .a = {0,0,0,0,0,0,0,0},
+    .running = true
   };
-  process_b = &context_b;
+  process_b = &pid0_context;
+  current_process = process_b;
 
   // Start the scheduler
   SET_VECTOR(tick_handler, MFP_TIMER_C);
 
-  sleep();
+  // We need to set up USP before disabling supervisor mode
+  // or we'll get a privilege error
+  register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
+  a0 = (uint32_t *)current_process->usp;
+  __asm__ __volatile__ ("move %%a0,%%usp":::);
+
+  disable_supervisor();
+
+  // We're effectively PID0 starting here
+  while(true) e68Print(".");
 }
 
 /*
@@ -107,22 +126,31 @@ void __attribute__ ((interrupt)) tick_handler() {
   //e68Println("Handling tick");
 
   // Switch processes (this will be a circular linked list next)
-  if (current_process == process_b) {
-    current_process = process_a;
-  } else {
-    current_process = process_b;
-  }
+  //if (current_process == process_b) {
+  //  current_process = process_a;
+  //} else {
+  //  current_process = process_b;
+  //}
 
   // Context is meaningless if the process hasn't started
   if (current_process->running) {
-    // Save PC (4B) and SR (2B) from stack into the old process context
+    // Save the current process's SR
     __asm__ __volatile__ (
-      "move.w +2(%%a7),%0" : "=g" (current_process->pc) ::
+      "move (%%a7),%0"
+      :"=g" (current_process->sr)::
     );
-    
+
+    // Save the current process's PC
+    __asm__ __volatile__ (
+      "move.w +2(%%a7),%0\n\t"
+      "move.w +4(%%a7),%1"
+      : "=g" (current_process->pc_low), "=g" (current_process->pc_high)::
+    );
+
     // Save Address and Data registers to old process context
     __asm__ __volatile__ (
-      "movem.l %%a0-%%a7/%%d0-%%d7,%0" : "=g" (current_process->a) ::
+      "movem.l %%d0-%%d7/%%a0-%%a7,%0"
+      :"=g" (current_process->d)::
     );
 
     // Save USP to old process context
@@ -134,12 +162,14 @@ void __attribute__ ((interrupt)) tick_handler() {
   }
 
   e68Println(""); 
-  e68Println("Next process context");
+  e68Println("This process context");
   e68Print("USP: 0x");
   e68DisplayNumUnsigned(current_process->usp,16);
   e68Println("");
-  e68Print("PC: 0x");
-  e68DisplayNumUnsigned(current_process->pc,16);
+  e68Print("PC low: 0x");
+  e68DisplayNumUnsigned(current_process->pc_low,16);
+  e68Print(" PC high: 0x");
+  e68DisplayNumUnsigned(current_process->pc_high,16);
   e68Println("");
   e68Print("SR: 0x");
   e68DisplayNumUnsigned(current_process->sr,16);
@@ -188,34 +218,34 @@ void __attribute__ ((interrupt)) tick_handler() {
     e68Println("False");
   }
 
-  // Move new USP into USP
+  current_process->running = true;
+
+  // Move next USP into USP
   register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
   a0 = (uint32_t *)current_process->usp;
   __asm__ __volatile__ ("move %%a0,%%usp":::);
 
-  //e68Print("USP set to:");
-  //e68PrintNumSignedWidth(current_process->usp, 10);
-  //e68Println("");
-
-  // 4. Replace PC and SR on stack w/ new process's values
-  // Program counter is at stack pointer+2
+  // Replace PC w/ next process's values
   __asm__ __volatile__ (
-    "move.l %0,+2(%%a7)"  // I'm not convinced this offset is right
-    ::"g" (current_process->pc):
+    "move.w %0,+2(%%a7)\n\t"  // I'm not convinced this offset is right
+    "move.w %1,+4(%%a7)"
+    ::"g" (current_process->pc_low), "g" (current_process->pc_high):
   );
 
-  //e68Print("PC set to:");
-  //e68PrintNumSignedWidth(current_process->pc, 10);
-  //e68Println("");
+  // Replace SR w/ next process's values
+  __asm__ __volatile__ (
+    "move.l %0,(%%a7)"
+    ::"g" (current_process->sr):
+  );
 
-  // 6. Restore the A, D registers
-  //__asm__ __volatile__ (
-  //  "movem.l %0,%%a0-%%a7/%%d0-%%d7"
-  //  ::"g" (current_process->a):
-  //);
-  current_process->running = true;
-  // 7. Clear interrupt-in-service
+  // Clear interrupt-in-service
   SET_BYTE(~0x20, MFP_ISRB);  // Clear interrupt-in-service
+
+  // Restore the A, D registers
+  __asm__ __volatile__ (
+    "movem.l (%0),%%d0-%%d7/%%a0-%%a7"
+    ::"g" (current_process->a):
+  );
 
   // RTE implied by interrupt attribute on function
 }
@@ -234,9 +264,12 @@ void user_routine_a() {
 User space routine that doesn't do too much
 Same as the first
 */
-void user_routine_b() {
-  e68Println("Start of routine_b");
+void pid0() {
+  //__asm__ __volatile (
+  //  "move.l #0xf0f0f0f0,%d4"
+  //);
+  //e68Println("PID0 sleep forever");
   for (;;) {
-    e68Println("B");
+    e68Println("."); // this will go away once things work
   }
 }
