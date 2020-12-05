@@ -33,14 +33,12 @@ typedef uint8_t state;
 #define DEAD 1
 
 typedef struct {
-    uint32_t a[8];      // Address registers
+    uint32_t usp;       // User stack pointer
+    uint32_t a[7];      // Address registers
     uint32_t d[8];      // Data registers
-    uint32_t c[8];      // Address registers
-    uint32_t e[8];      // Data registers
     uint16_t sr;        // Status register (and really just CCR)
     uint16_t pc_low;    // Program counter low word
     uint16_t pc_high;   // Program counter high word
-    uint32_t usp;       // User stack pointer
     bool running;       // temporary process state
 } context_t;
 
@@ -72,19 +70,7 @@ noreturn void kmain() {
   e68ClearScr();
   e68Println("Kernel started");
 
-  for (int i=0;i<50000;i++) {/* do nothing for a while */}
-
-  /*context_t context_a = {
-    .usp = 0x4000,
-    .pc = (uint32_t)user_routine_a,
-    .sr = 0x0,
-    .a = {0,0,0,0,0,0,0,0},
-    .d = {0,0,0,0,0,0,0,0},
-    .running = false
-  };
-  process_a = &context_a;*/
-
-  for (int i=0;i<50000;i++) {/* do nothing for a while */}
+  for (int i=0;i<100000;i++) {/* do nothing for a while */}
   
   // We need a process always running and we need to keep track of it
   // I guess this is like process 0 in Unix?
@@ -95,7 +81,7 @@ noreturn void kmain() {
     .pc_high = 0x0,
     .sr = 0x0,
     .d = {0,0,0,0,0,0,0,0},
-    .a = {0,0,0,0,0,0,0,0},
+    .a = {0,0,0,0,0,0,0},
     .running = true
   };
   process_0 = &pid0_context;
@@ -107,7 +93,7 @@ noreturn void kmain() {
     .pc_high = 0x0,
     .sr = 0x0,
     .d = {0,0,0,0,0,0,0,0},
-    .a = {0,0,0,0,0,0,0,0},
+    .a = {0,0,0,0,0,0,0,},
     .running = true
   };
 
