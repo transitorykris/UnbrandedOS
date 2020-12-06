@@ -55,7 +55,7 @@ context_t *next_process;
 context_t *process_0;
 context_t *process_1;
 
-uint32_t *spp;
+uint32_t *ssp;
 
 void tick_handler();
 
@@ -113,13 +113,9 @@ noreturn void kmain() {
   //unsigned int i=0;
   // We're effectively PID0 starting here
   while(true) {
-    //e68DisplayNumUnsigned(i,10);
-    //e68Println("");
-    //i++;
     e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
     e68Println("");
   }
-  //while(true) i++;
 }
 
 /*
