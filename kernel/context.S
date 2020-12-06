@@ -28,7 +28,7 @@ context_swap::
     addi.l #1,$40C              ; Increment tick counter
     
     move.l a7,ssp              ; Save the location of the stack pointer
-    move.l current_process,a7   ; Replace it with current_process
+    move.l (current_process),a7   ; Replace it with current_process
     movem.l d0-d7/a0-a6,-(a7)   ; Save registers to current_process
     move usp,a0                 ; Save user stack pointer
     move a0,-(a7)
