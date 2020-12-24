@@ -33,29 +33,28 @@ typedef uint8_t state;
 #define DEAD 1
 
 // Order matters! Append only
-typedef struct {
-    uint32_t d[8];      // Data registers
-    uint32_t a[7];      // Address registers, a7 will be stored in usp
+struct context_t {
+    uint32_t d[7];      // Data registers D1-D7
+    uint32_t a[6];      // Address registers A1-A6, a7 will be stored in usp
+    uint32_t d0;        // Saved separately from ^
+    uint32_t a0;        // Ditto
     uint32_t usp;       // User stack pointer
     uint16_t sr;        // Status register (and really just CCR)
     uint32_t pc;        // Program counter
 
+    struct context_t* next;     // Next process to run
+
+    // Order shouldn't matter too much below this line
     bool running;
-} context_t;
+};
 
 uint32_t scratch;
 
-typedef struct {
-    uint16_t pid;       // Process ID
-    state state;
-    context_t context;
-} process_t;
-
-context_t *current_process;
-context_t *next_process;
-context_t *temp_process;
-context_t *process_0;
-context_t *process_1;
+struct context_t *current_process;
+struct context_t *next_process;
+struct context_t *temp_process;
+struct context_t *process_0;
+struct context_t *process_1;
 
 uint32_t *ssp;
 
@@ -77,32 +76,12 @@ noreturn void kmain() {
   // We need a process always running and we need to keep track of it
   // I guess this is like process 0 in Unix?
   // This will be populated by the scheduler's first context switch
-  context_t pid0_context = {
+  struct context_t pid0_context = {
     .usp = 0x6000,
-    //.pc_low = 0x0,
-    //.pc_high = 0x0,
-    .pc = 0x0,  // we don't know what this is yet
-    .sr = 0x0,
-    .d = {0,0,0,0,0,0,0,0},
-    .a = {0,0,0,0,0,0,0},
     .running = true
   };
-  process_0 = &pid0_context;
-  current_process = process_0;
-
-  context_t pid1_context = {
-    .usp = 0x8000,
-    //.pc_low = 0x0,
-    //.pc_high = 0x0,
-    .pc = 0x0,  // this will be set to user_routine_a later
-    .sr = 0x0,
-    .d = {0,0,0,0,0,0,0,0},
-    .a = {0,0,0,0,0,0,0},
-    .running = true
-  };
-  process_1 = &pid1_context;
-  next_process = process_1;
-  pid1_context.pc = (uint32_t)user_routine_a;
+  pid0_context.next = &pid0_context;
+  current_process = &pid0_context;
 
   // Start the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
