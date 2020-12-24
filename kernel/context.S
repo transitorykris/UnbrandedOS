@@ -97,7 +97,7 @@ context_swap::
 
     ; Next context - XXX make sure this is right
     ; WTFFFFffff
-    lea (a0,C_NEXT_OFFSET),a0
+    lea (C_NEXT_OFFSET,a0),a0
 
     ; Restore the SR and PC
     move.w (C_SR_OFFSET,a0),(SP_SR_OFFSET,sp) ; Save SR
