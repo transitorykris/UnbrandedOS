@@ -70,13 +70,24 @@ context_swap::
     lea current_process,a0      ; Get our current_process
 
     ; Save
-    movem.l d1-d7/a1-a6,C_DR_OFFSET(a0) ; Save bulk registers, a7 our SP
+    movem.l d1-d7/a1-a6,C_DR_OFFSET(a0) ; Save bulk registers, a7 is our SP
+    
     move.l SP_USP_OFFSET(sp),C_USP_OFFSET(a0)    ; Save USP
+
+    move.l (sp),C_SR_OFFSET(a0) ; Save SR
+    move.l SP_PC_OFFSET(sp),C_PC_OFFSET(a0) ; Save PC
+
+    ; Next context
 
 
     ; Restore
+    move.l C_SR_OFFSET(a0),SP_SR_OFFSET(sp) ; Save SR
+    move.l C_PC_OFFSET(a0),SP_PC_OFFSET(sp) ; Save PC
+
     move.l C_USP_OFFSET(a0),a1          ; Restore USP
     move.l a1,usp
+
+    movem.l C_DR_OFFSET(a0),d1-d7/a1-a6, ; Restre bulk registers
 
     movem.l SP_SCRATCH_OFFSET(sp),d0/a0         ; Restore scratch registers
 
