@@ -13,7 +13,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror	\
 				-mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_kernel.ld -L $(SYSLIBDIR)	\
 				-Map=$(MAP)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m68010 -spaces -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot

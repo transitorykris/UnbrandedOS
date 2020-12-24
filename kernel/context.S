@@ -22,96 +22,64 @@
 
     section .text
 
-; This will eventually become our context swap routine
-; For now just learning how to call assembly routines
+TICKER      = $40c
+INT_ADDR    = $f80011
+CLEAR_INT   = ~$20
+
+; Order matters! Append only
+;typedef struct {
+;    uint32_t a[8];      // Address registers
+;    uint32_t d[8];      // Data registers
+;    uint32_t usp;       // User stack pointer
+;    uint16_t sr;        // Status register (and really just CCR)
+;    uint32_t pc;        // Program counter
+;} context_t;
+
+C_DR_OFFSET     = 0
+C_AR_OFFSET     = 32
+C_USP_OFFSET    = 60
+C_SR_OFFSET     = 64
+C_PC_OFFSET     = 66
+
+; - stack contains some goodies about the current task
+; 0xSP-12 | USP                  |
+; 0xSP-8  | Scratch A0           |
+; 0xSP-4  | Scratch D0           |
+; 0xSP    | Status Register      | <- sp
+; 0xSP+2  | Program Counter High |
+; 0xSP+4  | Program Counter Low  |
+
+SP_SR_OFFSET = 0
+SP_PC_OFFSET = 2
+SP_SCRATCH_OFFSET = -8   ; D0 and A0
+SP_USP_OFFSET = -12
+
+; Context swap attempt number 283
+; Notes
+; - the context_swap's stack pointer is in sp
+; - the user's stack pointer is in usp
+; - we want to save SR, PC, USP, and D0-D7 and A0-A7
 context_swap::
-    addi.l #1,$40C              ; Increment tick counter
+    addi.l #1,TICKER            ; Tick the next tick
+
+    movem.l d0/a0,SP_SCRATCH_OFFSET(sp) ; Create scratch register (offset?)
     
-    move.l a7,ssp              ; Save the location of the stack pointer
-    move.l (current_process),a7   ; Replace it with current_process
-    movem.l d0-d7/a0-a6,-(a7)   ; Save registers to current_process
-    move usp,a0                 ; Save user stack pointer
-    move a0,-(a7)
+    move.l usp,a0               ; Save user stack pointer to our stack
+    move.l a0,SP_USP_OFFSET(sp)
 
-    ; Swap here....
+    lea current_process,a0      ; Get our current_process
 
-    move (a7)+,a0               ; Restore usp
-    move a0,usp
-    movem.l (a7)+,d0-d7/a0-a6   ; Restore registers
-    move.l ssp,a7                 ; Restore supervisor stack pointer
-    
-    move.b #~$20,$f80011        ; Clear interrupt
+    ; Save
+    movem.l d1-d7/a1-a6,C_DR_OFFSET(a0) ; Save bulk registers, a7 our SP
+    move.l SP_USP_OFFSET(sp),C_USP_OFFSET(a0)    ; Save USP
 
-    rte                         ; Return to next process!
 
-context_swap_o::
-    addi.l #1,$40C
-    movem.l d0-d7/a0-a6,-(a7)   ; Save the previous registers
-    move usp,a0                 ; Save the previous user stack pointer
-    move a0,-(a7)
-    
-    ; Save PC, SR, registers, USP to struct
-    ;move.l (a7)+,(current_process)    ; usp
-    ;move.l (a7)+,current_process    ; a6
-    ;move.l (a7)+,current_process    ; a5
-    ;move.l (a7)+,current_process    ; a4
-    ;move.l (a7)+,current_process    ; a3
-    ;move.l (a7)+,current_process    ; a2
-    ;move.l (a7)+,current_process    ; a1
-    ;move.l (a7)+,current_process    ; a0
-    ;move.l (a7)+,current_process    ; d7
-    ;move.l (a7)+,current_process    ; d6
-    ;move.l (a7)+,current_process    ; d5
-    ;move.l (a7)+,current_process    ; d4
-    ;move.l (a7)+,current_process    ; d3
-    ;move.l (a7)+,current_process    ; d2
-    ;move.l (a7)+,current_process    ; d1
-    ;move.l (a7)+,current_process    ; d0
-    ;move.w (a7)+,current_process    ; sr
-    ;move.w (a7)+,current_process    ; pc high
-    ;move.l (a7)+,current_process    ; pc low
+    ; Restore
+    move.l C_USP_OFFSET(a0),a1          ; Restore USP
+    move.l a1,usp
 
-    ; Load new PC, SR, registers, and USP
-    ; Save PC, SR, registers, USP to struct
-    ;move.l -(a7),current_process    ; usp
-    ;move.l -(a7),current_process    ; a6
-    ;move.l -(a7),current_process    ; a5
-    ;move.l -(a7),current_process    ; a4
-    ;move.l -(a7),current_process    ; a3
-    ;move.l -(a7),current_process    ; a2
-    ;move.l -(a7),current_process    ; a1
-    ;move.l -(a7),current_process    ; a0
-    ;move.l -(a7),current_process    ; d7
-    ;move.l -(a7),current_process    ; d6
-    ;move.l -(a7),current_process    ; d5
-    ;move.l -(a7),current_process    ; d4
-    ;move.l -(a7),current_process    ; d3
-    ;move.l -(a7),current_process    ; d2
-    ;move.l -(a7),current_process    ; d1
-    ;move.l -(a7),current_process    ; d0
-    ;move.w -(a7),current_process    ; sr
-    ;move.w -(a7),current_process    ; pc high
-    ;move.l -(a7),current_process    ; pc low
+    movem.l SP_SCRATCH_OFFSET(sp),d0/a0         ; Restore scratch registers
 
-    ; TODO move these back from the new context struct
-    move (a7)+,a0                 ; Save the previous user stack pointer
-    move a0,usp
-    movem.l (a7)+,d0-d7/a0-a6   ; Restore the new registers
-    move.b #~$20,$f80011
-    rte
-
-;context_swap::
-;    addi.l #1,$40C              ; Context swap counter ;)
-;    movem.l d0-d7/a1-a6,-(sp)   ; Save the previous registers
-;    move usp,a0                 ; Save the previous user stack pointer
-;    move.l a0,-(sp)
-;    
-;    ; Save PC, SR, registers, USP to struct
-;
-;    ; TODO replace USP, PC, and SR on the stack
-;    move.l (sp)+,a0
-;    move a0,usp                 ; Restore the new user stack pointer
-;
-;    ; TODO move these back from the new context struct
-;    movem.l (sp)+,d0-d7/a0-a7   ; Restore the new registers
-;    rts
+    ; We're done!
+    move.b CLEAR_INT,INT_ADDR   ; Clear interrupt
+    rte                         ; Return to next task

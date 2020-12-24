@@ -32,14 +32,15 @@ typedef uint8_t state;
 #define RUNNING 0
 #define DEAD 1
 
+// Order matters! Append only
 typedef struct {
-    uint32_t usp;       // User stack pointer
-    uint32_t a[7];      // Address registers
     uint32_t d[8];      // Data registers
+    uint32_t a[7];      // Address registers, a7 will be stored in usp
+    uint32_t usp;       // User stack pointer
     uint16_t sr;        // Status register (and really just CCR)
-    uint16_t pc_low;    // Program counter low word
-    uint16_t pc_high;   // Program counter high word
-    bool running;       // temporary process state
+    uint32_t pc;        // Program counter
+
+    bool running;
 } context_t;
 
 uint32_t scratch;
@@ -52,6 +53,7 @@ typedef struct {
 
 context_t *current_process;
 context_t *next_process;
+context_t *temp_process;
 context_t *process_0;
 context_t *process_1;
 
@@ -77,8 +79,9 @@ noreturn void kmain() {
   // This will be populated by the scheduler's first context switch
   context_t pid0_context = {
     .usp = 0x6000,
-    .pc_low = 0x0,
-    .pc_high = 0x0,
+    //.pc_low = 0x0,
+    //.pc_high = 0x0,
+    .pc = 0x0,  // we don't know what this is yet
     .sr = 0x0,
     .d = {0,0,0,0,0,0,0,0},
     .a = {0,0,0,0,0,0,0},
@@ -87,17 +90,19 @@ noreturn void kmain() {
   process_0 = &pid0_context;
   current_process = process_0;
 
-  context_t process_1_c = {
+  context_t pid1_context = {
     .usp = 0x8000,
-    .pc_low = 0x0,
-    .pc_high = 0x0,
+    //.pc_low = 0x0,
+    //.pc_high = 0x0,
+    .pc = 0x0,  // this will be set to user_routine_a later
     .sr = 0x0,
     .d = {0,0,0,0,0,0,0,0},
-    .a = {0,0,0,0,0,0,0,},
+    .a = {0,0,0,0,0,0,0},
     .running = true
   };
-
-  process_1 = &process_1_c;
+  process_1 = &pid1_context;
+  next_process = process_1;
+  pid1_context.pc = (uint32_t)user_routine_a;
 
   // Start the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
