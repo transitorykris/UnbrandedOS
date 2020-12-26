@@ -37,7 +37,9 @@ struct context_t {
     uint32_t usp;       // User stack pointer
     uint16_t sr;        // Status register (and really just CCR)
     uint32_t pc;        // Program counter
-    struct context_t* next;     // Next process to run
+
+    // Next process to run
+    struct context_t* next;
 
     // Order shouldn't matter too much below this line
 };
@@ -51,6 +53,8 @@ void tick_handler();
 void user_routine_a();
 void pid0();
 
+extern uint32_t test_process;
+
 noreturn void kmain() {
   debug_stub();
 
@@ -63,8 +67,14 @@ noreturn void kmain() {
   struct context_t pid0_context = {
     .usp = 0x6000,
   };
-  pid0_context.next = &pid0_context;
   current_process = &pid0_context;
+
+  struct context_t pid1_context = {
+    .usp = 0x8000,
+    .pc = (uint32_t)user_routine_a,
+    .next = &pid0_context,
+  };
+  current_process->next = &pid1_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -72,12 +82,22 @@ noreturn void kmain() {
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
   register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  a0 = (uint32_t *)current_process->usp;
+  //a0 = (uint32_t *)current_process->usp;
+  // XXX point this usp elsewhere for now
+  a0 = (uint32_t *)0x6000;
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
 
-  pid0();
+  for (;;) {
+    e68Println("This is a long string");
+  }
+
+pid1_start:
+  e68Println("Start of pid0");
+  for (;;) {
+    e68Println("A");
+  }
 }
 
 /*

@@ -3,12 +3,15 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+# Removed cflag -pedantic for non-standard use of labels
+# Removed cflag -Wall because this is getting messy
+
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lmachine -leasy68k -lcstdlib -lstart_serial -ldebug_stub
 DEFINES=-DROSCO_M68K
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror	\
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Werror	\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010	\
 				-mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_kernel.ld -L $(SYSLIBDIR)	\

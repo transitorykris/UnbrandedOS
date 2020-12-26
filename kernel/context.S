@@ -81,15 +81,17 @@ context_swap::
     move.w SP_SR(sp),C_SR(a0)       ; Save sr
     move.l SP_PC(sp),C_PC(a0)       ; Save pc
 
-    move.l C_NEXT(a0),a1            ; Switch to next task
+    ; XXX this might not be correct!
+    move.l C_NEXT(a0),a0            ; Switch to next task
 
     move.w C_SR(a0),SP_SR(sp)       ; Restore sr
     move.l C_PC(a0),SP_PC(sp)       ; Restore pc
     movem.l C_DR(a0),d1-d7/a1-a6    ; Restore bulk registers
     move.l C_D0(a0),SP_D0(sp)       ; Prepare to restore d0
     move.l C_A0(a0),SP_A0(sp)       ; Prepare to restore a0
-    move.l C_USP(a0),SP_USP(sp)     ; Restore usp
-    move.l SP_USP(sp),a0
+    ;move.l C_USP(a0),SP_USP(sp)     ; Restore usp
+    ;move.l SP_USP(sp),a0 ; XXX superfluous?
+    move.l C_USP(a0),a0
     move.l a0,usp
     move.l SP_D0(sp),d0             ; Restore d0
     move.l SP_A0(sp),a0             ; Restore a0
@@ -98,3 +100,16 @@ context_swap::
 
     move.b CLEAR_INT,INT_ADDR       ; Clear interrupt
     rte                             ; Return to next task
+
+test_process::
+	pea msg_start
+	jsr e68Println
+	addq.l #4,sp
+L8:
+	pea msg_loop
+	jsr e68Println
+	addq.l #4,sp
+	jmp L8
+
+msg_start db "this is a test",0
+msg_loop db "A",0
