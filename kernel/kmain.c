@@ -51,7 +51,7 @@ struct context_t *current_process;
 void tick_handler();
 
 void user_routine_a();
-void pid0();
+void user_routine_b();
 
 extern uint32_t test_process;
 
@@ -74,7 +74,13 @@ noreturn void kmain() {
     .pc = (uint32_t)user_routine_a,
     .next = &pid0_context,
   };
-  current_process->next = &pid1_context;
+
+  struct context_t pid2_context = {
+    .usp = 0x9000,
+    .pc = (uint32_t)user_routine_b,
+    .next = &pid1_context,
+  };
+  current_process->next = &pid2_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -82,58 +88,37 @@ noreturn void kmain() {
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
   register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  //a0 = (uint32_t *)current_process->usp;
-  // XXX point this usp elsewhere for now
-  a0 = (uint32_t *)0x6000;
+  a0 = (uint32_t *)current_process->usp;
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
 
-  for (;;) {
-    e68Println("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    //e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    //e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
-  }
-
-  //pid0();
-  //for (;;) {
-  //  e68Print(".");
-  //}
-
-//pid1_start:
-//  e68Println("Start of pid0");
-//  for (;;) {
-//    e68Println("A");
-//  }
-}
-
-/*
-pid0 is predefined and started by the system
-*/
-noreturn void pid0() {
-  e68Println("pid0 starting");
-  for (;;) {
-    e68Println(".");
-    e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    //e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
-  }
+  // XXX go to sleep... this is still burning cycles though!
+  for (;;);
 }
 
 /*
 User space routine that doesn't do too much
 */
 void user_routine_a() {
-  //e68Println("Start of routine_a");
-  for (;;) {
-    e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    //e68Println("0123456789");
+  for (int i=0;;i++) {
+    e68DisplayNumUnsigned(i,10);
+    // movem.l d0-d2,-(a7)
+    //e68ClearScr();
   }
 }
 
+/*
+Nor this one
+*/
 void user_routine_b() {
-  e68Println("ticker starting");
   for (;;) {
-    //e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
+    e68Println("T");
+    e68Println("U");
+    e68Println("V");
+    e68Println("W");
+    e68Println("X");
+    e68Println("Y");
+    e68Println("Z");
   }
 }

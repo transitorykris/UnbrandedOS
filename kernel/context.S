@@ -74,7 +74,7 @@ context_swap::
 
     move.l (current_process),a0     ; Get our current_process
 
-    movem.l d1-d7/a1-a6,(C_DR,a0)   ; Save bulk registers
+    movem.l d1-d7/a1-a6,C_DR(a0)   ; Save bulk registers
     move.l SP_D0(sp),C_D0(a0)       ; Save d0
     move.l SP_A0(sp),C_A0(a0)       ; Save a0
     move.l SP_USP(sp),C_USP(a0)     ; Save usp
@@ -99,16 +99,3 @@ context_swap::
 
     move.b CLEAR_INT,INT_ADDR       ; Clear interrupt
     rte                             ; Return to next task
-
-test_process::
-	pea msg_start
-	jsr e68Println
-	addq.l #4,sp
-L8:
-	pea msg_loop
-	jsr e68Println
-	addq.l #4,sp
-	jmp L8
-
-msg_start db "this is a test",0
-msg_loop db "A",0
