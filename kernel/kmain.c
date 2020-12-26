@@ -74,7 +74,7 @@ noreturn void kmain() {
     .pc = (uint32_t)user_routine_a,
     .next = &pid0_context,
   };
-  current_process->next = &pid0_context;
+  current_process->next = &pid1_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -88,25 +88,34 @@ noreturn void kmain() {
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
-  pid0();
+
   for (;;) {
-    e68Println("This is a long string");
+    e68Println("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    //e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
+    //e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
   }
 
-pid1_start:
-  e68Println("Start of pid0");
-  for (;;) {
-    e68Println("A");
-  }
+  //pid0();
+  //for (;;) {
+  //  e68Print(".");
+  //}
+
+//pid1_start:
+//  e68Println("Start of pid0");
+//  for (;;) {
+//    e68Println("A");
+//  }
 }
 
 /*
 pid0 is predefined and started by the system
 */
 noreturn void pid0() {
+  e68Println("pid0 starting");
   for (;;) {
+    e68Println(".");
     e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    e68Println(" TICK"); // this will go away once things work
+    //e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
   }
 }
 
@@ -114,8 +123,17 @@ noreturn void pid0() {
 User space routine that doesn't do too much
 */
 void user_routine_a() {
-  e68Println("Start of routine_a");
+  //e68Println("Start of routine_a");
   for (;;) {
-    e68Println("A");
+    e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
+    //e68Println("0123456789");
+  }
+}
+
+void user_routine_b() {
+  e68Println("ticker starting");
+  for (;;) {
+    //e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
+    e68Println(" TICK WITH A REALLY DAMNED LONG MESSAGE 1234"); // this will go away once things work
   }
 }

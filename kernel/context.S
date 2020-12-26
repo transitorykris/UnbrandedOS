@@ -81,16 +81,15 @@ context_swap::
     move.w SP_SR(sp),C_SR(a0)       ; Save sr
     move.l SP_PC(sp),C_PC(a0)       ; Save pc
 
-    ; XXX this might not be correct!
+    ; XXX this isn't doing what I think it should do!!
     move.l C_NEXT(a0),a0            ; Switch to next task
+    move.l a0,(current_process)
 
     move.w C_SR(a0),SP_SR(sp)       ; Restore sr
     move.l C_PC(a0),SP_PC(sp)       ; Restore pc
     movem.l C_DR(a0),d1-d7/a1-a6    ; Restore bulk registers
     move.l C_D0(a0),SP_D0(sp)       ; Prepare to restore d0
     move.l C_A0(a0),SP_A0(sp)       ; Prepare to restore a0
-    ;move.l C_USP(a0),SP_USP(sp)     ; Restore usp
-    ;move.l SP_USP(sp),a0 ; XXX superfluous?
     move.l C_USP(a0),a0
     move.l a0,usp
     move.l SP_D0(sp),d0             ; Restore d0
