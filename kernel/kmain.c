@@ -40,23 +40,17 @@ struct context_t {
     uint32_t a0;        // Ditto
     uint32_t usp;       // User stack pointer
     uint16_t sr;        // Status register (and really just CCR)
+    uint16_t blank;
     uint32_t pc;        // Program counter
-
     struct context_t* next;     // Next process to run
 
     // Order shouldn't matter too much below this line
-    bool running;
+    //bool running;
 };
 
 uint32_t scratch;
 
 struct context_t *current_process;
-struct context_t *next_process;
-struct context_t *temp_process;
-struct context_t *process_0;
-struct context_t *process_1;
-
-uint32_t *ssp;
 
 void tick_handler();
 
@@ -78,10 +72,16 @@ noreturn void kmain() {
   // This will be populated by the scheduler's first context switch
   struct context_t pid0_context = {
     .usp = 0x6000,
-    .running = true
+    //.running = true
   };
+  //struct context_t pid1_context;
   pid0_context.next = &pid0_context;
   current_process = &pid0_context;
+  e68Println("current_process");
+  e68DisplayNumUnsigned((uint32_t)current_process,10);
+  e68Println("current_process.next");
+  e68DisplayNumUnsigned((uint32_t)current_process->next,10);
+  e68Println("");
 
   // Start the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -98,6 +98,7 @@ noreturn void kmain() {
   // We're effectively PID0 starting here
   while(true) {
     e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
+    //e68DisplayNumUnsigned(current_process->d[0],10);
     e68Println("");
   }
 }
