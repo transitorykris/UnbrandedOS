@@ -28,10 +28,6 @@ SOFTWARE.
 #include "system.h"
 #include "mfp.h"
 
-typedef uint8_t state;
-#define RUNNING 0
-#define DEAD 1
-
 // Order matters! Append only
 struct context_t {
     uint32_t d[7];      // Data registers D1-D7
@@ -44,7 +40,6 @@ struct context_t {
     struct context_t* next;     // Next process to run
 
     // Order shouldn't matter too much below this line
-    //bool running;
 };
 
 uint32_t scratch;
@@ -67,7 +62,6 @@ noreturn void kmain() {
   // pid0 will always be defined so the system has something to do  
   struct context_t pid0_context = {
     .usp = 0x6000,
-    //.running = true
   };
   pid0_context.next = &pid0_context;
   current_process = &pid0_context;
@@ -77,9 +71,9 @@ noreturn void kmain() {
 
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
-  //register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  //a0 = (uint32_t *)current_process->usp;
-  //__asm__ __volatile__ ("move.l %%a0,%%usp":::);
+  register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
+  a0 = (uint32_t *)current_process->usp;
+  __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
 
@@ -87,14 +81,9 @@ noreturn void kmain() {
 }
 
 /*
-User space routine that doesn't do too much
-Same as the first
+pid0 is predefined and started by the system
 */
 noreturn void pid0() {
-  //__asm__ __volatile (
-  //  "move.l #0xf0f0f0f0,%d4"
-  //);
-  //e68Println("PID0 sleep forever");
   for (;;) {
     e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
     e68Println(" TICK"); // this will go away once things work
