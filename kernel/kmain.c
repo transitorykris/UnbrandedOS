@@ -74,7 +74,7 @@ noreturn void kmain() {
     .pc = (uint32_t)user_routine_a,
     .next = &pid0_context,
   };
-  current_process->next = &pid1_context;
+  current_process->next = &pid0_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -88,7 +88,7 @@ noreturn void kmain() {
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
-
+  pid0();
   for (;;) {
     e68Println("This is a long string");
   }
