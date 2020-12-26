@@ -40,7 +40,6 @@ struct context_t {
     uint32_t a0;        // Ditto
     uint32_t usp;       // User stack pointer
     uint16_t sr;        // Status register (and really just CCR)
-    uint16_t blank;
     uint32_t pc;        // Program counter
     struct context_t* next;     // Next process to run
 
@@ -65,41 +64,40 @@ noreturn void kmain() {
   e68ClearScr();
   e68Println("Kernel started");
 
-  for (int i=0;i<100000;i++) {/* do nothing for a while */}
-  
-  // We need a process always running and we need to keep track of it
-  // I guess this is like process 0 in Unix?
-  // This will be populated by the scheduler's first context switch
+  // pid0 will always be defined so the system has something to do  
   struct context_t pid0_context = {
     .usp = 0x6000,
     //.running = true
   };
-  //struct context_t pid1_context;
   pid0_context.next = &pid0_context;
   current_process = &pid0_context;
-  e68Println("current_process");
-  e68DisplayNumUnsigned((uint32_t)current_process,10);
-  e68Println("current_process.next");
-  e68DisplayNumUnsigned((uint32_t)current_process->next,10);
-  e68Println("");
 
-  // Start the scheduler
+  // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
 
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
-  register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  a0 = (uint32_t *)current_process->usp;
-  __asm__ __volatile__ ("move.l %%a0,%%usp":::);
+  //register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
+  //a0 = (uint32_t *)current_process->usp;
+  //__asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
 
-  //unsigned int i=0;
-  // We're effectively PID0 starting here
-  while(true) {
+  pid0();
+}
+
+/*
+User space routine that doesn't do too much
+Same as the first
+*/
+noreturn void pid0() {
+  //__asm__ __volatile (
+  //  "move.l #0xf0f0f0f0,%d4"
+  //);
+  //e68Println("PID0 sleep forever");
+  for (;;) {
     e68DisplayNumUnsigned((uint32_t)get_ticks(),10);
-    //e68DisplayNumUnsigned(current_process->d[0],10);
-    e68Println("");
+    e68Println(" TICK"); // this will go away once things work
   }
 }
 
@@ -110,19 +108,5 @@ void user_routine_a() {
   e68Println("Start of routine_a");
   for (;;) {
     e68Println("A");
-  }
-}
-
-/*
-User space routine that doesn't do too much
-Same as the first
-*/
-void pid0() {
-  //__asm__ __volatile (
-  //  "move.l #0xf0f0f0f0,%d4"
-  //);
-  //e68Println("PID0 sleep forever");
-  for (;;) {
-    e68Println("."); // this will go away once things work
   }
 }

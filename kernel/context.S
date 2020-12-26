@@ -17,7 +17,7 @@
 ; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ; SOFTWARE.
 
-    xref current_process
+    import current_process
 
     section .text
 
@@ -43,10 +43,12 @@ C_D0_OFFSET     = 52
 C_A0_OFFSET     = 56
 C_USP_OFFSET    = 60    ; User stack pointer
 C_SR_OFFSET     = 64    ; Status register
-C_PC_OFFSET     = 68    ; Program counter
-C_NEXT_OFFSET   = 72    ; Next process to run
+C_PC_OFFSET     = 66    ; Program counter
+C_NEXT_OFFSET   = 70    ; Next process to run
 
-; - stack contains some goodies about the current task
+; Stack contains some goodies about the current task
+; We also save a0 and d0 so we have space to work in
+; USP is saved because we can't move directly from usp to our struct
 ; 0xSP      | USP                  |    <- sp will eventually be here
 ; 0xSP-4    | Scratch A0           |
 ; 0xSP-8    | Scratch D0           |
@@ -60,62 +62,39 @@ SP_D0_OFFSET    = 8
 SP_A0_OFFSET    = 4
 SP_USP_OFFSET   = 0
 
-; Context swap attempt number 283
-; Notes
-; - the context_swap's stack pointer is in sp
-; - the user's stack pointer is in usp
-; - we want to save SR, PC, USP, and D0-D7 and A0-A7
+; Saves the current context and restores the next context in the list
 context_swap::
     addi.l #1,TICKER            ; Tick the next tick
     
-    ; Monkey with the stack pointer to make offsets easier?
-
-    ; Free up scratch registers
-    ;movem.l d0/a0,SP_SCRATCH_OFFSET(sp) ; Create scratch register (offset?)
-    move.l d0,-(sp)
+    move.l d0,-(sp)             ; Free up scratch registers
     move.l a0,-(sp)
 
-    ; Save user stack pointer to our stack using the newly freed register
     move.l usp,a0               ; Save user stack pointer to our stack
     move.l a0,-(sp)
-    ; sp should now represent the offsets we defined above
 
-    ; Load our current_process struct
     move.l (current_process),a0      ; Get our current_process
 
-    ; Save
-    movem.l d1-d7/a1-a6,(C_DR_OFFSET,a0) ; Save bulk registers, a7 is our SP
-    move.l SP_D0_OFFSET(sp),C_D0_OFFSET(a0)
-    move.l SP_A0_OFFSET(sp),C_A0_OFFSET(a0)
-    move.l SP_USP_OFFSET(sp),C_USP_OFFSET(a0)    ; Save USP
+    movem.l d1-d7/a1-a6,(C_DR_OFFSET,a0)        ; Save bulk registers
+    move.l SP_D0_OFFSET(sp),C_D0_OFFSET(a0)     ; Save d0
+    move.l SP_A0_OFFSET(sp),C_A0_OFFSET(a0)     ; Save a0
+    move.l SP_USP_OFFSET(sp),C_USP_OFFSET(a0)   ; Save usp
+    move.w SP_SR_OFFSET(sp),C_SR_OFFSET(a0)     ; Save sr
+    move.l SP_PC_OFFSET(sp),C_PC_OFFSET(a0)     ; Save pc
 
-    ; Save the current SR and PC
-    move.w SP_SR_OFFSET(sp),C_SR_OFFSET(a0) ; Save SR
-    move.l SP_PC_OFFSET(sp),C_PC_OFFSET(a0) ; Save PC
+    move.l C_NEXT_OFFSET(a0),a1                 ; Switch to next task
 
-    ; Next context - XXX make sure this is right
-    ; WTFFFFffff
-    move.l C_NEXT_OFFSET(a0),a1
-
-    ; Restore the SR and PC
-    move.w C_SR_OFFSET(a0),SP_SR_OFFSET(sp) ; Save SR
-    move.l C_PC_OFFSET(a0),SP_PC_OFFSET(sp) ; Save PC
-    ; Restore D0-D7, A0-A6, and USP
-    movem.l C_DR_OFFSET(a0),d1-d7/a1-a6 ; Restore bulk registers
-
-    move.l C_D0_OFFSET(a0),SP_D0_OFFSET(sp)
-    move.l C_A0_OFFSET(a0),SP_A0_OFFSET(sp)
-    
-    move.l C_USP_OFFSET(a0),SP_USP_OFFSET(sp)
+    move.w C_SR_OFFSET(a0),SP_SR_OFFSET(sp)     ; Restore sr
+    move.l C_PC_OFFSET(a0),SP_PC_OFFSET(sp)     ; Restore pc
+    movem.l C_DR_OFFSET(a0),d1-d7/a1-a6         ; Restore bulk registers
+    move.l C_D0_OFFSET(a0),SP_D0_OFFSET(sp)     ; Prepare to restore d0
+    move.l C_A0_OFFSET(a0),SP_A0_OFFSET(sp)     ; Prepare to restore a0
+    move.l C_USP_OFFSET(a0),SP_USP_OFFSET(sp)   ; Restore usp
     move.l SP_USP_OFFSET(sp),a0
     move.l a0,usp
+    move.l SP_D0_OFFSET(sp),d0                  ; Restore d0
+    move.l SP_A0_OFFSET(sp),a0                  ; Restore a0
 
-    move.l SP_D0_OFFSET(sp),d0
-    move.l SP_A0_OFFSET(sp),a0
+    add.l #SP_SR_OFFSET,sp                      ; Reset our stack pointer
 
-    ; Move our stack pointer back to where it started for RTE to work!
-    add.l #SP_SR_OFFSET,sp
-
-    ; We're done!
-    move.b CLEAR_INT,INT_ADDR   ; Clear interrupt
-    rte                         ; Return to next task
+    move.b CLEAR_INT,INT_ADDR                   ; Clear interrupt
+    rte                                         ; Return to next task
