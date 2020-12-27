@@ -72,15 +72,16 @@ noreturn void kmain() {
   struct context_t pid1_context = {
     .usp = 0x8000,
     .pc = (uint32_t)user_routine_a,
-    .next = &pid0_context,
   };
+  current_process->next = &pid1_context;
 
   struct context_t pid2_context = {
     .usp = 0x9000,
     .pc = (uint32_t)user_routine_b,
     .next = &pid1_context,
   };
-  current_process->next = &pid2_context;
+  pid1_context.next = &pid2_context;
+  //pid2_context.next = &pid0_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -93,8 +94,11 @@ noreturn void kmain() {
 
   disable_supervisor();
 
-  // XXX go to sleep... this is still burning cycles though!
-  for (;;);
+  // pid0 will stop after the first context switch
+  for (;;) {
+    e68Print(".");
+  }
+  e68Println("Oh shit.");
 }
 
 /*
@@ -103,7 +107,7 @@ User space routine that doesn't do too much
 void user_routine_a() {
   for (int i=0;;i++) {
     e68DisplayNumUnsigned(i,10);
-    // movem.l d0-d2,-(a7)
+    e68Println("$");
     //e68ClearScr();
   }
 }
@@ -112,13 +116,36 @@ void user_routine_a() {
 Nor this one
 */
 void user_routine_b() {
-  for (;;) {
-    e68Println("T");
-    e68Println("U");
-    e68Println("V");
-    e68Println("W");
-    e68Println("X");
-    e68Println("Y");
-    e68Println("Z");
+  for(;;) {
+    e68DisplayNumUnsigned(1234,10);
+    e68Println("");
   }
+  /*for (;;) {
+    e68Println("a");
+    e68Println("b");
+    e68Println("c");
+    e68Println("d");
+    e68Println("e");
+    e68Println("f");
+    e68Println("g");
+    e68Println("h");
+    e68Println("i");
+    e68Println("j");
+    e68Println("k");
+    e68Println("l");
+    e68Println("m");
+    e68Println("n");
+    e68Println("o");
+    e68Println("p");
+    e68Println("q");
+    e68Println("r");
+    e68Println("s");
+    e68Println("t");
+    e68Println("u");
+    e68Println("v");
+    e68Println("w");
+    e68Println("x");
+    e68Println("y");
+    e68Println("z");
+  }*/
 }
