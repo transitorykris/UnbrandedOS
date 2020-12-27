@@ -106,7 +106,7 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
   for (int i=0;;i++) {
-    e68DisplayNumUnsigned(i,10);
+    //e68DisplayNumUnsigned(i,10);
     e68Println("$");
     //e68ClearScr();
   }
@@ -117,8 +117,8 @@ Nor this one
 */
 void user_routine_b() {
   for(;;) {
-    e68DisplayNumUnsigned(1234,10);
-    e68Println("");
+    //e68DisplayNumUnsigned(1234,10);
+    e68Println("+");
   }
   /*for (;;) {
     e68Println("a");
