@@ -18,6 +18,7 @@
 ; SOFTWARE.
 
     import current_process
+    import context_switches
 
     section .text
 
@@ -37,14 +38,25 @@ CLEAR_INT   = ~$20
 ;    struct context_t* next;     // Next process to run
 ;} context_t;
 
-C_DR     = 0     ; Data registers
-C_AR     = 28    ; Address registers
-C_D0     = 52
-C_A0     = 56
-C_USP    = 60    ; User stack pointer
-C_SR     = 64    ; Status register
-C_PC     = 66    ; Program counter
-C_NEXT   = 70    ; Next process to run
+CP_D0     = 0
+CP_D1     = 4
+CP_D2     = 8
+CP_D3     = 12
+CP_D4     = 16
+CP_D5     = 20
+CP_D6     = 24
+CP_D7     = 28
+CP_A0     = 32
+CP_A1     = 36
+CP_A2     = 40
+CP_A3     = 44
+CP_A4     = 48
+CP_A5     = 52
+CP_A6     = 56
+CP_A7     = 60  ; USP
+CP_SR     = 64  ; Status register
+CP_PC     = 66  ; Program counter
+CP_NEXT   = 70  ; Next process to run
 
 ; Stack contains some goodies about the current task
 ; We also save a0 and d0 so we have space to work in
@@ -52,51 +64,84 @@ C_NEXT   = 70    ; Next process to run
 ; 0xSP      | USP                  |    <- sp will eventually be here
 ; 0xSP-4    | Scratch A0           |
 ; 0xSP-8    | Scratch D0           |
-; 0xSP-12   | Status Register      |
+; 0xSP-12   | Status Register      |    <- we start here on entry
 ; 0xSP-14   | Program Counter High |
-; 0xSP-16   | Program Counter Low  |
+; 0xSP-18   | Program Counter Low  |
 
-SP_PC    = 14
-SP_SR    = 12
-SP_D0    = 8
-SP_A0    = 4
-SP_USP   = 0
+SP_SR    = 0
+SP_PC    = 2
 
 ; Saves the current context and restores the next context in the list
 context_swap::
     addi.l #1,TICKER                ; Tick the next tick
-    
+
+    ; Check if we interrupted while running in supervisor
+    btst #5,(sp)
+    bne done           ; If yes, bail out
+    ;addi.l #1,context_switches
+    ; Todo - I believe if this is true we save a7 rather than usp
+
+    ; Set up
     move.l d0,-(sp)                 ; Free up scratch registers
     move.l a0,-(sp)
 
     move.l usp,a0                   ; Push user stack pointer
     move.l a0,-(sp)
 
-    move.l (current_process),a0     ; Get our current_process
+    move.l current_process,a0       ; Get our current_process
 
-    movem.l d1-d7/a1-a6,C_DR(a0)   ; Save bulk registers
-    move.l SP_D0(sp),C_D0(a0)       ; Save d0
-    move.l SP_A0(sp),C_A0(a0)       ; Save a0
-    move.l SP_USP(sp),C_USP(a0)     ; Save usp
-    move.w SP_SR(sp),C_SR(a0)       ; Save sr
-    move.l SP_PC(sp),C_PC(a0)       ; Save pc
+    ; Save
+    move.l (sp)+,CP_A7(a0)
+    move.l (sp)+,CP_A0(a0)
+    move.l (sp)+,CP_D0(a0)          ; SP now back to where we started
 
-    move.l C_NEXT(a0),a0            ; Switch to next task
-    move.l a0,(current_process)
+    move.l d1,CP_D1(a0)
+    move.l d2,CP_D2(a0)
+    move.l d3,CP_D3(a0)
+    move.l d4,CP_D4(a0)
+    move.l d5,CP_D5(a0)
+    move.l d6,CP_D6(a0)
+    move.l d7,CP_D7(a0)
+    move.l a1,CP_A1(a0)
+    move.l a2,CP_A2(a0)
+    move.l a3,CP_A3(a0)
+    move.l a4,CP_A4(a0)
+    move.l a5,CP_A5(a0)
+    move.l a6,CP_A6(a0)
+    move.w (sp),CP_SR(a0)       ; Save sr
+    move.l 2(sp),CP_PC(a0)       ; Save pc
 
-    move.w C_SR(a0),SP_SR(sp)       ; Restore sr
-    move.l C_PC(a0),SP_PC(sp)       ; Restore pc
-    movem.l C_DR(a0),d1-d7/a1-a6    ; Restore bulk registers
-    move.l C_D0(a0),SP_D0(sp)       ; Prepare to restore d0
-    move.l C_A0(a0),SP_A0(sp)       ; Prepare to restore a0
-    
-    move.l C_USP(a0),a0             ; Restore the user stack pointer
+    ; Switch
+    move.l CP_NEXT(a0),a0            ; Switch to next task
+    move.l a0,current_process
+
+    ; Restore
+    move.l CP_PC(a0),2(sp)       ; Restore pc
+    move.w CP_SR(a0),(sp)       ; Restore sr
+
+    move.l CP_D1(a0),d1
+    move.l CP_D2(a0),d2
+    move.l CP_D3(a0),d3
+    move.l CP_D4(a0),d4
+    move.l CP_D5(a0),d5
+    move.l CP_D6(a0),d6
+    move.l CP_D7(a0),d7
+    move.l CP_A1(a0),a1
+    move.l CP_A2(a0),a2
+    move.l CP_A3(a0),a3
+    move.l CP_A4(a0),a4
+    move.l CP_A5(a0),a5
+    move.l CP_A6(a0),a6
+
+    move.l CP_D0(a0),d0              ; Restore d0
+
+    move.l CP_A7(a0),a0              ; Restore USP
     move.l a0,usp
-    
-    move.l SP_D0(sp),d0             ; Restore d0
-    move.l SP_A0(sp),a0             ; Restore a0
 
-    add.l #SP_SR,sp                 ; Reset our stack pointer
+    move.l current_process,a0        ; Fix up a0 one last time
+    move.l CP_A0(a0),a0              ; to restore a0
 
+    ; Return
+done:
     move.b CLEAR_INT,INT_ADDR       ; Clear interrupt
     rte                             ; Return to next task

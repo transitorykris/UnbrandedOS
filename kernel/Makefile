@@ -56,3 +56,6 @@ dump: $(BINARY)
 
 load: $(BINARY)
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+
+terminal:
+	minicom -D /dev/cu.usbserial-1 -c on -R utf-8

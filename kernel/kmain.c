@@ -30,11 +30,8 @@ SOFTWARE.
 
 // Order matters! Append only
 struct context_t {
-    uint32_t d[7];      // Data registers D1-D7
-    uint32_t a[6];      // Address registers A1-A6, a7 will be stored in usp
-    uint32_t d0;        // Saved separately from ^
-    uint32_t a0;        // Ditto
-    uint32_t usp;       // User stack pointer
+    uint32_t d[8];      // Data registers D1-D7
+    uint32_t a[8];      // Address registers A1-A6, a7 will be stored in usp
     uint16_t sr;        // Status register (and really just CCR)
     uint32_t pc;        // Program counter
 
@@ -47,6 +44,8 @@ struct context_t {
 uint32_t scratch;
 
 struct context_t *current_process;
+
+uint32_t context_switches;
 
 void tick_handler();
 
@@ -65,18 +64,21 @@ noreturn void kmain() {
 
   // pid0 will always be defined so the system has something to do  
   struct context_t pid0_context = {
-    .usp = 0x6000,
+    .a = {0,0,0,0,0,0,0,0x6000}
   };
   current_process = &pid0_context;
 
   struct context_t pid1_context = {
-    .usp = 0x8000,
+    .d = {1,2,3,4,5,6},
+    .a = {0xFF,22,33,44,55,66,77,0x10000},
     .pc = (uint32_t)user_routine_a,
   };
   current_process->next = &pid1_context;
+  //current_process->next = &pid0_context;
 
   struct context_t pid2_context = {
-    .usp = 0x9000,
+    .d[5] = 0x123456,
+    .a = {0,0,0,0,0,0,0,0x12000},
     .pc = (uint32_t)user_routine_b,
     .next = &pid1_context,
   };
@@ -89,15 +91,27 @@ noreturn void kmain() {
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
   register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  a0 = (uint32_t *)current_process->usp;
+  a0 = (uint32_t *)current_process->a[7];
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
 
   // pid0 will stop after the first context switch
-  for (;;) {
+  /*for (;;) {
     e68Print(".");
+    e68Println("");
+  }*/
+
+  for (int i=0;;i++) {
+    //e68Print("COUNTER:");
+    //e68DisplayNumUnsigned(i,10);
+    //e68Print("TICKS:");
+    //e68DisplayNumUnsigned(get_ticks(),10);
+    //e68Println(":END");
+    e68Print(".");
+    //e68ClearScr();
   }
+
   e68Println("Oh shit.");
 }
 
@@ -106,8 +120,11 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
   for (int i=0;;i++) {
-    //e68DisplayNumUnsigned(i,10);
-    e68Println("$");
+    e68Print("COUNTER:");
+    e68DisplayNumUnsigned(i,10);
+    e68Print(":TICK:");
+    e68DisplayNumUnsigned(get_ticks(),10);
+    e68Println(":END");
     //e68ClearScr();
   }
 }
@@ -118,7 +135,7 @@ Nor this one
 void user_routine_b() {
   for(;;) {
     //e68DisplayNumUnsigned(1234,10);
-    e68Println("+");
+    e68Print("+");
   }
   /*for (;;) {
     e68Println("a");
