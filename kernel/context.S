@@ -76,8 +76,8 @@ context_swap::
     addi.l #1,TICKER                ; Tick the next tick
 
     ; Check if we interrupted while running in supervisor
-    btst #5,(sp)
-    bne done           ; If yes, bail out
+    ;btst #5,(sp)
+    ;bne done           ; If yes, bail out
     ;addi.l #1,context_switches
     ; Todo - I believe if this is true we save a7 rather than usp
 
@@ -94,6 +94,12 @@ context_swap::
     move.l (sp)+,CP_A7(a0)
     move.l (sp)+,CP_A0(a0)
     move.l (sp)+,CP_D0(a0)          ; SP now back to where we started
+
+    btst #5,(sp)
+    beq not_supervisor
+    move.l a7,CP_A7(a0)
+    subi.l #6,CP_A7(a0)
+not_supervisor:
 
     move.l d1,CP_D1(a0)
     move.l d2,CP_D2(a0)
