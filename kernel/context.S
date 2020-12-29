@@ -18,7 +18,6 @@
 ; SOFTWARE.
 
     import current_process
-    import context_switches
 
     section .text
 
@@ -26,37 +25,40 @@ TICKER      = $40c
 INT_ADDR    = $f80011
 CLEAR_INT   = ~$20
 
-; Order matters! Append only
-;typedef struct {
-;    uint32_t d[7];      // Data registers D1-D7
-;    uint32_t a[6];      // Address registers A1-A6, a7 will be stored in usp
-;    uint32_t d0;        // Saved separately from ^
-;    uint32_t a0;        // Ditto
+;struct context_t {
+;    // Order matters here
+;    uint32_t d[8];      // Data registers D1-D7
+;    uint32_t a[7];      // Address registers A1-A6, a7 will be stored in usp
 ;    uint32_t usp;       // User stack pointer
 ;    uint16_t sr;        // Status register (and really just CCR)
+;    uint16_t _blank;
 ;    uint32_t pc;        // Program counter
-;    struct context_t* next;     // Next process to run
-;} context_t;
+;
+;    // Next process to run
+;    struct context_t* next;
+;
+;    // Order shouldn't matter too much below this line
+;};
 
 CP_D0     = 0
-CP_D1     = 4
-CP_D2     = 8
-CP_D3     = 12
-CP_D4     = 16
-CP_D5     = 20
-CP_D6     = 24
-CP_D7     = 28
-CP_A0     = 32
-CP_A1     = 36
-CP_A2     = 40
-CP_A3     = 44
-CP_A4     = 48
-CP_A5     = 52
-CP_A6     = 56
-CP_A7     = 60  ; USP
-CP_SR     = 64  ; Status register
-CP_PC     = 66  ; Program counter
-CP_NEXT   = 70  ; Next process to run
+CP_D1     = CP_D0 + 4
+CP_D2     = CP_D1 + 4
+CP_D3     = CP_D2 + 4
+CP_D4     = CP_D3 + 4
+CP_D5     = CP_D4 + 4
+CP_D6     = CP_D5 + 4
+CP_D7     = CP_D6 + 4
+CP_A0     = CP_D7 + 4
+CP_A1     = CP_A0 + 4
+CP_A2     = CP_A1 + 4
+CP_A3     = CP_A2 + 4
+CP_A4     = CP_A3 + 4
+CP_A5     = CP_A4 + 4
+CP_A6     = CP_A5 + 4
+CP_SP     = CP_A6 + 4  ; USP
+CP_SR     = CP_SP + 4  ; Status register - really just 2 bytes
+CP_PC     = CP_SR + 4  ; Program counter
+CP_NEXT   = CP_PC + 4  ; Next process to run
 
 ; Stack contains some goodies about the current task
 ; We also save a0 and d0 so we have space to work in
@@ -73,81 +75,44 @@ SP_PC    = 2
 
 ; Saves the current context and restores the next context in the list
 context_swap::
-    addi.l #1,TICKER                ; Tick the next tick
+    addi.l  #1, TICKER              ; Tick the next tick
 
-    ; Check if we interrupted while running in supervisor
-    ;btst #5,(sp)
-    ;bne done           ; If yes, bail out
-    ;addi.l #1,context_switches
-    ; Todo - I believe if this is true we save a7 rather than usp
+    ;btst #5,(sp)                   ; Were we in supervisor mode?
+    ;bne done                       ; If yes, bail out
 
     ; Set up
-    move.l d0,-(sp)                 ; Free up scratch registers
-    move.l a0,-(sp)
+    move.l  a0, -(sp)               ; Free up a0 to do some work
 
-    move.l usp,a0                   ; Push user stack pointer
-    move.l a0,-(sp)
+    move.l  usp, a0                 ; Push user stack pointer
+    move.l  a0, -(sp)
 
-    move.l current_process,a0       ; Get our current_process
+    move.l  current_process,a0      ; Get our current_process
 
     ; Save
-    move.l (sp)+,CP_A7(a0)
-    move.l (sp)+,CP_A0(a0)
-    move.l (sp)+,CP_D0(a0)          ; SP now back to where we started
+    move.l  (sp)+, CP_SP(a0)
+    move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
 
-    btst #5,(sp)
-    beq not_supervisor
-    move.l a7,CP_A7(a0)
-    subi.l #6,CP_A7(a0)
-not_supervisor:
-
-    move.l d1,CP_D1(a0)
-    move.l d2,CP_D2(a0)
-    move.l d3,CP_D3(a0)
-    move.l d4,CP_D4(a0)
-    move.l d5,CP_D5(a0)
-    move.l d6,CP_D6(a0)
-    move.l d7,CP_D7(a0)
-    move.l a1,CP_A1(a0)
-    move.l a2,CP_A2(a0)
-    move.l a3,CP_A3(a0)
-    move.l a4,CP_A4(a0)
-    move.l a5,CP_A5(a0)
-    move.l a6,CP_A6(a0)
-    move.w (sp),CP_SR(a0)       ; Save sr
-    move.l 2(sp),CP_PC(a0)       ; Save pc
+    movem.l d0-d7, CP_D0(a0)
+    movem.l a1-a6, CP_A1(a0)
+    move.w  (sp), CP_SR(a0)         ; Save sr
+    move.l  2(sp), CP_PC(a0)        ; Save pc
 
     ; Switch
-    move.l CP_NEXT(a0),a0            ; Switch to next task
-    move.l a0,current_process
+    move.l  CP_NEXT(a0), a0         ; Switch to next task
+    move.l  a0, current_process
 
     ; Restore
-    move.l CP_PC(a0),2(sp)       ; Restore pc
-    move.w CP_SR(a0),(sp)       ; Restore sr
+    move.l  CP_PC(a0), 2(sp)        ; Restore pc
+    move.w  CP_SR(a0), (sp)         ; Restore sr
 
-    move.l CP_D1(a0),d1
-    move.l CP_D2(a0),d2
-    move.l CP_D3(a0),d3
-    move.l CP_D4(a0),d4
-    move.l CP_D5(a0),d5
-    move.l CP_D6(a0),d6
-    move.l CP_D7(a0),d7
-    move.l CP_A1(a0),a1
-    move.l CP_A2(a0),a2
-    move.l CP_A3(a0),a3
-    move.l CP_A4(a0),a4
-    move.l CP_A5(a0),a5
-    move.l CP_A6(a0),a6
-
-    move.l CP_D0(a0),d0              ; Restore d0
-
-    move.l CP_A7(a0),a0              ; Restore USP
-    move.l a0,usp
-
-    move.l current_process,a0        ; Fix up a0 one last time
-    move.l CP_A0(a0),a0              ; to restore a0
+    movem.l CP_D0(a0), d0-d7
+    movem.l CP_A1(a0), a1-a6
+    move.l  CP_SP(a0), a0           ; Restore USP
+    move.l  a0, usp                 ; before we lose a0
+    move.l  current_process, a0     ; Fix up a0 one last time
+    move.l  CP_A0(a0), a0           ; to restore a0
 
     ; Return
 done:
-    move.b CLEAR_INT,INT_ADDR       ; Clear interrupt
+    move.b  CLEAR_INT, INT_ADDR     ; Clear interrupt
     rte                             ; Return to next task

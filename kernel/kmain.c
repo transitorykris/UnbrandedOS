@@ -22,30 +22,28 @@ SOFTWARE.
 #include <stdlib.h>
 #include <debug_stub.h>
 #include <easy68k/easy68k.h>
+#include <machine.h>
 
 #include "helpers.h"
 #include "context.h"
 #include "system.h"
 #include "mfp.h"
 
-// Order matters! Append only
 struct context_t {
-    uint32_t d[8];      // Data registers D1-D7
-    uint32_t a[8];      // Address registers A1-A6, a7 will be stored in usp
-    uint16_t sr;        // Status register (and really just CCR)
-    uint32_t pc;        // Program counter
+    // Order matters here
+    uint32_t d[8];          // Data registers D1-D7
+    uint32_t a[7];          // Address registers A1-A6
+    uint32_t usp;           // User stack pointer / A7
+    uint16_t sr;            // Status register (and really just CCR)
+    uint16_t _blank;
+    uint32_t pc;            // Program counter
 
-    // Next process to run
-    struct context_t* next;
+    struct context_t* next; // Next process to run
 
     // Order shouldn't matter too much below this line
 };
 
-uint32_t scratch;
-
 struct context_t *current_process;
-
-uint32_t context_switches;
 
 void tick_handler();
 
@@ -64,21 +62,24 @@ noreturn void kmain() {
 
   // pid0 will always be defined so the system has something to do  
   struct context_t pid0_context = {
-    .a = {0,0,0,0,0,0,0,0x6000}
+    .a = {0,0,0,0,0,0,0},
+    .usp = 0x6000,
   };
   current_process = &pid0_context;
 
   struct context_t pid1_context = {
-    .d = {1,2,3,4,5,6},
-    .a = {0xFF,22,33,44,55,66,77,0x10000},
+    .d = {0,1,2,3,4,5,6,7},
+    .a = {00,11,22,33,44,55,66},
+    .usp = 0x10000,
     .pc = (uint32_t)user_routine_a,
   };
   current_process->next = &pid1_context;
   //current_process->next = &pid0_context;
 
   struct context_t pid2_context = {
-    .d[5] = 0x123456,
-    .a = {0,0,0,0,0,0,0,0x12000},
+    .d = {0xa,0xb,0xc,0xd,0xe,0xf,0xf6,0xf7},
+    .a = {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6},
+    .usp = 0x12000,
     .pc = (uint32_t)user_routine_b,
     .next = &pid1_context,
   };
@@ -108,7 +109,8 @@ noreturn void kmain() {
     //e68Print("TICKS:");
     //e68DisplayNumUnsigned(get_ticks(),10);
     //e68Println(":END");
-    e68Print(".");
+    //e68Print(".");
+    mcPrint(".");
     //e68ClearScr();
   }
 
@@ -120,11 +122,12 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
   for (int i=0;;i++) {
-    e68Print("COUNTER:");
+    mcPrintln(">HELLO<");
+    //e68Print("COUNTER:");
     e68DisplayNumUnsigned(i,10);
-    e68Print(":TICK:");
-    e68DisplayNumUnsigned(get_ticks(),10);
-    e68Println(":END");
+    //e68Print(":TICK:");
+    //e68DisplayNumUnsigned(get_ticks(),10);
+    //e68Println(":END");
     //e68ClearScr();
   }
 }
@@ -134,8 +137,9 @@ Nor this one
 */
 void user_routine_b() {
   for(;;) {
+    mcPrintln(")WORLD(");
     //e68DisplayNumUnsigned(1234,10);
-    e68Print("+");
+    //e68Println("+");
   }
   /*for (;;) {
     e68Println("a");
