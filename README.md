@@ -1,3 +1,3 @@
 # Kris68k
 
-Beginnings of my POSIX-lite OS for the MC68010 on a Rosco-m68k
+Beginnings of a little pre-emptive multitasking kernel for the MC68010 on a Rosco-m68k
