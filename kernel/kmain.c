@@ -97,7 +97,7 @@ noreturn void kmain() {
   // We never return, but we also stop execution here after the
   // first context switch
   for (;;) {
-    e68Print(".");
+    mcPrint(".");
   }
 }
 
