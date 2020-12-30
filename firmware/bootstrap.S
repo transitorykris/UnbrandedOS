@@ -14,7 +14,7 @@
 ; info in the System Data Block, enables interrupts and 
 ; calls the main stage1 loader (in main1.c).
 ;------------------------------------------------------------
-    include "../../shared/equates.S"
+    include "../shared/equates.S"
     include "equates.S"
 
     section .text

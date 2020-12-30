@@ -34,12 +34,10 @@ struct context_t {
     uint32_t d[8];          // Data registers D1-D7
     uint32_t a[7];          // Address registers A1-A6
     uint32_t usp;           // User stack pointer / A7
-    uint16_t sr;            // Status register (and really just CCR)
-    uint16_t _blank;
+    uint32_t sr;            // Status register (and really just CCR)
     uint32_t pc;            // Program counter
 
     struct context_t* next; // Next process to run
-
     // Order shouldn't matter too much below this line
 };
 
@@ -60,31 +58,30 @@ noreturn void kmain() {
   e68ClearScr();
   e68Println("Kernel started");
 
-  // pid0 will always be defined so the system has something to do  
-  struct context_t pid0_context = {
-    .a = {0,0,0,0,0,0,0},
+  // This context gets trashed after the first context switch  
+  struct context_t throw_away = {
+    .d = {0xd1d1d1dd,0xd1d1d1dd,0x2d2d2ddd,0x3d3d3ddd,0x4d4d4ddd,0x5d5d5ddd,0x6d6d6ddd,0x7d7d7ddd},
+    .a = {0xd1d1d1aa,0xd1d1d1aa,0x2d2d2daa,0x3d3d3daa,0x4d4d4daa,0x5d5d5daa,0x6d6d6daa},
     .usp = 0x6000,
   };
-  current_process = &pid0_context;
+  current_process = &throw_away;
 
   struct context_t pid1_context = {
-    .d = {0,1,2,3,4,5,6,7},
-    .a = {00,11,22,33,44,55,66},
+    .d = {0x010101dd,0x111111dd,0x212121dd,0x313131dd,0x414141dd,0x515151dd,0x616161dd,0x717171dd},
+    .a = {0x010101aa,0x111111aa,0x212121aa,0x313131aa,0x414141aa,0x515151aa,0x616161aa},
     .usp = 0x10000,
     .pc = (uint32_t)user_routine_a,
   };
   current_process->next = &pid1_context;
-  //current_process->next = &pid0_context;
 
   struct context_t pid2_context = {
-    .d = {0xa,0xb,0xc,0xd,0xe,0xf,0xf6,0xf7},
-    .a = {0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6},
+    .d = {0x0f0f0fdd,0x1f1f1fdd,0x2f2f2fdd,0x3f3f3fdd,0x4f4f4fdd,0x5f5f5fdd,0x6f6f6fdd,0x7f7f7fdd},
+    .a = {0x0f0f0faa,0x1f1f1faa,0x2f2f2faa,0x3f3f3faa,0x4f4f4faa,0x5f5f5faa,0x6f6f6faa},
     .usp = 0x12000,
     .pc = (uint32_t)user_routine_b,
     .next = &pid1_context,
   };
   pid1_context.next = &pid2_context;
-  //pid2_context.next = &pid0_context;
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
@@ -97,76 +94,25 @@ noreturn void kmain() {
 
   disable_supervisor();
 
-  // pid0 will stop after the first context switch
-  /*for (;;) {
-    e68Print(".");
-    e68Println("");
-  }*/
-
-  for (int i=0;;i++) {
-    //e68Print("COUNTER:");
-    //e68DisplayNumUnsigned(i,10);
-    //e68Print("TICKS:");
-    //e68DisplayNumUnsigned(get_ticks(),10);
-    //e68Println(":END");
-    //e68Print(".");
-    mcPrint(".");
-    //e68ClearScr();
-  }
-
-  e68Println("Oh shit.");
+  // We never return, but we also stop execution here after the
+  // first context switch
+  for (;;) {e68Print(".");}
 }
 
 /*
 User space routine that doesn't do too much
 */
 void user_routine_a() {
-  for (int i=0;;i++) {
-    mcPrintln(">HELLO<");
-    //e68Print("COUNTER:");
-    e68DisplayNumUnsigned(i,10);
-    //e68Print(":TICK:");
-    //e68DisplayNumUnsigned(get_ticks(),10);
-    //e68Println(":END");
-    //e68ClearScr();
-  }
+    for(;;) {
+      e68DisplayNumUnsigned(1,10);
+    }
 }
 
 /*
 Nor this one
 */
-void user_routine_b() {
+void volatile user_routine_b() {
   for(;;) {
-    mcPrintln(")WORLD(");
-    //e68DisplayNumUnsigned(1234,10);
-    //e68Println("+");
+    e68DisplayNumUnsigned(2,10);
   }
-  /*for (;;) {
-    e68Println("a");
-    e68Println("b");
-    e68Println("c");
-    e68Println("d");
-    e68Println("e");
-    e68Println("f");
-    e68Println("g");
-    e68Println("h");
-    e68Println("i");
-    e68Println("j");
-    e68Println("k");
-    e68Println("l");
-    e68Println("m");
-    e68Println("n");
-    e68Println("o");
-    e68Println("p");
-    e68Println("q");
-    e68Println("r");
-    e68Println("s");
-    e68Println("t");
-    e68Println("u");
-    e68Println("v");
-    e68Println("w");
-    e68Println("x");
-    e68Println("y");
-    e68Println("z");
-  }*/
 }

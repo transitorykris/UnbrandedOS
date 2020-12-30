@@ -55,20 +55,16 @@ CP_A3     = CP_A2 + 4
 CP_A4     = CP_A3 + 4
 CP_A5     = CP_A4 + 4
 CP_A6     = CP_A5 + 4
-CP_SP     = CP_A6 + 4  ; USP
+CP_A7     = CP_A6 + 4  ; This is kind of a dead register!!
+CP_SP     = CP_A7      ; USP
 CP_SR     = CP_SP + 4  ; Status register - really just 2 bytes
 CP_PC     = CP_SR + 4  ; Program counter
 CP_NEXT   = CP_PC + 4  ; Next process to run
 
-; Stack contains some goodies about the current task
-; We also save a0 and d0 so we have space to work in
-; USP is saved because we can't move directly from usp to our struct
-; 0xSP      | USP                  |    <- sp will eventually be here
-; 0xSP-4    | Scratch A0           |
-; 0xSP-8    | Scratch D0           |
-; 0xSP-12   | Status Register      |    <- we start here on entry
-; 0xSP-14   | Program Counter High |
-; 0xSP-18   | Program Counter Low  |
+; context_swap gets a stack that looks like:
+; 0xSP+4    | Program Counter Low  |
+; 0xSP+2    | Program Counter High |
+; 0xSP      | Status Register      |    <- we start here on entry
 
 SP_SR    = 0
 SP_PC    = 2
@@ -113,6 +109,6 @@ context_swap::
     move.l  CP_A0(a0), a0           ; to restore a0
 
     ; Return
-done:
+context_swap_done:
     move.b  CLEAR_INT, INT_ADDR     ; Clear interrupt
     rte                             ; Return to next task
