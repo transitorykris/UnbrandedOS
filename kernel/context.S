@@ -73,9 +73,6 @@ SP_PC    = 2
 context_swap::
     addi.l  #1, TICKER              ; Tick the next tick
 
-    ;btst #5,(sp)                   ; Were we in supervisor mode?
-    ;bne done                       ; If yes, bail out
-
     ; Set up
     move.l  a0, -(sp)               ; Free up a0 to do some work
 
@@ -88,7 +85,7 @@ context_swap::
     move.l  (sp)+, CP_SP(a0)
     move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
 
-    movem.l d0-d7, CP_D0(a0)
+    movem.l d0-d7/a0-a6, CP_D0(a0)
     movem.l a1-a6, CP_A1(a0)
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
