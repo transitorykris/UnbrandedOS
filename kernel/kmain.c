@@ -89,7 +89,7 @@ noreturn void kmain() {
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
   register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  a0 = (uint32_t *)current_process->a[7];
+  a0 = (uint32_t *)current_process->usp;
   __asm__ __volatile__ ("move.l %%a0,%%usp":::);
 
   disable_supervisor();
