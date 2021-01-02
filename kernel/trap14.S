@@ -20,6 +20,8 @@
 ; TRAP 16 is a temporary hack while I sort out how to do
 ; proper pre-emptive multitasking and interrupt handling (kris)
 
+    import context_swap
+
 ; EFP table addresses (from the firmware's equates.S)
 EFP_PRINT       equ    $420
 EFP_PRINTLN     equ    $424
@@ -35,7 +37,7 @@ EFP_SETCURSOR   equ    $440
 
 ; Trashes: MFP_UDR
 ; Modifies: Nothing
-    section .text.mcPrintln
+    section .text.krisPrintln
 krisPrintln::
     movem.l D0-D1/A0,-(A7)            ; Save regs
     move.l  (16,A7),A0                ; Get C char* from the stack into A0
@@ -46,7 +48,7 @@ krisPrintln::
 
 ; This is the exception handler...
 TRAP_14_HANDLER::
-    ori.w   #$700,sr
+    ori.w   #$700,sr                  ; Disable interrupts
     cmp.l   #0,D1                     ; FC == 0?
     beq.s   .PRINT                    ;   PRINT if so...
     cmp.l   #1,D1                     ; FC == 1?
@@ -59,8 +61,7 @@ TRAP_14_HANDLER::
     beq.s   .PRINTCHAR                ;   PRINTCHAR if so...
     cmp.l   #5,D1                     ; FC == 5?
     beq.s   .SETCURSOR                ;   SETCURSOR if so...
-    andi.w  #$F8FF,sr
-    rte                               ; That's all for now...
+    bra     context_swap              ; RTE happens here
 
 .PRINT
     move.l  A1,-(A7)

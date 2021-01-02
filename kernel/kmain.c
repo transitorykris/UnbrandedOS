@@ -103,7 +103,7 @@ User space routine that doesn't do too much
 void user_routine_a() {
     for(;;) {
       //e68DisplayNumUnsigned(1,10);
-      krisPrintln(" Hello " );
+      krisPrintln("12345678901234567890");
     }
 }
 
@@ -113,6 +113,6 @@ Nor this one
 void user_routine_b() {
   for(;;) {
     //e68DisplayNumUnsigned(2,10);
-    krisPrintln(" World " );
+    krisPrintln("abcdefghij");
   }
 }

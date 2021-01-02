@@ -25,6 +25,8 @@ TICKER      = $40c
 INT_ADDR    = $f80011
 CLEAR_INT   = ~$20
 
+IN_SWAP     = $800  ; arbitrary and probably a bad choice
+
 ;struct context_t {
 ;    // Order matters here
 ;    uint32_t d[8];      // Data registers D1-D7
@@ -73,6 +75,10 @@ SP_PC    = 2
 context_swap::
     addi.l  #1, TICKER              ; Tick the next tick
 
+    cmp.l #1,IN_SWAP
+    beq context_swap_quick_done
+    move.l #1,IN_SWAP
+
     ; Set up
     move.l  a0, -(sp)               ; Free up a0 to do some work
 
@@ -108,4 +114,6 @@ context_swap::
     ; Return
 context_swap_done:
     move.b  CLEAR_INT, INT_ADDR     ; Clear interrupt
+    move.l #0,IN_SWAP               ; no longer in a swap
+context_swap_quick_done:
     rte                             ; Return to next task
