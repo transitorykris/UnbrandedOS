@@ -23,6 +23,8 @@ SOFTWARE.
 #include <machine.h>
 #include <basicio.h>
 
+#include "system.h"
+
 #include "shell.h"
 
 void shell() {
@@ -30,8 +32,8 @@ void shell() {
     for(;;) {
         print("# ");
         if (readline(buf, BUFFER_LEN) > 0) {
-            // do something
+            printuint(get_ticks());
+            println("");
         }
     }
-    for(;;);
 }
