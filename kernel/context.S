@@ -24,22 +24,17 @@
 TICKER      = $40c
 INT_ADDR    = $f80011
 CLEAR_INT   = ~$20
-
 IN_SWAP     = $800  ; arbitrary and probably a bad choice
 
 ;struct context_t {
 ;    // Order matters here
-;    uint32_t d[8];      // Data registers D1-D7
-;    uint32_t a[7];      // Address registers A1-A6, a7 will be stored in usp
-;    uint32_t usp;       // User stack pointer
-;    uint16_t sr;        // Status register (and really just CCR)
+;    uint32_t d[8];             // Data registers D1-D7
+;    uint32_t a[7];             // Address registers A1-A6
+;    uint32_t usp;              // User stack pointer
+;    uint16_t sr;               // Status register (and really just CCR)
 ;    uint16_t _blank;
-;    uint32_t pc;        // Program counter
-;
-;    // Next process to run
-;    struct context_t* next;
-;
-;    // Order shouldn't matter too much below this line
+;    uint32_t pc;               // Program counter
+;    struct context_t* next;    // Next process to run
 ;};
 
 CP_D0     = 0
@@ -79,7 +74,7 @@ context_init::
 context_swap::
     addi.l  #1, TICKER              ; Tick the next tick
 
-    tas IN_SWAP
+    tas IN_SWAP                     ; Automic test and set
     bne context_swap_quick_done
 
     ; Set up

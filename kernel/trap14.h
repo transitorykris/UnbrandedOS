@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,10 +19,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef CONTEXT_H
-#define CONTEXT_H
+#ifndef TRAP14_H
+#define TRAP14_H
 
-extern void context_swap();
-extern void context_init();
+extern void TRAP_14_HANDLER();
 
 #endif

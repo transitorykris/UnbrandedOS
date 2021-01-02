@@ -28,6 +28,7 @@ SOFTWARE.
 #include "context.h"
 #include "system.h"
 #include "mfp.h"
+#include "trap14.h"
 
 struct context_t {
     // Order matters here
@@ -41,22 +42,18 @@ struct context_t {
     // Order shouldn't matter too much below this line
 };
 
-struct context_t *current_process;
-
-void tick_handler();
+struct context_t *current_process;  // Currently executing task
 
 void user_routine_a();
 void user_routine_b();
 void user_routine_c();
 
-extern void TRAP_14_HANDLER();
-extern void krisPrintln(char *str);
-extern void context_init();
-
 noreturn void kmain() {
+  // Set up the handy crash dump printer
   debug_stub();
 
-  for (int i=0;i<50000;i++) {/* do nothing for a while */}
+  // The rosco-m68k needs a bit of time (why?)
+  for (int i=0;i<50000;i++);
 
   e68ClearScr();
   e68Println("Kernel started");
@@ -79,7 +76,7 @@ noreturn void kmain() {
   };
   pid1_context.next = &pid2_context;
 
-struct context_t pid3_context = {
+  struct context_t pid3_context = {
     .usp = 0x14000,
     .pc = (uint32_t)user_routine_c,
     .next = &pid1_context,
@@ -93,12 +90,8 @@ struct context_t pid3_context = {
   // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
   SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
 
-  // We need to set up USP before disabling supervisor mode
-  // or we'll get a privilege error
-  register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-  a0 = (uint32_t *)current_process->usp;
-  __asm__ __volatile__ ("move.l %%a0,%%usp":::);
-
+  // Ready to go
+  set_usp(current_process->usp);  // keep the supervisor stack clean
   disable_supervisor();
 
   // We never return, but we also stop execution here after the
@@ -113,8 +106,8 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
     for(;;) {
-      //e68DisplayNumUnsigned(1,10);
       mcPrintln("1234567890");
+      mcPrintln("0987654321");
     }
 }
 
@@ -123,14 +116,15 @@ Nor this one
 */
 void user_routine_b() {
   for(;;) {
-    //e68DisplayNumUnsigned(2,10);
     mcPrintln("abcdefghij");
   }
 }
 
+/*
+And this one
+*/
 void user_routine_c() {
   for(;;) {
-    //e68DisplayNumUnsigned(2,10);
     mcPrintln("!@#$%^&*()");
   }
 }
