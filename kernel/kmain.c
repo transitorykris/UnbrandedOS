@@ -47,9 +47,11 @@ void tick_handler();
 
 void user_routine_a();
 void user_routine_b();
+void user_routine_c();
 
 extern void TRAP_14_HANDLER();
 extern void krisPrintln(char *str);
+extern void context_init();
 
 noreturn void kmain() {
   debug_stub();
@@ -74,13 +76,22 @@ noreturn void kmain() {
   struct context_t pid2_context = {
     .usp = 0x12000,
     .pc = (uint32_t)user_routine_b,
-    .next = &pid1_context,
   };
   pid1_context.next = &pid2_context;
 
+struct context_t pid3_context = {
+    .usp = 0x14000,
+    .pc = (uint32_t)user_routine_c,
+    .next = &pid1_context,
+  };
+  pid2_context.next = &pid3_context;
+
   // Start the timer for firing the scheduler
+  context_init();
   SET_VECTOR(context_swap, MFP_TIMER_C);
-  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);  // Overwrite trap14 vector
+
+  // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
+  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
 
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
@@ -103,7 +114,7 @@ User space routine that doesn't do too much
 void user_routine_a() {
     for(;;) {
       //e68DisplayNumUnsigned(1,10);
-      krisPrintln("12345678901234567890");
+      krisPrintln("1234567890");
     }
 }
 
@@ -114,5 +125,12 @@ void user_routine_b() {
   for(;;) {
     //e68DisplayNumUnsigned(2,10);
     krisPrintln("abcdefghij");
+  }
+}
+
+void user_routine_c() {
+  for(;;) {
+    //e68DisplayNumUnsigned(2,10);
+    krisPrintln("!@#$%^&*()");
   }
 }

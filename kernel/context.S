@@ -71,13 +71,16 @@ CP_NEXT   = CP_PC + 4  ; Next process to run
 SP_SR    = 0
 SP_PC    = 2
 
+context_init::
+    move.l #0, IN_SWAP
+    rts
+
 ; Saves the current context and restores the next context in the list
 context_swap::
     addi.l  #1, TICKER              ; Tick the next tick
 
-    cmp.l #1,IN_SWAP
-    beq context_swap_quick_done
-    move.l #1,IN_SWAP
+    tas IN_SWAP
+    bne context_swap_quick_done
 
     ; Set up
     move.l  a0, -(sp)               ; Free up a0 to do some work
