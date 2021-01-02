@@ -104,7 +104,7 @@ struct context_t pid3_context = {
   // We never return, but we also stop execution here after the
   // first context switch
   for (;;) {
-    krisPrintln(".");
+    mcPrintln(".");
   }
 }
 
@@ -114,7 +114,7 @@ User space routine that doesn't do too much
 void user_routine_a() {
     for(;;) {
       //e68DisplayNumUnsigned(1,10);
-      krisPrintln("1234567890");
+      mcPrintln("1234567890");
     }
 }
 
@@ -124,13 +124,13 @@ Nor this one
 void user_routine_b() {
   for(;;) {
     //e68DisplayNumUnsigned(2,10);
-    krisPrintln("abcdefghij");
+    mcPrintln("abcdefghij");
   }
 }
 
 void user_routine_c() {
   for(;;) {
     //e68DisplayNumUnsigned(2,10);
-    krisPrintln("!@#$%^&*()");
+    mcPrintln("!@#$%^&*()");
   }
 }

@@ -35,17 +35,6 @@ EFP_SETCURSOR   equ    $440
 
     section .text
 
-; Trashes: MFP_UDR
-; Modifies: Nothing
-    section .text.krisPrintln
-krisPrintln::
-    movem.l D0-D1/A0,-(A7)            ; Save regs
-    move.l  (16,A7),A0                ; Get C char* from the stack into A0
-    move.l  #1,D1                     ; Func code is 1
-    trap    #14                       ; TRAP to firmware
-    movem.l (A7)+,D0-D1/A0            ; Restore regs
-    rts                               ; We're done.
-
 ; This is the exception handler...
 TRAP_14_HANDLER::
     ori.w   #$700,sr                  ; Disable interrupts
