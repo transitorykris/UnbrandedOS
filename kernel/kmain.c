@@ -32,18 +32,6 @@ SOFTWARE.
 
 #include "shell.h"
 
-struct context_t {
-    // Order matters here
-    uint32_t d[8];          // Data registers D1-D7
-    uint32_t a[7];          // Address registers A0-A6
-    uint32_t usp;           // User stack pointer / A7
-    uint32_t sr;            // Status register
-    uint32_t pc;            // Program counter
-
-    struct context_t* next; // Next process to run
-    // Order shouldn't matter too much below this line
-};
-
 struct context_t *current_process;  // Currently executing task
 
 noreturn void kmain() {

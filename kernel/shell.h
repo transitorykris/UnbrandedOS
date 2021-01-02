@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,22 +19,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef CONTEXT_H
-#define CONTEXT_H
+#ifndef SHELL_H
+#define SHELL_H
 
-struct context_t {
-    // Order matters here
-    uint32_t d[8];          // Data registers D1-D7
-    uint32_t a[7];          // Address registers A0-A6
-    uint32_t usp;           // User stack pointer / A7
-    uint32_t sr;            // Status register
-    uint32_t pc;            // Program counter
-
-    struct context_t* next; // Next process to run
-    // Order shouldn't matter too much below this line
-};
-
-extern void context_swap();
-extern void context_init();
+void shell();
 
 #endif
