@@ -48,7 +48,8 @@ void tick_handler();
 void user_routine_a();
 void user_routine_b();
 
-extern uint32_t test_process;
+extern void TRAP_14_HANDLER();
+extern void krisPrintln(char *str);
 
 noreturn void kmain() {
   debug_stub();
@@ -79,6 +80,7 @@ noreturn void kmain() {
 
   // Start the timer for firing the scheduler
   SET_VECTOR(context_swap, MFP_TIMER_C);
+  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);  // Overwrite trap14 vector
 
   // We need to set up USP before disabling supervisor mode
   // or we'll get a privilege error
@@ -91,7 +93,7 @@ noreturn void kmain() {
   // We never return, but we also stop execution here after the
   // first context switch
   for (;;) {
-    mcPrint(".");
+    krisPrintln(".");
   }
 }
 
@@ -100,7 +102,8 @@ User space routine that doesn't do too much
 */
 void user_routine_a() {
     for(;;) {
-      e68DisplayNumUnsigned(1,10);
+      //e68DisplayNumUnsigned(1,10);
+      krisPrintln(" Hello " );
     }
 }
 
@@ -109,6 +112,7 @@ Nor this one
 */
 void volatile user_routine_b() {
   for(;;) {
-    e68DisplayNumUnsigned(2,10);
+    //e68DisplayNumUnsigned(2,10);
+    krisPrintln(" World " );
   }
 }

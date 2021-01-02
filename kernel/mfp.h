@@ -25,4 +25,6 @@ SOFTWARE.
 #define MFP_TIMER_C 0x114
 #define MFP_ISRB    0xf80011
 
+#define TRAP_14_VECTOR  0xB8
+
 #endif
