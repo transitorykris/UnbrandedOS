@@ -19,11 +19,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
 #include <machine.h>
+#include <basicio.h>
 
 #include "shell.h"
 
 void shell() {
-    mcPrintln("Starting shell");
+    println("Starting shell");
+    for(;;) {
+        print("# ");
+        if (readline(buf, BUFFER_LEN) > 0) {
+            // do something
+        }
+    }
     for(;;);
 }

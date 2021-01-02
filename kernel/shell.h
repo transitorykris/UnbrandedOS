@@ -22,6 +22,10 @@ SOFTWARE.
 #ifndef SHELL_H
 #define SHELL_H
 
+#define BUFFER_LEN  80  // arbitrary value right now
+
+char buf[BUFFER_LEN];
+
 void shell();
 
 #endif
