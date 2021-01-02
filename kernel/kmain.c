@@ -54,7 +54,8 @@ noreturn void kmain() {
     .usp = 0x10000,
     .pc = (uint32_t)shell,
   };
-  pid1.next=&pid1;
+  pid1.next = &pid1;
+  current_process->next = &pid1;
 
   // Start the timer for firing the scheduler
   context_init();
