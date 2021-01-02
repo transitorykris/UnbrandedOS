@@ -110,7 +110,7 @@ void user_routine_a() {
 /*
 Nor this one
 */
-void volatile user_routine_b() {
+void user_routine_b() {
   for(;;) {
     //e68DisplayNumUnsigned(2,10);
     krisPrintln(" World " );

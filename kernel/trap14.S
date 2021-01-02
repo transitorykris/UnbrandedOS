@@ -46,7 +46,7 @@ krisPrintln::
 
 ; This is the exception handler...
 TRAP_14_HANDLER::
-    ori.w #0x700,SR
+    ori.w   #$700,sr
     cmp.l   #0,D1                     ; FC == 0?
     beq.s   .PRINT                    ;   PRINT if so...
     cmp.l   #1,D1                     ; FC == 1?
@@ -59,7 +59,7 @@ TRAP_14_HANDLER::
     beq.s   .PRINTCHAR                ;   PRINTCHAR if so...
     cmp.l   #5,D1                     ; FC == 5?
     beq.s   .SETCURSOR                ;   SETCURSOR if so...
-    andi.w #0xF8FF,SR
+    andi.w  #$F8FF,sr
     rte                               ; That's all for now...
 
 .PRINT
