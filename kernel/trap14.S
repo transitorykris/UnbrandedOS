@@ -20,6 +20,8 @@
 ; TRAP 16 is a temporary hack while I sort out how to do
 ; proper pre-emptive multitasking and interrupt handling (kris)
 
+    include "../shared/equates.S"
+
     import context_swap
 
 ; EFP table addresses (from the firmware's equates.S)
@@ -75,8 +77,10 @@ TRAP_14_HANDLER::
 
 .RECVCHAR
     move.l  A1,-(A7)
-    move.l  EFP_RECVCHAR,A1
-    jsr     (A1)
+    ;move.l  RECVCHAR_MFP,A1
+    ;move.l  RECVCHAR_MFP_NONBLOCKING,A1
+    ;jsr     (A1)
+    jsr RECVCHAR_MFP_NONBLOCKING
     move.l  (A7)+,A1
     rte
     
@@ -93,6 +97,32 @@ TRAP_14_HANDLER::
     jsr     (A1)
     move.l  (A7)+,A1
     rte
+
+; XXX hacking this in for now XXX
+RECVCHAR_MFP_NONBLOCKING:
+    bclr.b  #7,MFP_GPDR           ; Lower RTS
+.BEGIN
+    move.b  MFP_RSR,D0            ; Get RSR
+    btst    #7,D0                 ; Is buffer_full bit set?
+    bne.s   .GOTCHR               ; Yes - Go to receive character
+
+    btst    #6,D0                 ; Else, do we have an overrun error?
+    bne.s   .GOTERR               ; .. Yes - handle that
+    ;bra.s   .BEGIN                ; .. No - Just loop
+    bra.s .NOCHR                     ; No - we're out
+
+.GOTERR
+    move.b  MFP_UDR,D0            ; Empty buffer
+    bchg.b  #1,MFP_GPDR           ; And toggle I1
+    bra.s   .BEGIN                ; And continue testing...
+    
+.GOTCHR
+    move.b  MFP_UDR,D0            ; Get the data
+    rts
+
+.NOCHR
+    move.b #$00,D0
+    rts
 
 
 ; Wraps FW_PRINT so it can be called from C-land
