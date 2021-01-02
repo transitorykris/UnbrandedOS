@@ -30,6 +30,8 @@ SOFTWARE.
 #include "mfp.h"
 #include "trap14.h"
 
+#include "shell.h"
+
 struct context_t {
     // Order matters here
     uint32_t d[8];          // Data registers D1-D7
@@ -43,10 +45,6 @@ struct context_t {
 };
 
 struct context_t *current_process;  // Currently executing task
-
-void user_routine_a();
-void user_routine_b();
-void user_routine_c();
 
 noreturn void kmain() {
   // Set up the handy crash dump printer
@@ -64,24 +62,11 @@ noreturn void kmain() {
   };
   current_process = &throw_away;
 
-  struct context_t pid1_context = {
+  struct context_t pid1 = {
     .usp = 0x10000,
-    .pc = (uint32_t)user_routine_a,
+    .pc = (uint32_t)shell,
   };
-  current_process->next = &pid1_context;
-
-  struct context_t pid2_context = {
-    .usp = 0x12000,
-    .pc = (uint32_t)user_routine_b,
-  };
-  pid1_context.next = &pid2_context;
-
-  struct context_t pid3_context = {
-    .usp = 0x14000,
-    .pc = (uint32_t)user_routine_c,
-    .next = &pid1_context,
-  };
-  pid2_context.next = &pid3_context;
+  pid1.next=&pid1;
 
   // Start the timer for firing the scheduler
   context_init();
@@ -98,33 +83,5 @@ noreturn void kmain() {
   // first context switch
   for (;;) {
     mcPrintln(".");
-  }
-}
-
-/*
-User space routine that doesn't do too much
-*/
-void user_routine_a() {
-    for(;;) {
-      mcPrintln("1234567890");
-      mcPrintln("0987654321");
-    }
-}
-
-/*
-Nor this one
-*/
-void user_routine_b() {
-  for(;;) {
-    mcPrintln("abcdefghij");
-  }
-}
-
-/*
-And this one
-*/
-void user_routine_c() {
-  for(;;) {
-    mcPrintln("!@#$%^&*()");
   }
 }
