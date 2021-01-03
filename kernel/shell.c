@@ -30,15 +30,14 @@ SOFTWARE.
 void shell() {
     int count = 0;
     printf("Starting shell\n\r");
+    
     for(;;) {
-        printuint(get_ticks());
-        print(" # ");
-        // readline is currently a blocking call...
+        printf("%d /# ", get_ticks());
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
-            println("");
+            printf("\n\r");
             if (count > 0) {
-                println(buffer);
+                printf("%s\n\r", buffer);
             }
             break;
         }
