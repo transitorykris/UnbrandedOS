@@ -34,6 +34,8 @@ SOFTWARE.
 
 struct context_t *current_process;  // Currently executing task
 
+void create_process(struct context_t *context, uint32_t pc, uint32_t sp);
+
 noreturn void kmain() {
   // Set up the handy crash dump printer
   debug_stub();
@@ -42,38 +44,58 @@ noreturn void kmain() {
   for (int i=0;i<50000;i++);
 
   e68ClearScr();
-  e68Println("Kernel started");
+  e68Println("Kernel starting");
 
-  // This context gets trashed after the first context switch  
+  // This context gets trashed after the first context switch
   struct context_t throw_away = {
     .usp = 0x6000,
     //.pc is populated after the first context switch
     .state = SLEEPING,
   };
   current_process = &throw_away;
+  current_process->next = current_process;  // only process in the list
 
-  struct context_t pid1 = {
-    .usp = 0x10000,
-    .pc = (uint32_t)shell,
-    .state = RUNNING,
-  };
-  pid1.next = &pid1;
-  current_process->next = &pid1;
+  mcPrintln("Setting up shell");
+  struct context_t pid1;
+  create_process(&pid1, (uint32_t)shell, 0x10000);
+
+  // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
+  mcPrintln("Overriding ROM IO");
+  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
 
   // Start the timer for firing the scheduler
+  mcPrintln("Starting scheduler");
   context_init();
   SET_VECTOR(context_swap, MFP_TIMER_C);
 
-  // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
-  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
-
   // Ready to go
+  mcPrintln("Entering user mode");
   set_usp(current_process->usp);  // keep the supervisor stack clean
   disable_supervisor();
 
-  // We never return, but we also stop execution here after the
+  // We never return, but we will also stop execution here after the
   // first context switch
-  for (;;) {
-    mcPrintln(".");
+  for (;;);
+}
+
+void create_process(struct context_t *context, uint32_t pc, uint32_t sp) {
+  context->pc = pc;
+  context->usp = sp;
+  context->sr = 0x00;
+
+  // Initialize our registers to zer
+  for (int i=0;i<8;i++) {
+    context->d[i] = 0x0000;
   }
+  
+  for (int i=0;i<7;i++) {
+    context->a[i] = 0x0000;
+  }
+
+  // Set to running
+  context->state = RUNNING;
+  
+  // Insert into the linked list
+  context->next = current_process->next;
+  current_process->next = context;
 }
