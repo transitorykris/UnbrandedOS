@@ -23,6 +23,7 @@ SOFTWARE.
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "system.h"
 
@@ -30,18 +31,33 @@ SOFTWARE.
 
 void uptime();
 
+struct commands_t {
+    char *name;
+    void (*func)();
+};
+
 void shell() {
     int count = 0;
     printf("Starting shell\n\r");
     
+    struct commands_t commands[] = {
+        {
+            .name = "uptime",
+            .func = uptime,
+        }
+    };
+    int command_count = sizeof commands / sizeof (struct commands_t);
+
     for(;;) {
         printf("/# ", get_ticks());
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");
             if (count > 0) {
-                if (!strcmp(buffer, "uptime")) {
-                    uptime();
+                for(int i=0;i<command_count;i++) {
+                    if (!strcmp(buffer, commands[i].name)) {
+                        commands[i].func();
+                    }
                 }
             }
             break;
@@ -51,5 +67,7 @@ void shell() {
 
 /* A tiny program that prints the number of ticks */
 void uptime() {
-    printf("%d\n\r", get_ticks());
+    uint32_t ticks = get_ticks();
+    uint32_t seconds = ticks / 100;
+    printf("up %d seconds, 1 user\n\r", seconds);
 }
