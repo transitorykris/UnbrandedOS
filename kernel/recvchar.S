@@ -21,23 +21,23 @@
 
 ; Falls through returning NULL if no characters are waiting
 RECVCHAR_MFP_NONBLOCKING::
-    bclr.b  #7,MFP_GPDR           ; Lower RTS
+    bclr.b  #7,MFP_GPDR         ; Lower RTS
 .BEGIN
-    move.b  MFP_RSR,D0            ; Get RSR
-    btst    #7,D0                 ; Is buffer_full bit set?
-    bne.s   .GOTCHR               ; Yes - Go to receive character
+    move.b  MFP_RSR,D0          ; Get RSR
+    btst    #7,D0               ; Is buffer_full bit set?
+    bne.s   .GOTCHR             ; Yes - Go to receive character
 
-    btst    #6,D0                 ; Else, do we have an overrun error?
-    bne.s   .GOTERR               ; .. Yes - handle that
-    bra.s   .NOCHR                ; No - we're out
+    btst    #6,D0               ; Else, do we have an overrun error?
+    bne.s   .GOTERR             ; .. Yes - handle that
+    bra.s   .NOCHR              ; No - we're out
 
 .GOTERR
-    move.b  MFP_UDR,D0            ; Empty buffer
-    bchg.b  #1,MFP_GPDR           ; And toggle I1
-    bra.s   .BEGIN                ; And continue testing...
+    move.b  MFP_UDR,D0          ; Empty buffer
+    bchg.b  #1,MFP_GPDR         ; And toggle I1
+    bra.s   .BEGIN              ; And continue testing...
     
 .GOTCHR
-    move.b  MFP_UDR,D0            ; Get the data
+    move.b  MFP_UDR,D0          ; Get the data
     rts
 
 .NOCHR
