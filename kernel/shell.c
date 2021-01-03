@@ -22,24 +22,34 @@ SOFTWARE.
 #include <stdio.h>
 #include <machine.h>
 #include <basicio.h>
+#include <string.h>
 
 #include "system.h"
 
 #include "shell.h"
+
+void uptime();
 
 void shell() {
     int count = 0;
     printf("Starting shell\n\r");
     
     for(;;) {
-        printf("%d /# ", get_ticks());
+        printf("/# ", get_ticks());
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");
             if (count > 0) {
-                printf("%s\n\r", buffer);
+                if (!strcmp(buffer, "uptime")) {
+                    uptime();
+                }
             }
             break;
         }
     }
+}
+
+/* A tiny program that prints the number of ticks */
+void uptime() {
+    printf("%d\n\r", get_ticks());
 }
