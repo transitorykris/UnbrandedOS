@@ -35,6 +35,7 @@
 
 #include "printf.h"
 
+uint32_t __umodsi3(uint32_t dividend, uint32_t divisor);
 
 // define this globally (e.g. gcc -DPRINTF_INCLUDE_CONFIG_H ...) to include the
 // printf_config.h header file

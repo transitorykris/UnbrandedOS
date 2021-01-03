@@ -29,7 +29,7 @@ SOFTWARE.
 
 void shell() {
     int count = 0;
-    println("Starting shell");
+    printf("Starting shell\n\r");
     for(;;) {
         printuint(get_ticks());
         print(" # ");
