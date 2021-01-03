@@ -38,7 +38,7 @@ noreturn void kmain() {
   debug_stub();
 
   // The rosco-m68k needs a bit of time (why?)
-  for (int i=0;i<50000;i++);
+  delay(40000);
 
   e68ClearScr();
   e68Println("Kernel starting");
@@ -72,5 +72,5 @@ noreturn void kmain() {
 
   // We never return, but we will also stop execution here after the
   // first context switch
-  for (;;);
+  sleep();
 }

@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,41 +19,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "helpers.h"
-#include "system.h"
+#ifndef PROCESS_H
+#define PROCESS_H
 
-/*
-Returns the number of ticks since the system started
-*/
-tick_t get_ticks() {
-    return GET_LONG(SYS_TICKS);
-}
+struct context_t *current_process;  // Currently executing task
 
-/*
-Returns the value of the status register
-*/
-uint16_t get_status_register() {
-    uint16_t sr;
-    __asm__ __volatile__ (
-        "move.w %%sr,%0": "=r" (sr)
-    );
-    return sr;
-}
+void create_process(struct context_t *context, uint32_t pc, uint32_t sp);
 
-/*
-Set the user stack pointer
-*/
-__attribute__((gnu_inline)) void inline set_usp(uint32_t usp) {
-    register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-    a0 = (uint32_t *)usp;
-    __asm__ __volatile__ (
-        "move %%a0,%%usp":::"a0"
-    );
-}
-
-/*
-Delays for some number of duration units
-*/
-void delay(uint32_t duration) {
-  for (int i=0;i<duration;i++);
-}
+#endif

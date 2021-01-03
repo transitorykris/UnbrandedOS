@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,41 +19,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "helpers.h"
-#include "system.h"
+#include <machine.h>    // for some types
 
-/*
-Returns the number of ticks since the system started
-*/
-tick_t get_ticks() {
-    return GET_LONG(SYS_TICKS);
-}
+#include "context.h"
+#include "process.h"
 
-/*
-Returns the value of the status register
-*/
-uint16_t get_status_register() {
-    uint16_t sr;
-    __asm__ __volatile__ (
-        "move.w %%sr,%0": "=r" (sr)
-    );
-    return sr;
-}
+void create_process(struct context_t *context, uint32_t pc, uint32_t sp) {
+  context->pc = pc;
+  context->usp = sp;
+  context->sr = 0x00;
 
-/*
-Set the user stack pointer
-*/
-__attribute__((gnu_inline)) void inline set_usp(uint32_t usp) {
-    register uint32_t *a0 __asm__ ("a0") __attribute__((unused));
-    a0 = (uint32_t *)usp;
-    __asm__ __volatile__ (
-        "move %%a0,%%usp":::"a0"
-    );
-}
+  // Initialize our registers to zer
+  for (int i=0;i<8;i++) {
+    context->d[i] = 0x0000;
+  }
+  
+  for (int i=0;i<7;i++) {
+    context->a[i] = 0x0000;
+  }
 
-/*
-Delays for some number of duration units
-*/
-void delay(uint32_t duration) {
-  for (int i=0;i<duration;i++);
+  // Set to running
+  context->state = RUNNING;
+  
+  // Insert into the linked list
+  context->next = current_process->next;
+  current_process->next = context;
 }
