@@ -26,6 +26,10 @@ int readline(char *buf, int buf_size) {
   while (i < buf_size - 1) {
     c = buf[i] = mcReadchar();
 
+    if (c == 0) {
+        continue;   // No character returned
+    }
+
     switch (c) {
     case 0x08:
     case 0x7F:  /* DEL */
@@ -41,7 +45,6 @@ int readline(char *buf, int buf_size) {
     case 0x0D:
       // return
       buf[i] = 0;
-      mcPrintln("");
       return i;
     default:
       buf[i++] = c;

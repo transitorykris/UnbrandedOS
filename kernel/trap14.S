@@ -95,6 +95,31 @@ TRAP_14_HANDLER::
     move.l  (A7)+,A1
     rte
 
+; Falls through returning NULL if no characters are waiting
+RECVCHAR_MFP_NONBLOCKING::
+    bclr.b  #7,MFP_GPDR         ; Lower RTS
+.BEGIN
+    move.b  MFP_RSR,D0          ; Get RSR
+    btst    #7,D0               ; Is buffer_full bit set?
+    bne.s   .GOTCHR             ; Yes - Go to receive character
+
+    btst    #6,D0               ; Else, do we have an overrun error?
+    bne.s   .GOTERR             ; .. Yes - handle that
+    bra.s   .NOCHR              ; No - we're out
+
+.GOTERR
+    move.b  MFP_UDR,D0          ; Empty buffer
+    bchg.b  #1,MFP_GPDR         ; And toggle I1
+    bra.s   .BEGIN              ; And continue testing...
+    
+.GOTCHR
+    move.b  MFP_UDR,D0          ; Get the data
+    rts
+
+.NOCHR
+    move.b #0,D0                ; Send a NULL otherwise
+    rts
+
 ; Wraps FW_PRINT so it can be called from C-land
 ;
 ; Modifies: A0 (Will point to address after null terminator)

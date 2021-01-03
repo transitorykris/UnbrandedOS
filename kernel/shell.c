@@ -27,8 +27,6 @@ SOFTWARE.
 
 #include "shell.h"
 
-int readline_nonblocking(char *buf, int buf_size);
-
 void shell() {
     int count = 0;
     println("Starting shell");
@@ -37,7 +35,7 @@ void shell() {
         print(" # ");
         // readline is currently a blocking call...
         for (;;) {
-            count = readline_nonblocking(buffer, BUFFER_LEN);
+            count = readline(buffer, BUFFER_LEN);
             println("");
             if (count > 0) {
                 println(buffer);
@@ -46,71 +44,3 @@ void shell() {
         }
     }
 }
-
-static char backspace[4] = { 0x08, 0x20, 0x08, 0x00 };
-static char sendbuf[2] = { 0x00, 0x00 };
-
-int readline_nonblocking(char *buf, int buf_size) {
-    register char c;
-    register uint8_t i = 0;
-
-    while (i < buf_size - 1) {
-        c = buf[i] = mcReadchar();
-        if (c == 0) {
-            continue;   // No character returned
-        }
-
-        switch (c) {
-            case 0x08:
-            case 0x7F:  /* DEL */
-                if (i > 0) {
-                    buf[i-1] = 0;
-                    i = i - 1;
-                    mcPrint(backspace);
-                }
-                break;
-            case 0x0A:  // LF - throw away
-                break;
-            case 0x0D:  // CR - user pressed enter, end of line
-                buf[i] = 0;
-                return i;
-            default:
-                buf[i++] = c;
-                sendbuf[0] = c;
-                mcPrint(sendbuf);
-        }
-    }
-
-    // Buffer has filled, return it, null terminated
-    buf[buf_size-1] = 0;
-    return buf_size;
-}
-
-/*
-.RECVCHAR
-    move.l  A1,-(A7)
-    move.l  EFP_RECVCHAR,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rte
-
-RECVCHAR_MFP:
-    bclr.b  #7,MFP_GPDR           ; Lower RTS
-.BEGIN
-    move.b  MFP_RSR,D0            ; Get RSR
-    btst    #7,D0                 ; Is buffer_full bit set?
-    bne.s   .GOTCHR               ; Yes - Go to receive character
-
-    btst    #6,D0                 ; Else, do we have an overrun error?
-    bne.s   .GOTERR               ; .. Yes - handle that
-    bra.s   .BEGIN                ; .. No - Just loop
-
-.GOTERR
-    move.b  MFP_UDR,D0            ; Empty buffer
-    bchg.b  #1,MFP_GPDR           ; And toggle I1
-    bra.s   .BEGIN                ; And continue testing...
-    
-.GOTCHR
-    move.b  MFP_UDR,D0            ; Get the data
-    rts
-*/
