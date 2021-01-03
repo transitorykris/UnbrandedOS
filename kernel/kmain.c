@@ -29,12 +29,9 @@ SOFTWARE.
 #include "system.h"
 #include "mfp.h"
 #include "trap14.h"
+#include "process.h"
 
 #include "shell.h"
-
-struct context_t *current_process;  // Currently executing task
-
-void create_process(struct context_t *context, uint32_t pc, uint32_t sp);
 
 noreturn void kmain() {
   // Set up the handy crash dump printer
@@ -76,26 +73,4 @@ noreturn void kmain() {
   // We never return, but we will also stop execution here after the
   // first context switch
   for (;;);
-}
-
-void create_process(struct context_t *context, uint32_t pc, uint32_t sp) {
-  context->pc = pc;
-  context->usp = sp;
-  context->sr = 0x00;
-
-  // Initialize our registers to zer
-  for (int i=0;i<8;i++) {
-    context->d[i] = 0x0000;
-  }
-  
-  for (int i=0;i<7;i++) {
-    context->a[i] = 0x0000;
-  }
-
-  // Set to running
-  context->state = RUNNING;
-  
-  // Insert into the linked list
-  context->next = current_process->next;
-  current_process->next = context;
 }

@@ -32,7 +32,7 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=common.o trap14.o context.o system.o shell.o kmain.o
+OBJECTS=process.o common.o trap14.o context.o system.o shell.o kmain.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
