@@ -29,6 +29,8 @@ SOFTWARE.
 
 #include "shell.h"
 
+#define PROMPT  "/# "
+
 void uptime();
 
 struct commands_t {
@@ -49,7 +51,7 @@ void shell() {
     int command_count = sizeof commands / sizeof (struct commands_t);
 
     for(;;) {
-        printf("/# ", get_ticks());
+        printf(PROMPT);
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");
@@ -57,7 +59,9 @@ void shell() {
                 for(int i=0;i<command_count;i++) {
                     if (!strcmp(buffer, commands[i].name)) {
                         commands[i].func();
+                        break;
                     }
+                    printf("command not found: %s\n\r", buffer);
                 }
             }
             break;
