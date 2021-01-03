@@ -47,12 +47,15 @@ noreturn void kmain() {
   // This context gets trashed after the first context switch  
   struct context_t throw_away = {
     .usp = 0x6000,
+    //.pc is populated after the first context switch
+    .state = SLEEPING,
   };
   current_process = &throw_away;
 
   struct context_t pid1 = {
     .usp = 0x10000,
     .pc = (uint32_t)shell,
+    .state = RUNNING,
   };
   pid1.next = &pid1;
   current_process->next = &pid1;

@@ -18,6 +18,7 @@
 ; SOFTWARE.
 
     import current_process
+    import SLEEPING
 
     section .text
 
@@ -57,6 +58,7 @@ CP_SP     = CP_A7      ; USP
 CP_SR     = CP_SP + 4  ; Status register - really just 2 bytes
 CP_PC     = CP_SR + 4  ; Program counter
 CP_NEXT   = CP_PC + 4  ; Next process to run
+CP_STATE  = CP_NEXT + 4
 
 ; context_swap gets a stack that looks like:
 ; 0xSP+4    | Program Counter Low  |
@@ -95,6 +97,7 @@ context_swap::
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
     ; Switch
+next:
     move.l  CP_NEXT(a0), a0         ; Switch to next task
     move.l  a0, current_process
 

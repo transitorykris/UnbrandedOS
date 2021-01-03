@@ -22,6 +22,11 @@ SOFTWARE.
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#define SLEEPING        0
+#define RUNNING         1
+
+typedef uint8_t state;
+
 struct context_t {
     // Order matters here
     uint32_t d[8];          // Data registers D1-D7
@@ -32,6 +37,8 @@ struct context_t {
 
     struct context_t* next; // Next process to run
     // Order shouldn't matter too much below this line
+
+    state state;
 };
 
 extern void context_swap();
