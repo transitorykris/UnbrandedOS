@@ -55,7 +55,7 @@ noreturn void kmain() {
   current_process = &throw_away;
   current_process->next = current_process;  // only process in the list
 
-  mcPrintln("Setting up shell");
+  mcPrintln("Setting up PID1");
   struct context_t pid1;
   create_process(&pid1, (uint32_t)shell, 0x10000);
 

@@ -41,7 +41,7 @@ struct commands_t {
 
 void shell() {
     int count = 0;
-    printf("Starting shell\n\r");
+    printf("Starting shell\n\n\r");
     
     struct commands_t commands[] = {
         {
