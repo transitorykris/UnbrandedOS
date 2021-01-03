@@ -24,7 +24,7 @@ SOFTWARE.
 
 #define BUFFER_LEN  80  // arbitrary value right now
 
-char buf[BUFFER_LEN];
+char buffer[BUFFER_LEN];
 
 void shell();
 

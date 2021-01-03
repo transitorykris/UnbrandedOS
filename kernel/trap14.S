@@ -108,8 +108,7 @@ RECVCHAR_MFP_NONBLOCKING:
 
     btst    #6,D0                 ; Else, do we have an overrun error?
     bne.s   .GOTERR               ; .. Yes - handle that
-    ;bra.s   .BEGIN                ; .. No - Just loop
-    bra.s .NOCHR                     ; No - we're out
+    bra.s   .NOCHR                ; No - we're out
 
 .GOTERR
     move.b  MFP_UDR,D0            ; Empty buffer
@@ -121,7 +120,7 @@ RECVCHAR_MFP_NONBLOCKING:
     rts
 
 .NOCHR
-    move.b #$00,D0
+    move.b #0,D0                ; Send a NULL otherwise
     rts
 
 

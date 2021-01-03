@@ -30,16 +30,19 @@ SOFTWARE.
 int readline_nonblocking(char *buf, int buf_size);
 
 void shell() {
+    int count = 0;
     println("Starting shell");
     for(;;) {
         printuint(get_ticks());
         print(" # ");
         // readline is currently a blocking call...
         for (;;) {
-            if (readline_nonblocking(buf, BUFFER_LEN) > 0) {
-                println(buf);
-                break;
+            count = readline_nonblocking(buffer, BUFFER_LEN);
+            println("");
+            if (count > 0) {
+                println(buffer);
             }
+            break;
         }
     }
 }
@@ -48,40 +51,39 @@ static char backspace[4] = { 0x08, 0x20, 0x08, 0x00 };
 static char sendbuf[2] = { 0x00, 0x00 };
 
 int readline_nonblocking(char *buf, int buf_size) {
-  register char c;
-  register uint8_t i = 0;
+    register char c;
+    register uint8_t i = 0;
 
-  while (i < buf_size - 1) {
-    c = buf[i] = mcReadchar();
+    while (i < buf_size - 1) {
+        c = buf[i] = mcReadchar();
+        if (c == 0) {
+            continue;   // No character returned
+        }
 
-    switch (c) {
-    case 0x00:  // No character read
-        continue;
-    case 0x08:
-    case 0x7F:  /* DEL */
-      if (i > 0) {
-        buf[i-1] = 0;
-        i = i - 1;
-        mcPrint(backspace);
-      }
-      break;
-    case 0x0A:
-      // throw this away...
-      break;
-    case 0x0D:
-      // return
-      buf[i] = 0;
-      mcPrintln("");
-      return i;
-    default:
-      buf[i++] = c;
-      sendbuf[0] = c;
-      mcPrint(sendbuf);
+        switch (c) {
+            case 0x08:
+            case 0x7F:  /* DEL */
+                if (i > 0) {
+                    buf[i-1] = 0;
+                    i = i - 1;
+                    mcPrint(backspace);
+                }
+                break;
+            case 0x0A:  // LF - throw away
+                break;
+            case 0x0D:  // CR - user pressed enter, end of line
+                buf[i] = 0;
+                return i;
+            default:
+                buf[i++] = c;
+                sendbuf[0] = c;
+                mcPrint(sendbuf);
+        }
     }
-  }
 
-  buf[buf_size-1] = 0;
-  return buf_size;
+    // Buffer has filled, return it, null terminated
+    buf[buf_size-1] = 0;
+    return buf_size;
 }
 
 /*
