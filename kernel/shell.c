@@ -31,6 +31,7 @@ SOFTWARE.
 
 #define PROMPT  "/# "
 
+void exec(void (*func)());
 void uptime();
 
 struct commands_t {
@@ -58,7 +59,7 @@ void shell() {
             if (count > 0) {
                 for(int i=0;i<command_count;i++) {
                     if (!strcmp(buffer, commands[i].name)) {
-                        commands[i].func();
+                        exec(commands[i].func);
                         break;
                     }
                     printf("command not found: %s\n\r", buffer);
@@ -67,6 +68,11 @@ void shell() {
             break;
         }
     }
+}
+
+/* A pretty bad exec function */
+void exec(void (*func)()) {
+    func();
 }
 
 /* A tiny program that prints the number of ticks */
