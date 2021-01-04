@@ -33,7 +33,16 @@ SOFTWARE.
 
 #include "shell.h"
 
+void initialize_processes() {
+  for (int i=0;i<MAX_PROCESSES;i++) {
+    processes[i].name = NULL;
+    processes[i].context = NULL;
+  }
+}
+
 noreturn void kmain() {
+  initialize_processes();
+
   // Set up the handy crash dump printer
   debug_stub();
 
@@ -51,10 +60,14 @@ noreturn void kmain() {
   };
   current_process = &throw_away;
   current_process->next = current_process;  // only process in the list
+  processes[0].name = "throw_away";
+  processes[0].context = &throw_away;
 
   mcPrintln("Setting up PID1");
   struct context_t pid1;
   create_process(&pid1, (uint32_t)shell, 0x10000);
+  processes[1].name = "shell";
+  processes[1].context = &pid1;
 
   // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
   mcPrintln("Overriding ROM IO");

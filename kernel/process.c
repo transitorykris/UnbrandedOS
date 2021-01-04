@@ -45,3 +45,14 @@ void create_process(struct context_t *context, uint32_t pc, uint32_t sp) {
   context->next = current_process->next;
   current_process->next = context;
 }
+
+char * process_state(uint8_t state) {
+    switch(state) {
+        case SLEEPING:
+            return "sleeping";
+        case RUNNING:
+            return "running";
+        default:
+            return "unknown";
+    }
+}

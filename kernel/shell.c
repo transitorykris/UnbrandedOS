@@ -26,6 +26,8 @@ SOFTWARE.
 #include <stdlib.h>
 
 #include "system.h"
+#include "process.h"
+#include "context.h"
 
 #include "shell.h"
 
@@ -33,6 +35,7 @@ SOFTWARE.
 
 void exec(void (*func)());
 void uptime();
+void ps();
 
 struct commands_t {
     char *name;
@@ -47,6 +50,10 @@ void shell() {
         {
             .name = "uptime",
             .func = uptime,
+        },
+        {
+            .name = "ps",
+            .func = ps,
         }
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
@@ -60,11 +67,12 @@ void shell() {
                 for(int i=0;i<command_count;i++) {
                     if (!strcmp(buffer, commands[i].name)) {
                         exec(commands[i].func);
-                        break;
+                        goto done;
                     }
-                    printf("command not found: %s\n\r", buffer);
                 }
+                printf("command not found: %s\n\r", buffer);
             }
+done:
             break;
         }
     }
@@ -80,4 +88,18 @@ void uptime() {
     uint32_t ticks = get_ticks();
     uint32_t seconds = ticks / 100;
     printf("up %d seconds, 1 user\n\r", seconds);
+}
+
+/* Print out all defined processes */
+void ps() {
+    printf("%s %18s %20s\n\r", "PID", "CMD", "State");
+    for(int i=0;i<MAX_PROCESSES;i++) {
+        if (processes[i].name != NULL) {
+            printf("%d %20s %20s\n\r",
+                i, 
+                processes[i].name, 
+                process_state(processes[i].context->state)
+            );
+        }
+    }
 }
