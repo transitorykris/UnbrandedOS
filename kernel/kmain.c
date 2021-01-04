@@ -63,7 +63,7 @@ noreturn void kmain() {
   processes[0].name = "throw_away";
   processes[0].context = &throw_away;
 
-  mcPrintln("Setting up PID1");
+  mcPrintln("Setting up shell as PID1");
   struct context_t pid1;
   create_process(&pid1, (uint32_t)shell, 0x10000);
   processes[1].name = "shell";
