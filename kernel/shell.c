@@ -28,15 +28,13 @@ SOFTWARE.
 #include "system.h"
 #include "process.h"
 #include "context.h"
+#include "commands.h"
 
 #include "shell.h"
 
 #define PROMPT  "/# "
 
 void exec(void (*func)());
-void uptime();
-void ps();
-void reboot();
 
 struct commands_t {
     char *name;
@@ -59,7 +57,11 @@ void shell() {
         {
             .name = "reboot",
             .func = reboot,
-        }
+        },
+        {
+            .name = "who",
+            .func = who
+        },
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
 
@@ -86,30 +88,4 @@ done:
 /* A pretty bad exec function */
 void exec(void (*func)()) {
     func();
-}
-
-/* A tiny program that prints the number of ticks */
-void uptime() {
-    uint32_t ticks = get_ticks();
-    uint32_t seconds = ticks / 100;
-    printf("up %d seconds, 1 user\n\r", seconds);
-}
-
-/* Print out all defined processes */
-void ps() {
-    printf("%s %18s %20s\n\r", "PID", "CMD", "State");
-    for(int i=0;i<MAX_PROCESSES;i++) {
-        if (processes[i].name != NULL) {
-            printf("%d %20s %20s\n\r",
-                i, 
-                processes[i].name, 
-                process_state(processes[i].context->state)
-            );
-        }
-    }
-}
-
-/* Warm boots the system */
-void reboot() {
-    exit(1);    // This crashes, implementation needs to be a trap!
 }
