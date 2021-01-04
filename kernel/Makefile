@@ -33,7 +33,8 @@ MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=process.o common.o trap14.o context.o \
-		commands/ps.o commands/reboot.o commands/uptime.o commands/who.o \
+		fs.o \
+		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o \
 		system.o shell.o kmain.o
 
 %.o : %.c

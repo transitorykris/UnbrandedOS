@@ -30,6 +30,7 @@ SOFTWARE.
 #include "mfp.h"
 #include "trap14.h"
 #include "process.h"
+#include "fs.h"
 
 #include "shell.h"
 
@@ -51,6 +52,9 @@ noreturn void kmain() {
 
   e68ClearScr();
   e68Println("Kernel starting");
+
+  mcPrintln("Initializing file system");
+  fs_init();
 
   // This context gets trashed after the first context switch
   struct context_t throw_away = {

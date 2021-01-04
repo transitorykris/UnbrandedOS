@@ -28,13 +28,11 @@ SOFTWARE.
 #include "system.h"
 #include "process.h"
 #include "context.h"
-#include "commands.h"
+#include "fs.h"
 
 #include "shell.h"
 
 #define PROMPT  "/# "
-
-void exec(void (*func)());
 
 struct commands_t {
     char *name;
@@ -45,22 +43,11 @@ void shell() {
     int count = 0;
     printf("Starting shell\n\n\r");
     
+    // These are commands built into the shell
     struct commands_t commands[] = {
         {
-            .name = "uptime",
-            .func = uptime,
-        },
-        {
-            .name = "ps",
-            .func = ps,
-        },
-        {
-            .name = "reboot",
-            .func = reboot,
-        },
-        {
-            .name = "who",
-            .func = who
+            .name = "ls",
+            .func = ls,
         },
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
@@ -71,11 +58,16 @@ void shell() {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");
             if (count > 0) {
+                // Check built in commands first
                 for(int i=0;i<command_count;i++) {
                     if (!strcmp(buffer, commands[i].name)) {
-                        exec(commands[i].func);
+                        commands[i].func();
                         goto done;
                     }
+                }
+                // Check our local directory next
+                if (!exec(buffer)) {
+                    goto done;
                 }
                 printf("command not found: %s\n\r", buffer);
             }
@@ -85,7 +77,12 @@ done:
     }
 }
 
-/* A pretty bad exec function */
-void exec(void (*func)()) {
-    func();
+/* List files in the root directory */
+void ls() {
+    for (int i=0;i<MAX_FILES;i++) {
+        char *filename = fs.root->files[i].name;
+        if (filename) {
+            printf("%s\n\r", filename);
+        }
+    }
 }

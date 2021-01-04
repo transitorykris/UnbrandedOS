@@ -19,14 +19,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef FS_H
+#define FS_H
 
-#define BUFFER_LEN  80  // arbitrary value right now
+#define MAX_FILES       64
 
-char buffer[BUFFER_LEN];
+#define FILE        0
+#define DIRECTORY   1
 
-void shell();
-void ls();
+typedef struct {
+    // XXX very temporary hack
+    void (*start)();             // Location on device
+} inode_t;
+
+typedef struct {
+    char        *name;          // Human readable name
+    uint8_t     type;           // Type of this file
+    inode_t     inode;          // Points to the file's first inode
+} file_t;
+
+typedef struct {
+    file_t files[MAX_FILES];    // All files in this directory
+} directory_t;
+
+typedef struct {
+    directory_t* root;          // Root of the filesystem hierarchy
+} filesystem_t;
+
+void fs_init();
+void create_file(char *name, uint8_t type, void (*inode_start)());
+void delete_file(char *name);
+void list_directory();
+uint8_t exec(char *name);
+
+// We'll create one global filesystem for now
+filesystem_t fs;
+directory_t root;
 
 #endif
