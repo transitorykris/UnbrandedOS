@@ -36,6 +36,7 @@ SOFTWARE.
 void exec(void (*func)());
 void uptime();
 void ps();
+void reboot();
 
 struct commands_t {
     char *name;
@@ -54,6 +55,10 @@ void shell() {
         {
             .name = "ps",
             .func = ps,
+        },
+        {
+            .name = "reboot",
+            .func = reboot,
         }
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
@@ -102,4 +107,9 @@ void ps() {
             );
         }
     }
+}
+
+/* Warm boots the system */
+void reboot() {
+    exit(1);    // This crashes, implementation needs to be a trap!
 }
