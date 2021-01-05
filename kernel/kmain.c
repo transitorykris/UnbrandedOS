@@ -69,8 +69,7 @@ noreturn void kmain() {
 
   mcPrintln("Setting up shell as PID1");
   struct context_t pid1;
-  create_process(&pid1, (uint32_t)shell, 0x10000);
-  processes[1].name = "shell";
+  create_process(&pid1, "shell", (uint32_t)shell, 0x10000);
   processes[1].context = &pid1;
 
   // Overwrite trap14 vector -- small hack so we don't have to burn ROMs

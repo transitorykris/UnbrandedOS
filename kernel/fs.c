@@ -72,11 +72,11 @@ Executes the file with the given name in the current directory
 */
 uint8_t exec(char *name) {
     char *argv[1];
-    argv[1] = name;
     int argc = sizeof argv / sizeof (char *);
 
     for (int i=0;i<MAX_FILES;i++) {
         if (!strcmp(fs.root->files[i].name, name)) {
+            argv[0] = fs.root->files[i].name;
             fs.root->files[i].inode.start(argc, argv);
             return 0;
         }

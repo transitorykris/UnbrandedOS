@@ -19,31 +19,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdlib.h>
 #include <machine.h>    // for some types
 
 #include "context.h"
 #include "process.h"
 
-void create_process(struct context_t *context, uint32_t pc, uint32_t sp) {
-  context->pc = pc;
-  context->usp = sp;
-  context->sr = 0x00;
+void create_process(struct context_t *context, char *name, uint32_t pc, uint32_t sp) {
+    context->pc = pc;
+    context->usp = sp;
+    context->sr = 0x00;
 
-  // Initialize our registers to zer
-  for (int i=0;i<8;i++) {
-    context->d[i] = 0x0000;
-  }
-  
-  for (int i=0;i<7;i++) {
-    context->a[i] = 0x0000;
-  }
+    // Initialize our registers to zer
+    for (int i=0;i<8;i++) {
+        context->d[i] = 0x0000;
+    }
 
-  // Set to running
-  context->state = RUNNING;
-  
-  // Insert into the linked list
-  context->next = current_process->next;
-  current_process->next = context;
+    for (int i=0;i<7;i++) {
+        context->a[i] = 0x0000;
+    }
+
+    // Set to running
+    context->state = RUNNING;
+
+    // Insert into the linked list
+    context->next = current_process->next;
+    current_process->next = context;
+
+    // Add it to our process list
+    for (int i=0;i<MAX_PROCESSES;i++) {
+        if (processes[i].name == NULL) {
+            processes[i].name = name;
+            processes[i].context = context;
+            break;
+        }
+    }
+    // We need to return an error if we ran out of process slots
 }
 
 char * process_state(uint8_t state) {

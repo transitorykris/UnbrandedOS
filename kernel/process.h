@@ -35,7 +35,7 @@ struct context_t *current_process;  // Currently executing task
 // Pre-allocate all the processes we can run
 pcb_t processes[MAX_PROCESSES];
 
-void create_process(struct context_t *context, uint32_t pc, uint32_t sp);
+void create_process(struct context_t *context, char *name, uint32_t pc, uint32_t sp);
 char * process_state(uint8_t state);
 
 #endif
