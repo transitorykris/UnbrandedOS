@@ -23,6 +23,13 @@ SOFTWARE.
 blinky blinks an LED on the rosco-m68k
 */
 
+#include "gpio.h"
+
 int blinky(int argc, char *argv[]) {
+    for (int i=0;;i++) {
+        if (i%1000 == 0) {
+            digitalWrite(led_green, !digitalRead(led_green));
+        }
+    }
     return 0;
 }
