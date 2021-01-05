@@ -34,7 +34,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=process.o common.o trap14.o context.o \
 		fs.o \
-		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o \
+		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinky.o \
 		system.o shell.o kmain.o
 
 %.o : %.c

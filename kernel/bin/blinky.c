@@ -19,13 +19,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef COMMANDS_H
-#define COMMANDS_H
+/*
+blinky blinks an LED on the rosco-m68k
+*/
 
-int uptime(int argc, char *argv[]);
-int ps(int argc, char *argv[]);
-int reboot(int argc, char *argv[]);
-int who(int argc, char *argv[]);
-int blinky(int argc, char *argv[]);
-
-#endif
+int blinky(int argc, char *argv[]) {
+    return 0;
+}

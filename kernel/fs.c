@@ -35,11 +35,11 @@ void fs_init() {
     fs.root = &root;     // Set up the location of "/" aka root
 
     // Let's dump some uh "files" into it!
-    create_file("uptime",   FILE, uptime);
-    create_file("ps",       FILE, ps);
-    create_file("reboot",   FILE, reboot);
-    create_file("who",      FILE, who);
-
+    create_file("uptime",   FILE, (void *)uptime);
+    create_file("ps",       FILE, (void *)ps);
+    create_file("reboot",   FILE, (void *)reboot);
+    create_file("who",      FILE, (void *)who);
+    create_file("blinky",   FILE, (void *)blinky);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {
