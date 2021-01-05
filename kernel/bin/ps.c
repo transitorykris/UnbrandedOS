@@ -26,7 +26,7 @@ SOFTWARE.
 #include "../context.h"
 
 /* Print out all defined processes */
-void ps() {
+int ps(int argc, char *argv[]) {
     printf("%s %18s %20s\n\r", "PID", "CMD", "State");
     for(int i=0;i<MAX_PROCESSES;i++) {
         if (processes[i].name != NULL) {
@@ -37,4 +37,6 @@ void ps() {
             );
         }
     }
+    
+    return 0;
 }

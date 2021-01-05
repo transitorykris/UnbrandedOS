@@ -24,8 +24,11 @@ SOFTWARE.
 #include "../system.h"
 
 /* A tiny program that prints the number of ticks */
-void uptime() {
+int uptime(int argc, char *argv[]) {
     uint32_t ticks = get_ticks();
     uint32_t seconds = ticks / 100;
+
     printf("up %d seconds, 1 user\n\r", seconds);
+
+    return  0;
 }

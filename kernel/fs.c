@@ -71,11 +71,16 @@ This is in the wrong place but that's fine for now.
 Executes the file with the given name in the current directory
 */
 uint8_t exec(char *name) {
+    char *argv[1];
+    argv[1] = name;
+    int argc = sizeof argv / sizeof (char *);
+
     for (int i=0;i<MAX_FILES;i++) {
         if (!strcmp(fs.root->files[i].name, name)) {
-            fs.root->files[i].inode.start();
+            fs.root->files[i].inode.start(argc, argv);
             return 0;
         }
     }
+
     return 1;   // Generic error
 }

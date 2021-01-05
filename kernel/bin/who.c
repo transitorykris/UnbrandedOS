@@ -22,6 +22,8 @@ SOFTWARE.
 #include <stdio.h>
 
 /* Stubs out a who command to print out a list of users */
-void who() {
+int who(int argc, char *argv[]) {
     printf("root\n\r");
+
+    return 0;
 }
