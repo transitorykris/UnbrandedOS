@@ -39,7 +39,7 @@ void fs_init() {
     create_file("ps",       FILE, (void *)ps);
     create_file("reboot",   FILE, (void *)reboot);
     create_file("who",      FILE, (void *)who);
-    create_file("blinky",   FILE, (void *)blinky);
+    create_file("blinkd",   FILE, (void *)blinkd);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {

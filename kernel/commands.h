@@ -26,6 +26,6 @@ int uptime(int argc, char *argv[]);
 int ps(int argc, char *argv[]);
 int reboot(int argc, char *argv[]);
 int who(int argc, char *argv[]);
-int blinky(int argc, char *argv[]);
+int blinkd(int argc, char *argv[]);
 
 #endif
