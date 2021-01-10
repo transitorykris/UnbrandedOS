@@ -1,6 +1,6 @@
 # UnbrandedOS
 
-UnbrandedOS is the beginnings of a little pre-emptive multitasking kernel for the MC68010 on a [Rosco-m68k](https://rosco-m68k.com/).
+UnbrandedOS is the beginnings of a little pre-emptive multitasking kernel and OS for the MC68010 on a [Rosco-m68k](https://rosco-m68k.com/).
 Unbranded because it doesn't have a real name yet ;)
 
 ## Rosco code
