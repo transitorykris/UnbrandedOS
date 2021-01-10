@@ -31,6 +31,7 @@ SOFTWARE.
 #include "trap14.h"
 #include "process.h"
 #include "fs.h"
+#include "malloc.h"
 
 #include "shell.h"
 
@@ -52,6 +53,8 @@ noreturn void kmain() {
 
   e68ClearScr();
   e68Println("Kernel starting");
+
+  mcPrintln("Initializing heap");
 
   mcPrintln("Initializing file system");
   fs_init();
