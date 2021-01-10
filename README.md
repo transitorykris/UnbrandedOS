@@ -5,4 +5,4 @@ Unbranded because it doesn't have a real name yet ;)
 
 ## Rosco code
 
-Note: for convenience this currently contains a pretty sloppy fork of [Rosco's firmware and standard library]([Rosco standard libraries](https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs)).
+Note: for convenience this currently contains a pretty sloppy fork of [Rosco standard libraries](https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs).
