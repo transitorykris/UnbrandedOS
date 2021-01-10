@@ -75,7 +75,7 @@ noreturn void kmain() {
   // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
   mcPrintln("Overriding ROM IO");
   SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
-
+  
   // Start the timer for firing the scheduler
   mcPrintln("Starting scheduler");
   context_init();
