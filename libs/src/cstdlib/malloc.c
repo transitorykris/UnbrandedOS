@@ -15,6 +15,7 @@ typedef struct _memblk {
 	unsigned long	blk_magic;
 } memblk_t;
 
+/*// re-implementing elsewhere
 void* malloc(size_t size) {
 	size = (size + sizeof (long)-1) & ~(sizeof (long)-1);
 
@@ -37,6 +38,7 @@ void free(void *ptr)
 	if (blk->blk_magic != BLK_MAGIC)
 		abort();
 }
+*/
 
 void* realloc(void *ptr, size_t size)
 {
