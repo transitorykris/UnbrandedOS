@@ -202,25 +202,25 @@ debug_stub::
                 blt     .regloop
 
                 ; Dump the stack
-.kris           move.l  _EFP_PRINT.w,a1
-                lea.l   .dump_stack_str(pc),a0
-                jsr     (a1)                    ; print exception name
-                move.l  #$004FFF80,a2
-                move.l  a2,d2
-.kris_loop      bsr     printhex                ; print USP
-                moveq.l #"=",d0
-                jsr     (a0)
-                move.l  (a2),a3
-                move.l  a3,d2
-                bsr     printhex
-                lea.l   .crlf_str(pc),a0
-                jsr     (a1)
-                cmp.l   #$004FFE00,a2
-                beq     .kris_done
-                sub.l   #4,a2
-                move.l  a2,d2
-                jmp     .kris_loop
-.kris_done
+;.kris           move.l  _EFP_PRINT.w,a1
+;                lea.l   .dump_stack_str(pc),a0
+;                jsr     (a1)                    ; print exception name
+;                move.l  #$004FFF80,a2
+;                move.l  a2,d2
+;.kris_loop      bsr     printhex                ; print USP
+;                moveq.l #"=",d0
+;                jsr     (a0)
+;                move.l  (a2),a3
+;                move.l  a3,d2
+;                bsr     printhex
+;                lea.l   .crlf_str(pc),a0
+;                jsr     (a1)
+;                cmp.l   #$004FFE00,a2
+;                beq     .kris_done
+;                sub.l   #4,a2
+;                move.l  a2,d2
+;                jmp     .kris_loop
+;.kris_done
 
 .peol_done      move.l  4.w,a0
                 jmp     (a0)
