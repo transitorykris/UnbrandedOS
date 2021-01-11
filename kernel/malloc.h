@@ -29,10 +29,13 @@ SOFTWARE.
 #define HEAP_END    (void *)0x4FFFFF
 
 struct heap_list {
-    void *location;
+    void *data;
     struct heap_list *next;
+    size_t size;
+    int free;
 };
 
+void init_heap();
 void *malloc(size_t size);
 void free(void *ptr);
 void *calloc(size_t nmemb, size_t size);

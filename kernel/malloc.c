@@ -29,24 +29,40 @@ struct heap_list *heap_last;
 
 void init_heap() {
     heap_start = HEAP_START;
-    heap_start->location = (void *)0x0;
+    heap_start->data = (void *)0x0;
     heap_start->next = heap_start + sizeof(struct heap_list);
+    heap_start->free = 0;   // never free
     heap_last = heap_start;
 }
 
 // Note: this isn't going to be reentrant
 // will need to add some locking
 void *malloc(size_t size) {
-    struct heap_list *start_next = heap_last;
-    
-    start_next->location = heap_last + sizeof(struct heap_list);
-    if (start_next->location > HEAP_END) {
+    // the next struct of metadata is adjacent to the last byte
+    // of the last allocation
+    struct heap_list *new_alloc = heap_last->next;
+    heap_last = new_alloc;  // keep track of the last node
+
+    // the location of the data is offset by the size of the header
+    new_alloc->data = new_alloc + sizeof(struct heap_list);
+
+    // If we've run past the end of available, too bad
+    if (new_alloc->data > HEAP_END) {
         return (void *)0x0;
     }
-    
-    start_next->next = start_next->location + size;
-    
-    return start_next->location;
+
+    // The next free memory location is after the last byte allocated
+    // the 68010 will get upset if we get misaligned!
+    new_alloc->next = new_alloc->data + size + (size % 2);
+
+    // Not free anymore!
+    new_alloc->free = 0;
+
+    // We could calculate this, but for now just store it
+    new_alloc->size = size;
+
+    // Give the caller the start of their block of data
+    return new_alloc->data;
 }
 
 void free(void *ptr) {

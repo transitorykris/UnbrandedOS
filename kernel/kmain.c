@@ -55,6 +55,7 @@ noreturn void kmain() {
   e68Println("Kernel starting");
 
   mcPrintln("Initializing heap");
+  init_heap();
 
   mcPrintln("Initializing file system");
   fs_init();

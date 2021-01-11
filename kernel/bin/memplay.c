@@ -57,7 +57,7 @@ int memplay(int argc, char *argv[]) {
 
     b_string = malloc(15);  // hello world!\n\r
 
-    printf("a_string @ %d", a_string);
+    printf("b_string @ %d", a_string);
 
     b_string[0] = 's';
     b_string[1] = 'o';
@@ -79,7 +79,7 @@ int memplay(int argc, char *argv[]) {
 
     // Back to A
 
-    printf("-> %s", a_string);
+    printf("a_string?? -> %s", a_string);
 
     return 0;
 }
