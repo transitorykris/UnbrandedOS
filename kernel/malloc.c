@@ -21,8 +21,11 @@ SOFTWARE.
 */
 
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "malloc.h"
+
+#define null    0x0;
 
 struct heap_list *heap_start;
 struct heap_list *heap_last;
@@ -31,7 +34,7 @@ void init_heap() {
     heap_start = HEAP_START;
     heap_start->data = (void *)0x0;
     heap_start->next = heap_start + sizeof(struct heap_list);
-    heap_start->free = 0;   // never free
+    heap_start->free = false;   // never free
     heap_last = heap_start;
 }
 
@@ -48,7 +51,7 @@ void *malloc(size_t size) {
 
     // If we've run past the end of available, too bad
     if (new_alloc->data > HEAP_END) {
-        return (void *)0x0;
+        return (void *)null;
     }
 
     // The next free memory location is after the last byte allocated
@@ -56,7 +59,7 @@ void *malloc(size_t size) {
     new_alloc->next = new_alloc->data + size + (size % 2);
 
     // Not free anymore!
-    new_alloc->free = 0;
+    new_alloc->free = false;
 
     // We could calculate this, but for now just store it
     new_alloc->size = size;
@@ -66,7 +69,9 @@ void *malloc(size_t size) {
 }
 
 void free(void *ptr) {
-    // To be implemented
+    // Incomplete implementation -- todo: merge adjacent free spaces
+    struct heap_list *metadata = ptr - sizeof(struct heap_list);
+    metadata->free = true;
 }
 
 void *calloc(size_t nmemb, size_t size) {
