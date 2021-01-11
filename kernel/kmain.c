@@ -54,7 +54,11 @@ noreturn void kmain() {
   e68ClearScr();
   e68Println("Kernel starting");
 
-  mcPrintln("Initializing heap");
+  mcPrint("Initializing heap 0x");
+  e68DisplayNumUnsigned((uint32_t)HEAP_START, 16);
+  mcPrint(" to 0x");
+  e68DisplayNumUnsigned((uint32_t)HEAP_END, 16);
+  mcPrintln("");
   init_heap();
 
   mcPrintln("Initializing file system");
