@@ -22,10 +22,14 @@ SOFTWARE.
 
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "malloc.h"
+#include "spinlock.h"
 
 #define null    0x0;
+
+spinlock_t malloc_lock;
 
 struct heap_list *heap_start;
 struct heap_list *heap_last;
@@ -36,11 +40,18 @@ void init_heap() {
     heap_start->next = heap_start + sizeof(struct heap_list);
     heap_start->free = false;   // never free
     heap_last = heap_start;
+
+    // Initialize our spin lock since this malloc is not reentrant
+    spinlock_init(&malloc_lock);
 }
 
 // Note: this isn't going to be reentrant
 // will need to add some locking
 void *malloc(size_t size) {
+    // Don't do anything until it's our turn
+    printf("Entering spinlock at %d\n\r", &malloc_lock);
+    spinlock(&malloc_lock);
+
     // the next struct of metadata is adjacent to the last byte
     // of the last allocation
     struct heap_list *new_alloc = heap_last->next;
@@ -60,6 +71,10 @@ void *malloc(size_t size) {
 
     // Not free anymore!
     new_alloc->free = false;
+
+    // We should be safe to unlock malloc here
+    printf("Exiting spinlock at %d\n\r", &malloc_lock);
+    spinunlock(&malloc_lock);
 
     // We could calculate this, but for now just store it
     new_alloc->size = size;

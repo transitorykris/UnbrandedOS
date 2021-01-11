@@ -32,7 +32,8 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=process.o common.o trap14.o context.o \
+OBJECTS=spinlock.o \
+		process.o common.o trap14.o context.o \
 		malloc.o fs.o \
 		bin/memplay.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \
