@@ -25,7 +25,7 @@
 
 spinlock_init::
     move.l  (8,a7), a0      ; get location of lock
-    andi.b  #0, (a0)        ; initialize as unlocked
+    andi.b  #127, (a0)      ; initialize as unlocked
     rts
 
 spinlock::
