@@ -49,7 +49,6 @@ void init_heap() {
 // will need to add some locking
 void *malloc(size_t size) {
     // Don't do anything until it's our turn
-    printf("Entering spinlock at %d\n\r", &malloc_lock);
     spinlock(&malloc_lock);
 
     // the next struct of metadata is adjacent to the last byte
@@ -73,7 +72,6 @@ void *malloc(size_t size) {
     new_alloc->free = false;
 
     // We should be safe to unlock malloc here
-    printf("Exiting spinlock at %d\n\r", &malloc_lock);
     spinunlock(&malloc_lock);
 
     // We could calculate this, but for now just store it
