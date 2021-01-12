@@ -57,7 +57,7 @@ int memplay(int argc, char *argv[]) {
 
     b_string = malloc(15);  // hello world!\n\r
 
-    printf("b_string @ %d", a_string);
+    printf("b_string @ %d", b_string);
 
     b_string[0] = 's';
     b_string[1] = 'o';
