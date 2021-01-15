@@ -41,6 +41,7 @@ void fs_init() {
     create_file("who",      FILE, (void *)who);
     create_file("blinkd",   FILE, (void *)blinkd);
     create_file("memplay",  FILE, (void *)memplay);
+    create_file("syscaller", FILE, (void *)syscaller);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {

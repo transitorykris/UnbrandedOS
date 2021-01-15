@@ -32,6 +32,7 @@ SOFTWARE.
 #include "process.h"
 #include "fs.h"
 #include "malloc.h"
+#include "syscall.h"
 
 #include "shell.h"
 
@@ -83,6 +84,10 @@ noreturn void kmain() {
   // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
   mcPrintln("Overriding ROM IO");
   SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
+
+  // Set up our syscall handler
+  mcPrintln("Installing syscall handler");
+  SET_UINT32_VECTOR(syscall_handler, TRAP_0_VECTOR);
   
   // Start the timer for firing the scheduler
   mcPrintln("Starting scheduler");

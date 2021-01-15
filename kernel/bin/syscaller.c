@@ -1,5 +1,6 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,67 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef HELPERS_H
-#define HELPERS_H
+// Fiddling around with memory allocation
 
+#include <stdio.h>
 #include <stdint.h>
 
-typedef void (*fptr)();
-typedef uint32_t (*uint32_fptr)();
-
-#define SET_BYTE(v,l) \
-{\
-    uint8_t *p = (uint8_t *)l;\
-    *p = v;\
+int syscaller(int argc, char *argv[]) {
+    uint32_t val;
+    register uint32_t d0 __asm__ ("d0") __attribute__((unused));
+    printf("Calling trap 0\n\t");
+    __asm__ __volatile__ (
+        "trap #0\n\t"
+        : "=r"(d0)
+        :
+        :
+    );
+    printf("Syscall returned %d\n\t", d0);
+    return 0;
 }
-
-#define SET_WORD(v,l) \
-{\
-    uint16_t *p = (uint16_t *)l;\
-    *p = v;\
-}
-
-#define SET_LONG(v,l) \
-{\
-    uint32_t *p = (uint32_t *)l;\
-    *p = v;\
-}
-
-// This works by creating a pointer to a function pointer
-// at the address of the interrupt vector. And then sets
-// the value of the handler at that address.
-#define SET_VECTOR(h,l) \
-{\
-    fptr *handler = (fptr *)l;\
-    *handler = &h;\
-}
-
-#define SET_UINT32_VECTOR(h,l) \
-{\
-    uint32_fptr *handler = (uint32_fptr *)l;\
-    *handler = &h;\
-}
-
-#define GET_BYTE(l) *(unsigned char *)l
-#define GET_WORD(l) *(unsigned int *)l
-#define GET_LONG(l) *(unsigned long *)l
-
-#define INC_BYTE(l) \
-{\
-    uint8_t *v = (uint8_t *)l;\
-    (*v)++;\
-}
-
-#define INC_WORD(l) \
-{\
-    uint16_t *v = (uint16_t *)l;\
-    (*v)++;\
-}
-
-#define INC_LONG(l) \
-{\
-    uint32_t *v = (uint32_t *)l;\
-    (*v)++;\
-}
-
-#endif

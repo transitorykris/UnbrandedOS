@@ -28,5 +28,6 @@ int reboot(int argc, char *argv[]);
 int who(int argc, char *argv[]);
 int blinkd(int argc, char *argv[]);
 int memplay(int argc, char *argv[]);
+int syscaller(int argc, char *argv[]);
 
 #endif

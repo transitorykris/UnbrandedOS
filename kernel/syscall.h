@@ -1,5 +1,6 @@
 /*
-Copyright 2020 Kris Foster
+Copyright 2021 Kris Foster
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,39 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef SYSCALL_H
+#define SYSCALL_H
 
-#define SYS_TICKS 0x40C
-
-#include "easy68k/easy68k.h"
-
-/*
-Disable supervisor bit
-*/
-#define disable_supervisor() \
-{\
-    __asm__ __volatile__ ("andi.w #0xdfff,%sr");\
+#define syscall_return(val)     \
+{                               \
+    __asm__ __volatile__ (      \
+        "rte\n\t"               \
+        :                       \
+        :"g" (val)              \
+        :                       \
+    );                          \
 }
 
-/*
-Disable interrupts
-*/
-#define disable_interrupts()                    \
-{                                               \
-    __asm__ __volatile__ ("ori.w #0x700,%sr");  \
-}
-
-/*
-Sleep... forever
-*/
-#define sleep() for(;;);
-
-typedef unsigned int tick_t;
-
-unsigned int get_ticks();
-uint16_t get_status_register();
-__attribute__((gnu_inline)) void inline set_usp(uint32_t usp);
-void delay(uint32_t duration);
+uint32_t syscall_handler(int num);
+//        "move.l %0,%%d0\n\t"    \
 
 #endif
