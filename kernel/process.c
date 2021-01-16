@@ -31,7 +31,7 @@ void create_process(struct context_t *context, char *name, uint32_t pc, uint32_t
     context->usp = sp;
     context->sr = 0x00;
 
-    // Initialize our registers to zer
+    // Initialize our registers to zero
     for (int i=0;i<8;i++) {
         context->d[i] = 0x0000;
     }

@@ -60,8 +60,6 @@ noreturn void idle() {
 }
 
 noreturn void kmain() {
-    init_processes();
-
     debug_stub();   // Set up the handy crash dump printer
 
     delay(40000);   // The rosco-m68k needs a bit of time (why?)
@@ -75,6 +73,10 @@ noreturn void kmain() {
     printf("Initializing file system\n\r");
     init_filesystem();
 
+    printf("Initializing process list\n\r");
+    init_processes();
+
+    printf("Creating idle process\n\r");
     // This context gets trashed after the first context switch
     struct context_t idle_proc = {
         .usp = 0x6000,
