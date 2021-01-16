@@ -55,6 +55,10 @@ void init_scheduler() {
     SET_VECTOR(context_swap, MFP_TIMER_C);
 }
 
+noreturn void idle() {
+    while(1);
+}
+
 noreturn void kmain() {
     init_processes();
 
@@ -100,5 +104,5 @@ noreturn void kmain() {
 
     // We never return, but we will also stop execution here after the
     // first context switch
-    sleep();
+    idle();
 }
