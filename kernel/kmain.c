@@ -20,9 +20,9 @@ SOFTWARE.
 */
 
 #include <stdlib.h>
+#include <stdio.h>
+
 #include <debug_stub.h>
-#include <easy68k/easy68k.h>
-#include <machine.h>
 
 #include "helpers.h"
 #include "context.h"
@@ -36,70 +36,68 @@ SOFTWARE.
 
 #include "shell.h"
 
-void initialize_processes() {
-  for (int i=0;i<MAX_PROCESSES;i++) {
-    processes[i].name = NULL;
-    processes[i].context = NULL;
-  }
+void init_processes() {
+    for (int i=0;i<MAX_PROCESSES;i++) {
+        processes[i].name = NULL;
+        processes[i].context = NULL;
+    }
+}
+
+void init_interrupts() {
+    // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
+    SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
+    SET_UINT32_VECTOR(syscall_handler, TRAP_0_VECTOR);
+}
+
+void init_scheduler() {
+    context_init();
+    SET_VECTOR(context_swap, MFP_TIMER_C);
 }
 
 noreturn void kmain() {
-  initialize_processes();
+    init_processes();
 
-  // Set up the handy crash dump printer
-  debug_stub();
+    debug_stub();   // Set up the handy crash dump printer
 
-  // The rosco-m68k needs a bit of time (why?)
-  delay(40000);
+    delay(40000);   // The rosco-m68k needs a bit of time (why?)
 
-  e68ClearScr();
-  e68Println("Kernel starting");
+    printf("\033[2JKernel starting\n\r");
 
-  mcPrint("Initializing heap 0x");
-  e68DisplayNumUnsigned((uint32_t)HEAP_START, 16);
-  mcPrint(" to 0x");
-  e68DisplayNumUnsigned((uint32_t)HEAP_END, 16);
-  mcPrintln("");
-  init_heap();
+    printf("Initializing pages %#x to %#x\n\r", (uint32_t)HEAP_START,
+        (uint32_t)HEAP_END);
+    init_heap();
 
-  mcPrintln("Initializing file system");
-  fs_init();
+    printf("Initializing file system\n\r");
+    init_filesystem();
 
-  // This context gets trashed after the first context switch
-  struct context_t throw_away = {
-    .usp = 0x6000,
-    //.pc is populated after the first context switch
-    .state = SLEEPING,
-  };
-  current_process = &throw_away;
-  current_process->next = current_process;  // only process in the list
-  processes[0].name = "throw_away";
-  processes[0].context = &throw_away;
+    // This context gets trashed after the first context switch
+    struct context_t idle_proc = {
+        .usp = 0x6000,
+        //.pc is populated after the first context switch
+        .state = SLEEPING,
+    };
+    current_process = &idle_proc;
+    current_process->next = current_process;  // only process in the list
+    processes[0].name = "idle";
+    processes[0].context = &idle_proc;
 
-  mcPrintln("Setting up shell as PID1");
-  struct context_t pid1;
-  create_process(&pid1, "shell", (uint32_t)shell, 0x10000);
-  processes[1].context = &pid1;
+    printf("Setting up shell as PID1\n\r");
+    struct context_t pid1;
+    create_process(&pid1, "shell", (uint32_t)shell, 0x10000);
+    processes[1].context = &pid1;
 
-  // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
-  mcPrintln("Overriding ROM IO");
-  SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
+    printf("Initializing interrupts\n\r");
+    init_interrupts();
 
-  // Set up our syscall handler
-  mcPrintln("Installing syscall handler");
-  SET_UINT32_VECTOR(syscall_handler, TRAP_0_VECTOR);
-  
-  // Start the timer for firing the scheduler
-  mcPrintln("Starting scheduler");
-  context_init();
-  SET_VECTOR(context_swap, MFP_TIMER_C);
+    // Start the timer for firing the scheduler
+    printf("Starting scheduler\n\r");
+    init_scheduler();
 
-  // Ready to go
-  mcPrintln("Entering user mode");
-  set_usp(current_process->usp);  // keep the supervisor stack clean
-  disable_supervisor();
+    // Ready to go
+    set_usp(current_process->usp);  // keep the supervisor stack clean
+    disable_supervisor();
 
-  // We never return, but we will also stop execution here after the
-  // first context switch
-  sleep();
+    // We never return, but we will also stop execution here after the
+    // first context switch
+    sleep();
 }

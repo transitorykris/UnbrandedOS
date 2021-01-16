@@ -46,7 +46,7 @@ typedef struct {
     directory_t* root;          // Root of the filesystem hierarchy
 } filesystem_t;
 
-void fs_init();
+void init_filesystem();
 void create_file(char *name, uint8_t type, void (*inode_start)());
 void delete_file(char *name);
 void list_directory();

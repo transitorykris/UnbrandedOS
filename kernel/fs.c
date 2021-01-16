@@ -27,7 +27,7 @@ SOFTWARE.
 
 #include "commands.h"
 
-void fs_init() {
+void init_filesystem() {
     // Make sure this directory is empty
     for (int i=0;i<MAX_FILES;i++) {
         root.files[i].name = NULL;
