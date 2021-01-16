@@ -23,17 +23,16 @@ SOFTWARE.
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
-#define syscall_return(val)     \
-{                               \
-    __asm__ __volatile__ (      \
-        "rte\n\t"               \
-        :                       \
-        :"g" (val)              \
-        :                       \
-    );                          \
+#define syscall_return(val) \
+{                           \
+    __asm__ __volatile__ (  \
+        "rte\n\t"           \
+        :                   \
+        :"g" (val)          \
+        :                   \
+    );                      \
 }
 
 uint32_t syscall_handler(int num);
-//        "move.l %0,%%d0\n\t"    \
 
 #endif

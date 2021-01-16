@@ -1,5 +1,6 @@
 /*
 Copyright 2021 Kris Foster
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -26,8 +27,8 @@ SOFTWARE.
 
 // Process Control Block
 typedef struct {
-  char *name;
-  struct context_t *context;
+    char *name;
+    struct context_t *context;
 } pcb_t;
 
 struct context_t *current_process;  // Currently executing task

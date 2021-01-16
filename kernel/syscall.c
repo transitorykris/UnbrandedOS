@@ -29,6 +29,5 @@ SOFTWARE.
 
 uint32_t syscall_handler(int num) {
     disable_interrupts();
-    //printf("Inside syscall_handler");
     syscall_return(123);
 }
