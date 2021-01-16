@@ -100,7 +100,7 @@ noreturn void kmain() {
 
     // Ready to go
     set_usp(current_process->usp);  // keep the supervisor stack clean
-    disable_supervisor();
+    disable_supervisor();           // switch to user mode
 
     // We never return, but we will also stop execution here after the
     // first context switch
