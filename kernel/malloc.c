@@ -88,7 +88,12 @@ void free(void *ptr) {
 }
 
 void *calloc(size_t nmemb, size_t size) {
-    // To be implemented
+    void *allocation = malloc(nmemb*size);
+    uint32_t *clear = allocation;
+    for(uint32_t i=0; i<nmemb*size; i++) {
+        *clear++ = 0;
+    }
+    return allocation;
 }
 
 void *realloc(void *ptr, size_t size) {
