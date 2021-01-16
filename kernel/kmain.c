@@ -56,7 +56,7 @@ void init_scheduler() {
 }
 
 noreturn void idle() {
-    while(1);
+    for(;;);
 }
 
 noreturn void kmain() {

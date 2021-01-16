@@ -23,8 +23,8 @@ SOFTWARE.
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#define SLEEPING        0
-#define RUNNING         1
+#define SLEEPING    0
+#define RUNNING     1
 
 typedef uint8_t state;
 

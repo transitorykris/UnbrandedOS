@@ -19,7 +19,6 @@
 ; SOFTWARE.
 
     import current_process
-    import SLEEPING
 
     section .text
 
@@ -27,6 +26,10 @@ TICKER      = $40c
 INT_ADDR    = $f80011
 CLEAR_INT   = ~$20
 IN_SWAP     = $800  ; arbitrary and probably a bad choice
+
+; Defined in context.h
+SLEEPING    = 0
+RUNNING     = 1
 
 ;struct context_t {
 ;    // Order matters here
@@ -97,9 +100,11 @@ context_swap::
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
-    ; Switch
+    ; Switch - note: something more clever should happen elsewhere
 next:
     move.l  CP_NEXT(a0), a0         ; Switch to next task
+    cmp     #SLEEPING, CP_STATE(a0) ; Check if sleeping
+    beq     next                    ; Yes, move to the next
     move.l  a0, current_process
 
     ; Restore
@@ -116,6 +121,6 @@ next:
     ; Return
 context_swap_done:
     move.b  CLEAR_INT, INT_ADDR     ; Clear interrupt
-    move.l #0,IN_SWAP               ; no longer in a swap
+    move.l  #0, IN_SWAP               ; no longer in a swap
 context_swap_quick_done:
     rte                             ; Return to next task
