@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef FS_H
 #define FS_H
 
-#define MAX_FILES       64
+#define MAX_FILES   64
 
 #define FILE        0
 #define DIRECTORY   1
