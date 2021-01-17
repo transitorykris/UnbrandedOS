@@ -27,6 +27,8 @@ SOFTWARE.
 #include "context.h"
 #include "process.h"
 
+#define ERR_TOO_MANY_PROCS  -1
+
 // !!! This needs to be behind a trap
 // Interrupts need to be disabled or disaster will eventually strike
 
@@ -70,8 +72,12 @@ int create_process(char *name, uint32_t entry) {
             break;
         }
         // Note: we rely on learning the pid # in this loop!
+        // so don't monkey with pid after this!
     }
-    // We need to return an error if we ran out of process slots
+    if (pid == MAX_PROCESSES) {
+        // We ran out!
+        return ERR_TOO_MANY_PROCS;
+    }
     return pid;
 }
 
