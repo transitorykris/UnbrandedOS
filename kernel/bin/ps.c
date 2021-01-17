@@ -27,13 +27,15 @@ SOFTWARE.
 
 /* Print out all defined processes */
 int ps(int argc, char *argv[]) {
-    printf("%s %18s %20s\n\r", "PID", "CMD", "State");
+    printf("%s %13s %15s %15s %15s\n\r", "PID", "CMD", "State", "Stack", "PC");
     for(int i=0;i<MAX_PROCESSES;i++) {
         if (processes[i].name != NULL) {
-            printf("%d %20s %20s\n\r",
+            printf("%d %15s %15s %#15x %#15x\n\r",
                 i, 
                 processes[i].name, 
-                process_state(processes[i].context->state)
+                process_state(processes[i].context->state),
+                processes[i].context->usp,
+                processes[i].context->pc
             );
         }
     }

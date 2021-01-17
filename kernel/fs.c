@@ -80,6 +80,8 @@ uint8_t exec(char *name) {
     for (int i=0;i<MAX_FILES;i++) {
         if (!strcmp(fs.root->files[i].name, name)) {
             argv[0] = fs.root->files[i].name;
+            // XXX this needs to be a create_process call
+            // so that we get a stack properly set up
             fs.root->files[i].inode.start(argc, argv);
             return 0;
         }
