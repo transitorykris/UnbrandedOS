@@ -23,7 +23,7 @@ SOFTWARE.
 #include <stdlib.h>
 #include <machine.h>    // for some types
 
-//#include "malloc.h"
+#include "malloc.h"
 #include "context.h"
 #include "process.h"
 
