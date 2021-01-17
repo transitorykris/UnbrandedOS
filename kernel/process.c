@@ -27,6 +27,9 @@ SOFTWARE.
 #include "context.h"
 #include "process.h"
 
+// !!! This needs to be behind a trap
+// Interrupts need to be disabled or disaster will eventually strike
+
 // create_process creates a new process given a name for it and
 // the entry point in memory
 // Returns the pid of the process or -1 if it failed
