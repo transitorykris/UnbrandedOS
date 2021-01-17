@@ -39,7 +39,7 @@ int blinkd(int argc, char *argv[]) {
     printf("Starting %s\n\r", argv[0]);
     
     // The world's most inaesthetic daemonization
-    create_process(&blinkd_ctx, argv[0], (uint32_t)_blinky, 0x14000);
+    create_process(&blinkd_ctx, argv[0], (uint32_t)_blinky);
 
     return 0;
 }
@@ -47,7 +47,7 @@ int blinkd(int argc, char *argv[]) {
 void _blinky() {
     for (int i=0;;i++) {
         if (i%1000 == 0) {
-        digitalWrite(led_green, !digitalRead(led_green));
+            digitalWrite(led_green, !digitalRead(led_green));
         }
     }
 }
