@@ -77,16 +77,11 @@ noreturn void kmain() {
     init_processes();
 
     printf("Creating idle process\n\r");
-    // This context gets trashed after the first context switch
-    struct context_t idle_proc = {
-        .usp = 0x6000,
-        //.pc is populated after the first context switch
-        .state = SLEEPING,
-    };
-    current_process = &idle_proc;
-    current_process->next = current_process;  // only process in the list
-    processes[0].name = "idle";
-    processes[0].context = &idle_proc;
+    int pid0 = create_process("idle", (uint32_t)idle);
+    if (pid0 != 0) {
+        printf("Expected to create pid0, got %d\n\r", pid0);
+    }
+    processes[pid0].context->state = SLEEPING;
 
     printf("Setting up shell as PID1\n\r");
     int pid1 = create_process("shell", (uint32_t)shell);

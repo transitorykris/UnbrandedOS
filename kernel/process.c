@@ -49,6 +49,11 @@ int create_process(char *name, uint32_t entry) {
     // Set to running
     context->state = RUNNING;
 
+    // Not pretty, but if this is the first process...
+    if (processes[0].name == NULL) {
+        current_process = context;
+        current_process->next = current_process;
+    }
     // Insert into the linked list
     context->next = current_process->next;
     current_process->next = context;
