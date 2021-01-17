@@ -29,11 +29,10 @@ SOFTWARE.
 
 #define DEFAULT_STACK_SIZE  65536
 
-void create_process(struct context_t *context, char *name, uint32_t pc, uint32_t sp) {
-    context->pc = pc;
-    context->usp = sp;
+void create_process(struct context_t *context, char *name, uint32_t entry) {
+    context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
-    //context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
     context->sr = 0x00;
 
     // Initialize our registers to zero

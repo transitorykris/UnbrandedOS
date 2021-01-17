@@ -90,7 +90,7 @@ noreturn void kmain() {
 
     printf("Setting up shell as PID1\n\r");
     struct context_t pid1;
-    create_process(&pid1, "shell", (uint32_t)shell, 0x10000);
+    create_process(&pid1, "shell", (uint32_t)shell);
     processes[1].context = &pid1;
 
     printf("Initializing interrupts\n\r");
