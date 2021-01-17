@@ -97,8 +97,8 @@ noreturn void kmain() {
     init_scheduler();
 
     // Ready to go
-    set_usp(current_process->usp);  // keep the supervisor stack clean
-    disable_supervisor();           // switch to user mode
+    set_usp(processes[pid0].context->usp);  // leave the kernel stack
+    disable_supervisor();                   // switch to user mode
 
     // We never return, but we will also stop execution here after the
     // first context switch
