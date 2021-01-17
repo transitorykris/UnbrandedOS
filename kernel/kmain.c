@@ -89,9 +89,10 @@ noreturn void kmain() {
     processes[0].context = &idle_proc;
 
     printf("Setting up shell as PID1\n\r");
-    struct context_t pid1;
-    create_process(&pid1, "shell", (uint32_t)shell);
-    processes[1].context = &pid1;
+    int pid1 = create_process("shell", (uint32_t)shell);
+    if (pid1 != 1) {
+        printf("Expected to create pid1, got %d\n\r", pid1);
+    }
 
     printf("Initializing interrupts\n\r");
     init_interrupts();

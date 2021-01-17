@@ -27,7 +27,11 @@ SOFTWARE.
 #include "context.h"
 #include "process.h"
 
-void create_process(struct context_t *context, char *name, uint32_t entry) {
+// create_process creates a new process given a name for it and
+// the entry point in memory
+// Returns the pid of the process or -1 if it failed
+int create_process(char *name, uint32_t entry) {
+    struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
     context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
@@ -50,14 +54,17 @@ void create_process(struct context_t *context, char *name, uint32_t entry) {
     current_process->next = context;
 
     // Add it to our process list
-    for (int i=0;i<MAX_PROCESSES;i++) {
-        if (processes[i].name == NULL) {
-            processes[i].name = name;
-            processes[i].context = context;
+    int pid;
+    for (pid=0;pid<MAX_PROCESSES;pid++) {
+        if (processes[pid].name == NULL) {
+            processes[pid].name = name;
+            processes[pid].context = context;
             break;
         }
+        // Note: we rely on learning the pid # in this loop!
     }
     // We need to return an error if we ran out of process slots
+    return pid;
 }
 
 char * process_state(uint8_t state) {
