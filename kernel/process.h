@@ -23,7 +23,8 @@ SOFTWARE.
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#define MAX_PROCESSES 64
+#define MAX_PROCESSES       64
+#define DEFAULT_STACK_SIZE  65536
 
 // Process Control Block
 typedef struct {

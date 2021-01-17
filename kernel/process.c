@@ -27,8 +27,6 @@ SOFTWARE.
 #include "context.h"
 #include "process.h"
 
-#define DEFAULT_STACK_SIZE  65536
-
 void create_process(struct context_t *context, char *name, uint32_t entry) {
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
