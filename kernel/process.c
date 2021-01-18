@@ -25,6 +25,8 @@ SOFTWARE.
 
 #include "malloc.h"
 #include "context.h"
+#include "users.h"
+
 #include "process.h"
 
 #define ERR_TOO_MANY_PROCS  -1
@@ -35,7 +37,7 @@ SOFTWARE.
 // create_process creates a new process given a name for it and
 // the entry point in memory
 // Returns the pid of the process or -1 if it failed
-int create_process(char *name, uint32_t entry) {
+int create_process(char *name, uint32_t entry, uid_t owner) {
     struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
@@ -69,6 +71,7 @@ int create_process(char *name, uint32_t entry) {
         if (processes[pid].name == NULL) {
             processes[pid].name = name;
             processes[pid].context = context;
+            processes[pid].owner = owner;
             break;
         }
         // Note: we rely on learning the pid # in this loop!

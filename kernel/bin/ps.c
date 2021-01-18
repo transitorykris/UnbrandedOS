@@ -22,16 +22,18 @@ SOFTWARE.
 #include <stdio.h>
 #include <machine.h>
 
+#include "../users.h"
 #include "../process.h"
 #include "../context.h"
 
 /* Print out all defined processes */
 int ps(int argc, char *argv[]) {
-    printf("%s %13s %15s %15s %15s\n\r", "PID", "CMD", "State", "Stack", "PC");
+    printf("%s %13s %13s %15s %15s %15s\n\r", "PID", "User", "CMD", "State", "Stack", "PC");
     for(int i=0;i<MAX_PROCESSES;i++) {
         if (processes[i].name != NULL) {
-            printf("%d %15s %15s %#15x %#15x\n\r",
-                i, 
+            printf("%d %15s %15s %15s %#15x %#15x\n\r",
+                i,
+                uid_lookup(processes[i].owner)->name,
                 processes[i].name, 
                 process_state(processes[i].context->state),
                 processes[i].context->usp,

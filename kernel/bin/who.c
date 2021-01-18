@@ -21,9 +21,19 @@ SOFTWARE.
 
 #include <stdio.h>
 
-/* Stubs out a who command to print out a list of users */
-int who(int argc, char *argv[]) {
-    printf("root\n\r");
+#include "../process.h"
+#include "../context.h"
+#include "../users.h"
 
+/*
+Lists all users
+Currently prints the owner of each process
+*/
+int who(int argc, char *argv[]) {
+    for (int i=0;i<MAX_PROCESSES;i++) {
+        if (processes[i].context->state == RUNNING) {
+            printf("%s\n\r", uid_lookup(processes[i].owner)->name);
+        }
+    }
     return 0;
 }

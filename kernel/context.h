@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#include "users.h"
+
 #define SLEEPING    0
 #define RUNNING     1
 
@@ -39,7 +41,7 @@ struct context_t {
     struct context_t* next; // Next process to run
     // Order shouldn't matter too much below this line
 
-    state state;
+    state state;            // State of this process
 };
 
 extern void context_swap();

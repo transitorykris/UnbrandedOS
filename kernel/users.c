@@ -1,5 +1,6 @@
 /*
 Copyright 2021 Kris Foster
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,36 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/*
-blinky blinks an LED on the rosco-m68k
-*/
+#include "malloc.h"
 
-#include <stdio.h>
-#include <gpio.h>
-#include <machine.h>
+#include "users.h"
 
-#include "../process.h"
-#include "../context.h"
+#define null    0x0
 
-void _blinky();
+struct user *users;
 
-// Really need a malloc, don't run blinkd twice!
-struct context_t blinkd_ctx;
-
-int blinkd(int argc, char *argv[]) {
-    printf("Starting %s\n\r", argv[0]);
-    
-    // The world's most inaesthetic daemonization
-    //create_process(&blinkd_ctx, argv[0], (uint32_t)_blinky);
-    create_process(argv[0], (uint32_t)_blinky, 0);
-
-    return 0;
-}
-
-void _blinky() {
-    for (int i=0;;i++) {
-        if (i%1000 == 0) {
-            digitalWrite(led_green, !digitalRead(led_green));
+uid_t create_user(char *name) {
+    for(int i=0;i<MAX_USERS;i++) {
+        if (users[i].name == null) {
+            users[i].name = name;
         }
     }
+}
+
+void init_users() {
+    // This is going to be super lazy for the moment
+    users = (struct user*)calloc(MAX_USERS, sizeof(struct user));
+}
+
+struct user *uid_lookup(uid_t uid) {
+    return &users[uid];
 }

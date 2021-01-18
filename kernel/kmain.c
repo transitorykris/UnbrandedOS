@@ -34,6 +34,7 @@ SOFTWARE.
 #include "fs.h"
 #include "malloc.h"
 #include "syscall.h"
+#include "users.h"
 
 #include "shell.h"
 
@@ -87,15 +88,19 @@ noreturn void kmain() {
     printf("Initializing process list\n\r");
     init_processes();
 
+    printf("Initializing user database\n\r");
+    init_users();
+    uid_t root_uid = create_user("root");   // This will always be 0
+
     printf("Creating idle process\n\r");
-    int pid0 = create_process("idle", (uint32_t)idle);
+    int pid0 = create_process("idle", (uint32_t)idle, root_uid);
     if (pid0 != 0) {
         printf("Expected to create pid0, got %d\n\r", pid0);
     }
     processes[pid0].context->state = SLEEPING;
 
     printf("Setting up shell as PID1\n\r");
-    int pid1 = create_process("shell", (uint32_t)shell);
+    int pid1 = create_process("shell", (uint32_t)shell, root_uid);
     if (pid1 != 1) {
         printf("Expected to create pid1, got %d\n\r", pid1);
     }
