@@ -37,6 +37,10 @@ SOFTWARE.
 
 #include "shell.h"
 
+// We're going to reuse the vectors set up by firmware for the
+// bits in there I'm not ready to replace yet
+uint32_t *vectors = 0x0;
+
 void init_processes() {
     for (int i=0;i<MAX_PROCESSES;i++) {
         processes[i].name = NULL;
@@ -44,15 +48,22 @@ void init_processes() {
     }
 }
 
+void install_vector_handler(int vector, uint32_t handler) {
+    vectors[vector] = handler;
+}
+
 void init_interrupts() {
+    // Syscalls will be trap #0
+    install_vector_handler(VEC_TRAP_0_HANDLER, (uint32_t)syscall_handler);
+
     // Overwrite trap14 vector -- small hack so we don't have to burn ROMs
-    SET_VECTOR(TRAP_14_HANDLER, TRAP_14_VECTOR);
-    SET_UINT32_VECTOR(syscall_handler, TRAP_0_VECTOR);
+    // while hacking on how these routines work
+    install_vector_handler(VEC_TRAP_14_HANDLER, (uint32_t)TRAP_14_HANDLER);
 }
 
 void init_scheduler() {
     context_init();
-    SET_VECTOR(context_swap, MFP_TIMER_C);
+    install_vector_handler(VEC_TICK_HANDLER, (uint32_t)context_swap);
 }
 
 noreturn void idle() {

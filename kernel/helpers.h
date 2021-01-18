@@ -25,9 +25,6 @@ SOFTWARE.
 
 #include <stdint.h>
 
-typedef void (*fptr)();
-typedef uint32_t (*uint32_fptr)();
-
 #define SET_BYTE(v,l)           \
 {                               \
     uint8_t *p = (uint8_t *)l;  \
@@ -46,29 +43,14 @@ typedef uint32_t (*uint32_fptr)();
     *p = v;                     \
 }
 
-// This works by creating a pointer to a function pointer
-// at the address of the interrupt vector. And then sets
-// the value of the handler at that address.
-#define SET_VECTOR(h,l)         \
-{                               \
-    fptr *handler = (fptr *)l;  \
-    *handler = &h;              \
-}
-
-#define SET_UINT32_VECTOR(h,l)              \
-{                                           \
-    uint32_fptr *handler = (uint32_fptr *)l;\
-    *handler = &h;                          \
-}
-
 #define GET_BYTE(l) *(unsigned char *)l
 #define GET_WORD(l) *(unsigned int *)l
 #define GET_LONG(l) *(unsigned long *)l
 
-#define INC_BYTE(l)                         \
-{                                           \
-    uint8_t *v = (uint8_t *)l;              \
-    (*v)++;                                 \
+#define INC_BYTE(l)             \
+{                               \
+    uint8_t *v = (uint8_t *)l;  \
+    (*v)++;                     \
 }
 
 #define INC_WORD(l)                 \
