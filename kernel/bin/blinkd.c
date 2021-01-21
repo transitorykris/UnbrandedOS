@@ -32,9 +32,6 @@ blinky blinks an LED on the rosco-m68k
 
 void _blinky();
 
-// Really need a malloc, don't run blinkd twice!
-struct context_t blinkd_ctx;
-
 int blinkd(int argc, char *argv[]) {
     printf("Starting %s\n\r", argv[0]);
     
