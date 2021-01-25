@@ -9,7 +9,7 @@
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lmachine -leasy68k -lcstdlib -lstart_serial -ldebug_stub -lprintf -lgpio
+LIBS=-lmachine -leasy68k -lcstdlib -lstart_serial -ldebug_stub -lprintf -lgpio -lsdfat
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Werror	\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010	\
@@ -35,7 +35,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 OBJECTS=spinlock.o \
 		process.o common.o trap14.o syscall.o context.o \
 		pages.o malloc.o fs.o users.o \
-		bin/memplay.o bin/syscaller.o \
+		bin/memplay.o bin/syscaller.o bin/dir.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \
 		system.o shell.o kmain.o
 

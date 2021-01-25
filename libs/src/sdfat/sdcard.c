@@ -18,14 +18,16 @@
 #include <sdfat.h>
 #include <stdio.h>
 
+static SDCard sdcard;
+
 bool SD_get_csd(SDCard *sd, SDCard_CSD *csd) {
     return SD_read_register(sd, 9, (void*) csd);
 }
 
-uint32_t SD_get_size(SDCard *sd) {
+uint32_t SD_get_size() {
     static SDCard_CSD csdbuf;
 
-    if (!SD_get_csd(sd, &csdbuf)) {
+    if (!SD_get_csd(&sdcard, &csdbuf)) {
         return 0;
     }
     if (csdbuf.v1.csd_ver == 0) {
@@ -45,8 +47,6 @@ uint32_t SD_get_size(SDCard *sd) {
         return 0;
     }
 }
-
-static SDCard sdcard;
 
 static int FAT_media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     for(int i = 0; i < sector_count; i++) {
