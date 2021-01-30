@@ -1466,26 +1466,43 @@ int fl_createdirectory(const char *path)
 #if FATFS_DIR_LIST_SUPPORT
 void fl_listdirectory(const char *path)
 {
+    printf("fl_listdirectory 1\n\r");
     FL_DIR dirstat;
 
     // If first call to library, initialise
     CHECK_FL_INIT();
 
+        printf("fl_listdirectory 2\n\r");
+
+
     FL_LOCK(&_fs);
 
+    printf("fl_listdirectory 3\n\r");
+
+
     FAT_PRINTF(("\r\nDirectory %s\r\n", path));
+
+    printf("fl_listdirectory 4\n\r");
 
     if (fl_opendir(path, &dirstat))
     {
         struct fs_dir_ent dirent;
 
+            printf("fl_listdirectory 4.a\n\r");
+
+
         while (fl_readdir(&dirstat, &dirent) == 0)
         {
+                printf("fl_listdirectory 4.b\n\r");
+
 #if FATFS_INC_TIME_DATE_SUPPORT
+        printf("fl_listdirectory 4.c\n\r");
             int d,m,y,h,mn,s;
             fatfs_convert_from_fat_time(dirent.write_time, &h,&m,&s);
             fatfs_convert_from_fat_date(dirent.write_date, &d,&mn,&y);
             FAT_PRINTF(("%02d/%02d/%04d  %02d:%02d      ", d,mn,y,h,m));
+                printf("fl_listdirectory 4.d\n\r");
+
 #endif
 
             if (dirent.is_dir)
@@ -1497,9 +1514,11 @@ void fl_listdirectory(const char *path)
                 FAT_PRINTF(("%s [%d bytes]\r\n", dirent.filename, dirent.size));
             }
         }
-
+    printf("fl_listdirectory 4.e\n\r");
         fl_closedir(&dirstat);
     }
+
+        printf("fl_listdirectory 5\n\r");
 
     FL_UNLOCK(&_fs);
 }

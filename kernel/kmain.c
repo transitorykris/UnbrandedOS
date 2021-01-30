@@ -24,6 +24,7 @@ SOFTWARE.
 #include <stdio.h>
 
 #include <debug_stub.h>
+#include <sdfat.h>
 
 #include "helpers.h"
 #include "context.h"
@@ -77,6 +78,18 @@ noreturn void kmain() {
     delay(40000);   // The rosco-m68k needs a bit of time (why?)
 
     printf("\033[2JKernel starting\n\r");
+
+    printf("Initializing storage\n\r");
+    if (!SD_check_support()) {
+        printf("ROM does not have SD support\n\r");
+        // TODO halt here
+    }
+
+    printf("Initializing FAT\n\r");
+    if (!SD_FAT_initialize()) {
+        printf("Failed to initialize FAT\n\r");
+        // TODO halt here
+    }
 
     printf("Initializing pages %#x to %#x\n\r", (uint32_t)HEAP_START,
         (uint32_t)HEAP_END);

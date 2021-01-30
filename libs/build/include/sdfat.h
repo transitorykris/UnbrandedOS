@@ -220,7 +220,7 @@ bool SD_get_csd(SDCard *sd, SDCard_CSD *csd);
 /** 
  * Attempt to determine the size of the connected SD card.
  */
-uint32_t SD_get_size(SDCard *sd);
+uint32_t SD_get_size();
 
 #endif
 
