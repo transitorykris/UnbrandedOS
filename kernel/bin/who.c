@@ -30,9 +30,9 @@ Lists all users
 Currently prints the owner of each process
 */
 int who(int argc, char *argv[]) {
-    for (int i=0;i<MAX_PROCESSES;i++) {
-        if (processes[i].context->state == RUNNING) {
-            printf("%s\n\r", uid_lookup(processes[i].owner)->name);
+    for (int pid=0;pid<MAX_PROCESSES;pid++) {
+        if (get_state(pid) == RUNNING) {
+            printf("%s\n\r", uid_lookup(processes[pid].owner)->name);
         }
     }
     return 0;

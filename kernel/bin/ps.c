@@ -29,15 +29,15 @@ SOFTWARE.
 /* Print out all defined processes */
 int ps(int argc, char *argv[]) {
     printf("%s %13s %13s %15s %15s %15s\n\r", "PID", "User", "CMD", "State", "Stack", "PC");
-    for(int i=0;i<MAX_PROCESSES;i++) {
-        if (processes[i].name != NULL) {
+    for(int pid=0;pid<MAX_PROCESSES;pid++) {
+        if (processes[pid].name != NULL) {
             printf("%d %15s %15s %15s %#15x %#15x\n\r",
-                i,
-                uid_lookup(processes[i].owner)->name,
-                processes[i].name, 
-                process_state(processes[i].context->state),
-                processes[i].context->usp,
-                processes[i].context->pc
+                pid,
+                uid_lookup(processes[pid].owner)->name,
+                processes[pid].name,
+                process_state(get_state(pid)),
+                processes[pid].context->usp,
+                processes[pid].context->pc
             );
         }
     }

@@ -100,3 +100,7 @@ state set_state(pid_t pid, state new_state) {
     processes[pid].context->state = new_state;
     return prev;
 }
+
+state get_state(pid_t pid) {
+    return processes[pid].context->state;
+}
