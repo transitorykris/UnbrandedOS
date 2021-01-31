@@ -117,7 +117,6 @@ noreturn void kmain() {
     if (pid0 != 0) {
         printf("Expected to create pid0, got %d\n\r", pid0);
     }
-    //processes[pid0].context->state = SLEEPING;
     set_state(pid0, SLEEPING);
 
     printf("Setting up shell as PID1\n\r");
