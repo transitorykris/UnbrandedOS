@@ -32,10 +32,10 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=spinlock.o \
+OBJECTS=musl/stdlib/atoi.o spinlock.o \
 		process.o common.o trap14.o syscall.o context.o \
 		pages.o malloc.o fs.o users.o \
-		bin/memplay.o bin/syscaller.o bin/dir.o \
+		bin/kill.o bin/memplay.o bin/syscaller.o bin/dir.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \
 		system.o shell.o kmain.o
 
