@@ -94,3 +94,9 @@ char * process_state(uint8_t state) {
             return "unknown";
     }
 }
+
+state set_state(pid_t pid, state new_state) {
+    state prev = processes[pid].context->state;
+    processes[pid].context->state = new_state;
+    return prev;
+}

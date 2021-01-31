@@ -24,6 +24,7 @@ SOFTWARE.
 #define PROCESS_H
 
 #include "users.h"
+#include "context.h"
 
 #define MAX_PROCESSES       64
 #define DEFAULT_STACK_SIZE  65536
@@ -35,6 +36,8 @@ typedef struct {
     uid_t owner;                // Owner of this process
 } pcb_t;
 
+typedef uint16_t pid_t;
+
 struct context_t *current_process;  // Currently executing task
 
 // Pre-allocate all the processes we can run
@@ -42,5 +45,6 @@ pcb_t processes[MAX_PROCESSES];
 
 int create_process(char *name, uint32_t entry, uid_t owner);
 char * process_state(uint8_t state);
+state set_state(pid_t pid, state new_state);
 
 #endif

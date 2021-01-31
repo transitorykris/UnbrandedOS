@@ -24,7 +24,12 @@ SOFTWARE.
 #include <stdio.h>
 
 #include <debug_stub.h>
+
+#define SDCARD
+
+#ifdef SDCARD
 #include <sdfat.h>
+#endif
 
 #include "helpers.h"
 #include "context.h"
@@ -79,6 +84,7 @@ noreturn void kmain() {
 
     printf("\033[2JKernel starting\n\r");
 
+#ifdef SDCARD
     printf("Initializing storage\n\r");
     if (!SD_check_support()) {
         printf("ROM does not have SD support\n\r");
@@ -90,6 +96,7 @@ noreturn void kmain() {
         printf("Failed to initialize FAT\n\r");
         // TODO halt here
     }
+#endif
 
     printf("Initializing pages %#x to %#x\n\r", (uint32_t)HEAP_START,
         (uint32_t)HEAP_END);
@@ -110,7 +117,8 @@ noreturn void kmain() {
     if (pid0 != 0) {
         printf("Expected to create pid0, got %d\n\r", pid0);
     }
-    processes[pid0].context->state = SLEEPING;
+    //processes[pid0].context->state = SLEEPING;
+    set_state(pid0, SLEEPING);
 
     printf("Setting up shell as PID1\n\r");
     int pid1 = create_process("shell", (uint32_t)shell, root_uid);
