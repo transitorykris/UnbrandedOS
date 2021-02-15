@@ -25,6 +25,10 @@ SOFTWARE.
 
 #include "process.h"
 
+//#define STDIN_FILENO    0
+//#define STDOUT_FILENO   1
+//#define STDERR_FILENO   2
+
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
 int execvp(const char *, char *const []);
