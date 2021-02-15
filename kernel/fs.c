@@ -44,6 +44,7 @@ void init_filesystem() {
     create_file("memplay",  FILE, (void *)memplay);
     create_file("syscaller", FILE, (void *)syscaller);
     create_file("dir",      FILE, (void *)dir);
+    create_file("kill",      FILE, (void *)kill);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {

@@ -35,8 +35,6 @@ void _blinky();
 int blinkd(int argc, char *argv[]) {
     printf("Starting %s\n\r", argv[0]);
     
-    // The world's most inaesthetic daemonization
-    //create_process(&blinkd_ctx, argv[0], (uint32_t)_blinky);
     create_process(argv[0], (uint32_t)_blinky, 0);
 
     return 0;

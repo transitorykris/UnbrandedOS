@@ -38,7 +38,8 @@ int kill(int argc, char *argv[]) {
         printf("%s: not enough arguments", argv[0]);
         return -1;
     }
-    unsigned int pid = atoi(argv[1]); 
+    unsigned int pid = atoi(argv[1]);
+    
     set_state(pid, SLEEPING);
 
     return 0;
