@@ -25,9 +25,9 @@ SOFTWARE.
 
 #include <stdint.h>
 
-#define MAX_USERS   32          // Low to make other horrors fast
+#include "sys/types.h"
 
-typedef uint16_t uid_t;
+#define MAX_USERS   32          // Low to make other horrors fast
 
 struct user {
     uid_t uid;

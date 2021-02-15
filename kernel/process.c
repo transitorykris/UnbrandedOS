@@ -23,9 +23,10 @@ SOFTWARE.
 #include <stdlib.h>
 #include <machine.h>    // for some types
 
+#include "sys/types.h"
+
 #include "malloc.h"
 #include "context.h"
-#include "users.h"
 
 #include "process.h"
 
@@ -103,4 +104,19 @@ state set_state(pid_t pid, state new_state) {
 
 state get_state(pid_t pid) {
     return processes[pid].context->state;
+}
+
+// TO BE IMPLEMENTED
+// https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
+
+pid_t fork(void) {
+    return -1;
+}
+
+pid_t wait(int *stat_loc) {
+    return -1;
+}
+
+void exit(int status) {
+
 }
