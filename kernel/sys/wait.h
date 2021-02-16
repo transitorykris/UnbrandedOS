@@ -27,10 +27,27 @@ SOFTWARE.
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
+// waitpid() options
+#define WCONTINUED  1   // Report status of continued child process.
+#define WNOHANG     2   // Do not hang if no status is available; return immediately.
+#define WUNTRACED   4   // Report status of stopped child process.
+
+// waitpid() status
+#define WEXITSTATUS     0   // Return exit status.
+#define WIFCONTINUED    1   // True if child has been continued.
+#define WIFEXITED       2   // True if child exited normally.
+#define WIFSIGNALED     4   // True if child exited due to uncaught signal.
+#define WIFSTOPPED      8   // True if child is currently stopped.
+#define WSTOPSIG        16  // Return signal number that caused process to stop.
+#define WTERMSIG        32  // Return signal number that caused process to terminate.
+
 pid_t wait(int *stat_loc);
 pid_t waitpid(pid_t pid, int *stat_loc, int options);
 
 // Does any system other than linux use this?
+//WEXITED // Wait for processes that have exited.
+//WNOWAIT // Keep the process whose status is returned in infop in a waitable state.
+//WSTOPPED // Status is returned for any child that has stopped upon receipt of a signal.
 //int waitid(idtype_t, id_t, siginfo_t *, int);
 
 #endif
