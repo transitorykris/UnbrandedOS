@@ -30,6 +30,7 @@ SOFTWARE.
 pid_t wait(int *stat_loc);
 pid_t waitpid(pid_t pid, int *stat_loc, int options);
 
+// Does any system other than linux use this?
 //int waitid(idtype_t, id_t, siginfo_t *, int);
 
 #endif
