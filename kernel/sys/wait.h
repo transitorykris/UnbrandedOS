@@ -23,7 +23,7 @@ SOFTWARE.
 #ifndef SYS_WAIT_H
 #define SYS_WAIT_H
 
-#include "../process.h"
+#include "types.h"
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
