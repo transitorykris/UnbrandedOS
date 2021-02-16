@@ -28,6 +28,8 @@ SOFTWARE.
 
 #include "commands.h"
 
+#include "process.h"
+
 void init_filesystem() {
     // Make sure this directory is empty
     for (int i=0;i<MAX_FILES;i++) {
@@ -69,31 +71,4 @@ void delete_file(char *name) {
 
 void list_directory() {
 
-}
-
-/* 
-This is in the wrong place but that's fine for now.
-Executes the file with the given name in the current directory
-*/
-uint8_t exec(char *name) {
-    char *argv[1];
-    int argc = sizeof argv / sizeof (char *);
-
-    for (int i=0;i<MAX_FILES;i++) {
-        if (!strcmp(fs.root->files[i].name, name)) {
-            argv[0] = fs.root->files[i].name;
-            // XXX this needs to be a create_process call
-            // so that we get a stack properly set up
-            fs.root->files[i].inode.start(argc, argv);
-            return 0;
-        }
-    }
-
-    return 1;   // Generic error
-}
-
-// https://pubs.opengroup.org/onlinepubs/9699919799/
-
-int execvp(const char *file, char *const argv[]) {
-    return -1;
 }

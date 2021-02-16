@@ -21,6 +21,8 @@ SOFTWARE.
 */
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <machine.h>    // for some types
 
 #include "sys/types.h"
@@ -29,6 +31,7 @@ SOFTWARE.
 #include "context.h"
 
 #include "process.h"
+#include "fs.h"
 
 #define ERR_TOO_MANY_PROCS  -1
 
@@ -115,6 +118,28 @@ pid_t fork(void) {
 
 pid_t wait(int *stat_loc) {
     return -1;
+}
+
+// https://pubs.opengroup.org/onlinepubs/9699919799/
+
+// Note: return value is likely not correct
+int execvp(const char *file, char *const argv[]) {
+    // XXX: We're temporarily going to create this ourselves
+    char *temp_argv[1];
+    int argc = sizeof temp_argv / sizeof (char *);
+
+    for (int i=0;i<MAX_FILES;i++) {
+        // XXX: file is just the name right now
+        if (!strcmp(fs.root->files[i].name, file)) {
+            temp_argv[0] = fs.root->files[i].name;
+            // XXX this needs to be a create_process call
+            // so that we get a stack properly set up
+            fs.root->files[i].inode.start(argc, temp_argv);
+            return 0;
+        }
+    }
+
+    return 1;   // Generic error
 }
 
 void exit(int status) {

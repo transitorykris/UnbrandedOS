@@ -21,14 +21,11 @@ SOFTWARE.
 */
 
 #include <stdio.h>
+#include "unistd.h"
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
-#include <stdlib.h>
 
-#include "system.h"
-#include "process.h"
-#include "context.h"
 #include "fs.h"
 
 #include "shell.h"
@@ -71,7 +68,8 @@ void shell() {
                     }
                 }
                 // Check our local directory next
-                if (!exec(buffer)) {
+                char *const argv[0];
+                if (!execvp(buffer, argv)) {
                     goto done;
                 }
                 printf("command not found: %s\n\r", buffer);
