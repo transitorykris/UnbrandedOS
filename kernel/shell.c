@@ -68,10 +68,14 @@ void shell() {
                     }
                 }
                 // Check our local directory next
+                // XXX probably not how we want to do this (leaning on
+                // exec to tell us if the executable exists..)
+                // fork() somewhere here
                 char *const argv[0];
                 if (!execvp(buffer, argv)) {
                     goto done;
                 }
+                // XXX wait() somewhere here unless using & ?
                 printf("command not found: %s\n\r", buffer);
             }
 done:

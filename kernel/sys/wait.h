@@ -28,8 +28,8 @@ SOFTWARE.
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
 pid_t wait(int *stat_loc);
+pid_t waitpid(pid_t pid, int *stat_loc, int options);
 
 //int waitid(idtype_t, id_t, siginfo_t *, int);
-//pid_t waitpid(pid_t, int *, int);
 
 #endif
