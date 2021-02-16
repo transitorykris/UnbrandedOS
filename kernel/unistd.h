@@ -31,8 +31,8 @@ SOFTWARE.
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
-int execvp(const char *, char *const []);
-void _exit(int);
+int execvp(const char *file, char *const argv[]);
+void _exit(int status);
 pid_t fork(void);
 
 //int access(const char *, int);

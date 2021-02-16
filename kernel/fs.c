@@ -91,3 +91,9 @@ uint8_t exec(char *name) {
 
     return 1;   // Generic error
 }
+
+// https://pubs.opengroup.org/onlinepubs/9699919799/
+
+int execvp(const char *file, char *const argv[]) {
+    return -1;
+}
