@@ -114,6 +114,10 @@ state get_state(pid_t pid) {
 // https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
 
 pid_t fork(void) {
+    // Copy the process
+    // Set the new processes return register to the appropriate value
+    // Set the program counter to the re-entry point
+    // Return from this function with the appropriate value
     return -1;
 }
 
@@ -122,6 +126,12 @@ pid_t wait(int *stat_loc) {
 }
 
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
+    // Add this process to the other process's "wait list"
+    // Also, create a waitlist for each process!
+    // Also, how does that work?
+    // return value when pid exits is stored in *stat_loc
+    // return value of waitpid is the process id of the child
+    // or -1 on error
     return -1;
 }
 
@@ -148,5 +158,6 @@ int execvp(const char *file, char *const argv[]) {
 }
 
 void exit(int status) {
-
+    // change the process state
+    // never return
 }
