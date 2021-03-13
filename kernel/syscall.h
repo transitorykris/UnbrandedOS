@@ -33,6 +33,6 @@ SOFTWARE.
     );                      \
 }
 
-uint32_t syscall_handler(int num);
+uint32_t syscall_handler(void);
 
 #endif

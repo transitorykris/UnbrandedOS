@@ -72,6 +72,7 @@ void shell() {
                 // exec to tell us if the executable exists..)
                 // fork() somewhere here
                 char *const argv[0];
+                fork();
                 if (!execvp(buffer, argv)) {
                     goto done;
                 }

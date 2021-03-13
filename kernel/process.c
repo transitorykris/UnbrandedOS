@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <machine.h>    // for some types
@@ -113,11 +114,22 @@ state get_state(pid_t pid) {
 // TO BE IMPLEMENTED
 // https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
 
-pid_t fork(void) {
+void _trap_fork(void) {
+    printf("inside _trap_fork()\n\r");
     // Copy the process
     // Set the new processes return register to the appropriate value
     // Set the program counter to the re-entry point
     // Return from this function with the appropriate value
+}
+
+pid_t fork(void) {
+    printf("inside fork()\n\r");
+
+    __asm__ __volatile__ (
+        //"move.l #1,-(%sp)\n\t" // fork is syscall 1
+        "move.l #1,%d0\n\t"
+        "trap #0\n\t"       // syscalls are handled at trap 0
+    );
     return -1;
 }
 

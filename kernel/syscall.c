@@ -26,8 +26,25 @@ SOFTWARE.
 #include "system.h"
 
 #include "syscall.h"
+#include "process.h"
 
-uint32_t syscall_handler(int num) {
+#define fork    1   // this isn't correct, fixme
+
+__attribute__((interrupt)) uint32_t syscall_handler(void)  {
     disable_interrupts();
-    syscall_return(123);
+    // we get the syscall in d0 because user processes shouldn't
+    // be monkeying with the supervisor's stack
+    register uint32_t d0 __asm__ ("d0");
+    uint32_t num = d0;
+    printf("interrupts disabled, calling syscall handler %d\n\r", num);
+    switch(num) {
+        case 1:
+            _trap_fork();
+            break;
+        default:
+            printf("unknown syscall\n\t");
+            break;
+    }
+    printf("done handling syscall\n\r");
+    return 0;
 }

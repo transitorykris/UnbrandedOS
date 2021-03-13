@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <debug_stub.h>
 
-#define SDCARD
+//#define SDCARD
 
 #ifdef SDCARD
 #include <sdfat.h>
