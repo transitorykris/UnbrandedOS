@@ -28,7 +28,7 @@ SOFTWARE.
 #include "syscall.h"
 #include "process.h"
 
-#define fork    1   // this isn't correct, fixme
+#define FORK_SYSCALL    1   // this isn't correct, fixme
 
 __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     disable_interrupts();
@@ -38,7 +38,7 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     uint32_t num = d0;
     printf("interrupts disabled, calling syscall handler %d\n\r", num);
     switch(num) {
-        case 1:
+        case FORK_SYSCALL:
             _trap_fork();
             break;
         default:
