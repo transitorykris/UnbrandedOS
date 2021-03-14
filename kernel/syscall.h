@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
+#define FORK    1           // this isn't correct, fixme
+
 #define syscall_return(val) \
 {                           \
     __asm__ __volatile__ (  \
@@ -33,6 +35,7 @@ SOFTWARE.
     );                      \
 }
 
+void syscall(uint16_t num);
 uint32_t syscall_handler(void);
 
 #endif

@@ -28,7 +28,13 @@ SOFTWARE.
 #include "syscall.h"
 #include "process.h"
 
-#define FORK_SYSCALL    1   // this isn't correct, fixme
+inline void syscall(uint16_t num) {
+    __asm__ __volatile__ (
+        "move.l %0,%d0\n\t"
+        "trap #0\n\t"       // syscalls are handled at trap 0
+        :: "r" (num)
+    );
+}
 
 __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     disable_interrupts();
@@ -36,15 +42,12 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     // be monkeying with the supervisor's stack
     register uint32_t d0 __asm__ ("d0");
     uint32_t num = d0;
-    printf("interrupts disabled, calling syscall handler %d\n\r", num);
     switch(num) {
-        case FORK_SYSCALL:
+        case FORK:
             _trap_fork();
             break;
         default:
-            printf("unknown syscall\n\t");
             break;
     }
-    printf("done handling syscall\n\r");
     return 0;
 }

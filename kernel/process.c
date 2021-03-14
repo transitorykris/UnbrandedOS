@@ -34,6 +34,7 @@ SOFTWARE.
 
 #include "process.h"
 #include "fs.h"
+#include "syscall.h"
 
 #define ERR_TOO_MANY_PROCS  -1
 
@@ -123,13 +124,7 @@ void _trap_fork(void) {
 }
 
 pid_t fork(void) {
-    printf("inside fork()\n\r");
-
-    __asm__ __volatile__ (
-        //"move.l #1,-(%sp)\n\t" // fork is syscall 1
-        "move.l #1,%d0\n\t"
-        "trap #0\n\t"       // syscalls are handled at trap 0
-    );
+    syscall(FORK);
     return -1;
 }
 
