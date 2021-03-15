@@ -124,3 +124,30 @@ context_swap_done:
     move.l  #0, IN_SWAP               ; no longer in a swap
 context_swap_quick_done:
     rte                             ; Return to next task
+
+context_save::
+    move.l  a0, -(sp)               ; Free up a0 to do some work
+    move.l  usp, a0                 ; Push user stack pointer
+    move.l  a0, -(sp)
+    move.l  current_process,a0      ; Get our current_process
+    move.l  (sp)+, CP_SP(a0)
+    move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
+    movem.l d0-d7/a0-a6, CP_D0(a0)
+    movem.l a1-a6, CP_A1(a0)
+    move.w  (sp), CP_SR(a0)         ; Save sr
+    move.l  2(sp), CP_PC(a0)        ; Save pc
+context_save_done:
+    rts
+
+; Restore the current context
+context_restore:
+    move.l  CP_PC(a0), 2(sp)        ; Restore pc
+    move.w  CP_SR(a0), (sp)         ; Restore sr
+    movem.l CP_D0(a0), d0-d7
+    movem.l CP_A1(a0), a1-a6
+    move.l  CP_SP(a0), a0           ; Restore USP
+    move.l  a0, usp                 ; before we lose a0
+    move.l  current_process, a0     ; Fix up a0 one last time
+    move.l  CP_A0(a0), a0           ; to restore a0
+context_restore_done:
+    rts

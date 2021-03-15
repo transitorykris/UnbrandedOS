@@ -46,5 +46,7 @@ struct context_t {
 
 extern void context_swap();
 extern void context_init();
+extern void context_save();
+extern void context_restore();
 
 #endif
