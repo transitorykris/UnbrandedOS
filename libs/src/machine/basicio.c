@@ -29,7 +29,7 @@ int readline(char *buf, int buf_size) {
     if (c == 0) {
         continue;   // No character returned
     }
-
+  
     switch (c) {
     case 0x08:
     case 0x7F:  /* DEL */

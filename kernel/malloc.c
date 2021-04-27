@@ -54,6 +54,7 @@ void *malloc(size_t size) {
     // the next struct of metadata is adjacent to the last byte
     // of the last allocation
     struct heap_list *new_alloc = heap_last->next;
+
     heap_last = new_alloc;  // keep track of the last node
 
     // the location of the data is offset by the size of the header

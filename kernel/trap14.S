@@ -25,15 +25,15 @@
     import context_swap
 
 ; EFP table addresses (from the firmware's equates.S)
-EFP_PRINT       equ    $420
-EFP_PRINTLN     equ    $424
-EFP_PRINTCHAR   equ    $428
-EFP_HALT        equ    $42C
-EFP_SENDCHAR    equ    $430
-EFP_RECVCHAR    equ    $434
-EFP_CLRSCR      equ    $438
-EFP_MOVEXY      equ    $43C
-EFP_SETCURSOR   equ    $440
+;EFP_PRINT       equ    $420
+;EFP_PRINTLN     equ    $424
+;EFP_PRINTCHAR   equ    $428
+;EFP_HALT        equ    $42C
+;EFP_SENDCHAR    equ    $430
+;EFP_RECVCHAR    equ    $434
+;EFP_CLRSCR      equ    $438
+;EFP_MOVEXY      equ    $43C
+;EFP_SETCURSOR   equ    $440
 
     section .text
 
@@ -77,7 +77,9 @@ TRAP_14_HANDLER::
 
 .RECVCHAR
     move.l  A1,-(A7)
-    jsr RECVCHAR_MFP_NONBLOCKING
+    ; Note: hard coding this, we really want to be able to switch
+    ; between MFP and DUART for automatically
+    jsr RECVCHAR_DUART_NONBLOCKING
     move.l  (A7)+,A1
     rte
     
@@ -94,6 +96,21 @@ TRAP_14_HANDLER::
     jsr     (A1)
     move.l  (A7)+,A1
     rte
+
+; Falls through returning NULL if no characters are waiting
+RECVCHAR_DUART_NONBLOCKING:
+    move.l  A0,-(A7)            ; Stash A0
+    move.l  SDB_UARTBASE,A0     ; Get DUART base address
+.BUSYLOOP
+    btst.b  #0,DUART_SRA(A0)
+    beq.s   .BUSYLOOP              ; No characters waiting for us
+.GOTCHR:
+    move.b  DUART_RBA(A0),D0
+    move.l  (A7)+,A0            ; Restore A0
+    rts
+.NOCHR
+    move.b #0,D0                ; Send a NULL otherwise
+    rts
 
 ; Falls through returning NULL if no characters are waiting
 RECVCHAR_MFP_NONBLOCKING::
