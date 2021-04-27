@@ -6,3 +6,7 @@ Unbranded because it doesn't have a real name yet ;)
 ## Rosco code
 
 Note: for convenience this currently contains a pretty sloppy fork of [Rosco standard libraries](https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs).
+
+# Notes
+
+* There's some bits hardcoded such as using the DUART board and the 4MB extension boards. If you have different hardware you'll need to tweak things (or better, submit a PR and make this configurable!)
