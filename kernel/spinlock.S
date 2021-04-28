@@ -25,8 +25,7 @@
 
 spinlock_init::
     move.l  (4,a7), a0      ; get location of lock
-    ;andi.b  #127, (a0)      ; initialize as unlocked
-    move.l #0, (a0)
+    andi.b  #0x7f, (a0)      ; initialize as unlocked
     rts
 
 spinlock::
@@ -37,5 +36,5 @@ spinlock::
 
 spinunlock::
     move.l (4,a7), a0       ; get location of lock
-    eori.b  #128, (a0)      ; unlock the lock
+    andi.b  #0x7f, (a0)      ; unlock the lock
     rts
