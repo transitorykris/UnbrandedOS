@@ -70,6 +70,7 @@ void init_interrupts() {
 
 void init_scheduler() {
     context_init();
+
     install_vector_handler(VEC_TICK_HANDLER, (uint32_t)context_swap);
 }
 

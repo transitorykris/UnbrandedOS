@@ -103,13 +103,14 @@ RECVCHAR_DUART_NONBLOCKING:
     move.l  SDB_UARTBASE,A0     ; Get DUART base address
 .BUSYLOOP
     btst.b  #0,DUART_SRA(A0)
-    beq.s   .BUSYLOOP              ; No characters waiting for us
+    beq.s   .NOCHR              ; No characters waiting for us
 .GOTCHR:
     move.b  DUART_RBA(A0),D0
     move.l  (A7)+,A0            ; Restore A0
     rts
 .NOCHR
-    move.b #0,D0                ; Send a NULL otherwise
+    move.b  #0,D0               ; Send a NULL otherwise
+    move.l  (A7)+,A0            ; Restore A0
     rts
 
 ; Falls through returning NULL if no characters are waiting

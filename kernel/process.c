@@ -49,7 +49,7 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
     context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-    context->sr = 0x00;
+    context->sr = 0x0000;
 
     // Initialize our registers to zero
     for (int i=0;i<8;i++) {
@@ -84,6 +84,7 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
         // Note: we rely on learning the pid # in this loop!
         // so don't monkey with pid after this!
     }
+    // XXX check this, does the for loop actually count this high?
     if (pid == MAX_PROCESSES) {
         // We ran out!
         return ERR_TOO_MANY_PROCS;
@@ -114,7 +115,7 @@ state get_state(pid_t pid) {
 
 // TO BE IMPLEMENTED
 // https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
-
+// This is called in supervisor mode
 void _trap_fork(void) {
     printf("inside _trap_fork()\n\r");
     // Copy the process

@@ -121,7 +121,7 @@ next:
     ; Return
 context_swap_done:
     move.b  CLEAR_INT, INT_ADDR     ; Clear interrupt
-    move.l  #0, IN_SWAP               ; no longer in a swap
+    move.l  #0, IN_SWAP             ; no longer in a swap
 context_swap_quick_done:
     rte                             ; Return to next task
 

@@ -44,6 +44,14 @@ Disable interrupts
 }
 
 /*
+Enable interrupts
+*/
+#define enable_interrupts()                     \
+{                                               \
+    __asm__ __volatile__ ("andi.w #0xF8FF,%sr"); \
+}
+
+/*
 Sleep... forever
 */
 #define sleep() for(;;);
