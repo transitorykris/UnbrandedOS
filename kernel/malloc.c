@@ -42,8 +42,6 @@ void init_heap() {
     heap_last = heap_start;
 
     // Initialize our spin lock since this malloc is not reentrant
-    malloc_lock = 0xff;
-    printf("creating malloc spinlock %#08x %d\n\r", &malloc_lock, malloc_lock);
     spinlock_init(&malloc_lock);
 }
 
@@ -51,9 +49,7 @@ void init_heap() {
 // will need to add some locking
 void *malloc(size_t size) {
     // Don't do anything until it's our turn
-    printf("entering malloc spinlock %#08x %d\n\r", &malloc_lock, malloc_lock);
     spinlock(&malloc_lock);
-    printf("acquired malloc spinlock %#08x %d\n\r", &malloc_lock, malloc_lock);
 
     // the next struct of metadata is adjacent to the last byte
     // of the last allocation
@@ -78,7 +74,6 @@ void *malloc(size_t size) {
 
     // We should be safe to unlock malloc here
     spinunlock(&malloc_lock);
-    printf("released malloc spinlock %#08x %d\n\r", &malloc_lock, malloc_lock);
 
     // We could calculate this, but for now just store it
     new_alloc->size = size;
