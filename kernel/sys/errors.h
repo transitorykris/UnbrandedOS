@@ -27,6 +27,7 @@ SOFTWARE.
 
 #define ERR_TOO_MANY_PROCS  -1
 
+// XXX this is a quick hack, errno needs to be process/thread specific
 int errno;              // Some calls will set errno on errors
 
 #endif
