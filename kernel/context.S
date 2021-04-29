@@ -95,7 +95,7 @@ context_swap::
     move.l  (sp)+, CP_SP(a0)
     move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
 
-    movem.l d0-d7/a0-a6, CP_D0(a0)
+    movem.l d0-d7, CP_D0(a0)
     movem.l a1-a6, CP_A1(a0)
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
@@ -132,7 +132,7 @@ context_save::
     move.l  current_process,a0      ; Get our current_process
     move.l  (sp)+, CP_SP(a0)
     move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
-    movem.l d0-d7/a0-a6, CP_D0(a0)
+    movem.l d0-d7, CP_D0(a0)
     movem.l a1-a6, CP_A1(a0)
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
