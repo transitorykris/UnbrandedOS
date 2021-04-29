@@ -23,6 +23,8 @@ SOFTWARE.
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "machine.h"
+
 #include <debug_stub.h>
 
 //#define SDCARD
@@ -84,6 +86,7 @@ noreturn void kmain() {
     delay(40000);   // The rosco-m68k needs a bit of time (why?)
 
     printf("\033[2JKernel starting\n\r");
+    printf("rosco_m68k firmware: %#x\n\r", _FIRMWARE_REV);
 
 #ifdef SDCARD
     printf("Initializing storage\n\r");
@@ -99,6 +102,8 @@ noreturn void kmain() {
     }
 #endif
 
+    // TODO: Use _SDB_MEM_SIZE to calculate this initialization
+    printf("System memory size: %#x\n", _SDB_MEM_SIZE);
     printf("Initializing pages %#x to %#x\n\r", (uint32_t)HEAP_START,
         (uint32_t)HEAP_END);
     init_heap();
