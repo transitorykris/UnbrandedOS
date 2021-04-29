@@ -26,6 +26,8 @@ SOFTWARE.
 #include <basicio.h>
 #include <string.h>
 
+#include "sys/errors.h"
+
 #include "fs.h"
 
 #include "shell.h"
@@ -71,13 +73,31 @@ void shell() {
                 // XXX probably not how we want to do this (leaning on
                 // exec to tell us if the executable exists..)
                 // fork() somewhere here
-                char *const argv[0];
-                //fork();
-                if (!execvp(buffer, argv)) {
-                    goto done;
+                // NULL is required after last argument
+                char *argv[MAX_ARGS] = {NULL};
+                // TODO: parse buffer, for now, no arguments
+                argv[0] = buffer;   // first argument is the process name
+
+                int rc = fork();
+                if (rc < 0) {
+                    // oh no, we failed to fork!
+                    // todo: something!
+                    printf("Fork failed!!\n\r");
+                } else if (rc == 0) {
+                    // we're now in the child process
+                    if (!execvp(buffer, argv)) {
+                        goto done;  // Success
+                    }
+                    // Failure
+                    if (errno == ENOENT) {
+                        printf("command not found: %s\n\r", buffer);
+                    } else {
+                        printf("unexpected error: %d\n\r", errno);
+                    }
+                } else {
+                    // we're in the parent process, wait for child to exit
+                    int rc_wait = wait(NULL);
                 }
-                // XXX wait() somewhere here unless using & ?
-                printf("command not found: %s\n\r", buffer);
             }
 done:
             break;

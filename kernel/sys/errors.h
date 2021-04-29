@@ -20,36 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef ERRORS_H
+#define ERRORS_H
 
-#include "sys/types.h"
+#define ENOENT          2
 
-#include "context.h"
+#define ERR_TOO_MANY_PROCS  -1
 
-#define MAX_PROCESSES       64
-#define DEFAULT_STACK_SIZE  65536
-#define MAX_ARGS            32  // XXX I don't know if this is right
-
-// Process Control Block
-typedef struct {
-    char *name;                 // name used to create this process
-    struct context_t *context;  // Complete state
-    uid_t owner;                // Owner of this process
-} pcb_t;
-
-struct context_t *current_process;  // Currently executing task
-
-// Pre-allocate all the processes we can run
-pcb_t processes[MAX_PROCESSES];
-
-int create_process(char *name, uint32_t entry, uid_t owner);
-char * process_state(uint8_t state);
-state set_state(pid_t pid, state new_state);
-state get_state(pid_t pid);
-void _trap_fork(void);
-pid_t fork(void);
-pid_t wait(int *stat_loc);
-pid_t waitpid(pid_t pid, int *stat_loc, int options);
+int errno;              // Some calls will set errno on errors
 
 #endif

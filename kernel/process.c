@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "sys/types.h"
 #include "sys/wait.h"
+#include "sys/errors.h"
 
 #include "malloc.h"
 #include "context.h"
@@ -35,8 +36,6 @@ SOFTWARE.
 #include "process.h"
 #include "fs.h"
 #include "syscall.h"
-
-#define ERR_TOO_MANY_PROCS  -1
 
 // !!! This needs to be behind a trap
 // Interrupts need to be disabled or disaster will eventually strike
@@ -117,7 +116,6 @@ state get_state(pid_t pid) {
 // https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
 // This is called in supervisor mode
 void _trap_fork(void) {
-    printf("inside _trap_fork()\n\r");
     // Copy the process
     // Set the new processes return register to the appropriate value
     // Set the program counter to the re-entry point
@@ -126,7 +124,7 @@ void _trap_fork(void) {
 
 pid_t fork(void) {
     syscall(FORK);
-    return -1;
+    return 0;   // XXX not what we want, quick hack
 }
 
 pid_t wait(int *stat_loc) {
@@ -147,22 +145,28 @@ pid_t waitpid(pid_t pid, int *stat_loc, int options) {
 
 // Note: return value is likely not correct
 int execvp(const char *file, char *const argv[]) {
-    // XXX: We're temporarily going to create this ourselves
-    char *temp_argv[1];
-    int argc = sizeof temp_argv / sizeof (char *);
-
-    for (int i=0;i<MAX_FILES;i++) {
-        // XXX: file is just the name right now
-        if (!strcmp(fs.root->files[i].name, file)) {
-            temp_argv[0] = fs.root->files[i].name;
-            // XXX this needs to be a create_process call
-            // so that we get a stack properly set up
-            fs.root->files[i].inode.start(argc, temp_argv);
-            return 0;
+    // Count the number of arguments
+    int argc = 0;
+    for (int i=0;i<MAX_ARGS;i++) {
+        if (argv[i] == NULL) {
+            argc = i;
+            break;
         }
     }
 
-    return 1;   // Generic error
+    // Find the file to execute
+    for (int i=0;i<MAX_FILES;i++) {
+        // XXX: file is just the name right now
+        if (!strcmp(fs.root->files[i].name, file)) {
+            // XXX this needs to be a create_process call
+            // so that we get a stack properly set up
+            fs.root->files[i].inode.start(argc, argv);
+            return 0;
+        }
+    }
+    // For now if we're here it means the file was not found
+    errno = ENOENT;
+    return -1;
 }
 
 void exit(int status) {
