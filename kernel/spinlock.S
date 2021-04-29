@@ -24,17 +24,17 @@
 ; All routines take a pointer to a byte
 
 spinlock_init::
-    move.l  (4,a7), a0      ; get location of lock
-    andi.b  #0x7f, (a0)     ; initialize as unlocked (high order bit 0)
+    move.l (4,a7), a0      ; get location of lock
+    bclr #7, (a0)           ; initialize as unlocked (high order bit 0)
     rts
 
 spinlock::
-    move.l  (4,a7), a0      ; get locatin of lock
+    move.l (4,a7), a0      ; get locatin of lock
     tas (a0)                ; test (a0)'s high-order bit, set if it's 0
     bne spinlock            ; if (a0) high-order bit was not 0, try again
     rts                     ; otherwise, it's now set, lock acquired
 
 spinunlock::
     move.l (4,a7), a0       ; get location of lock
-    andi.b  #0x7f, (a0)     ; unlock the lock (reset high order bit to 0)
+    bclr #7, (a0)           ; unlock the lock (reset high order bit to 0)
     rts
