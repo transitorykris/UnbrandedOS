@@ -29,7 +29,7 @@ spinlock_init::
     rts
 
 spinlock::
-    move.l (4,a7), a0      ; get locatin of lock
+    move.l (4,a7), a0      ; get location of lock
     tas (a0)                ; test (a0)'s high-order bit, set if it's 0
     bne spinlock            ; if (a0) high-order bit was not 0, try again
     rts                     ; otherwise, it's now set, lock acquired
