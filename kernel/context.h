@@ -49,6 +49,4 @@ extern void context_init();
 extern void context_save();
 extern void context_restore();
 
-extern void fork_handler();
-
 #endif

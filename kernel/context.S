@@ -20,8 +20,6 @@
 
     import current_process
 
-    export fork_handler
-
     section .text
 
 TICKER      = $40c

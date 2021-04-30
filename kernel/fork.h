@@ -20,35 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <stdint.h>
-#include <stdio.h>
+#ifndef FORK_H
+#define FORK_H
 
-#include "system.h"
+extern void fork_handler();
 
-#include "syscall.h"
-#include "process.h"
-#include "fork.h"
-
-inline void syscall(uint16_t num) {
-    __asm__ __volatile__ (
-        "move.l %0,%d0\n\t"
-        "trap #0\n\t"       // syscalls are handled at trap 0
-        :: "r" (num)
-    );
-}
-
-__attribute__((interrupt)) uint32_t syscall_handler(void)  {
-    disable_interrupts();
-    // we get the syscall in d0 because user processes shouldn't
-    // be monkeying with the supervisor's stack
-    register uint32_t d0 __asm__ ("d0");
-    uint32_t num = d0;
-    switch(num) {
-        case FORK:
-            fork_handler();
-            break;
-        default:
-            break;
-    }
-    return 0;
-}
+#endif

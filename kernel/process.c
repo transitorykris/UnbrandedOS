@@ -142,14 +142,13 @@ int execvp(const char *file, char *const argv[]) {
             argc = i;
             break;
         }
+        printf("arg: %s\n\r", argv[i]);
     }
 
     // Find the file to execute
     for (int i=0;i<MAX_FILES;i++) {
         // XXX: file is just the name right now
         if (!strcmp(fs.root->files[i].name, file)) {
-            // XXX this needs to be a create_process call
-            // so that we get a stack properly set up
             fs.root->files[i].inode.start(argc, argv);
             return 0;
         }
