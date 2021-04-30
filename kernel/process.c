@@ -102,13 +102,13 @@ char * process_state(uint8_t state) {
     }
 }
 
-state set_state(pid_t pid, state new_state) {
-    state prev = processes[pid].context->state;
+state_t set_state(pid_t pid, state_t new_state) {
+    state_t prev = processes[pid].context->state;
     processes[pid].context->state = new_state;
     return prev;
 }
 
-state get_state(pid_t pid) {
+state_t get_state(pid_t pid) {
     return processes[pid].context->state;
 }
 

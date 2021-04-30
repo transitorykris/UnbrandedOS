@@ -45,8 +45,8 @@ pcb_t processes[MAX_PROCESSES];
 
 int create_process(char *name, uint32_t entry, uid_t owner);
 char * process_state(uint8_t state);
-state set_state(pid_t pid, state new_state);
-state get_state(pid_t pid);
+state_t set_state(pid_t pid, state_t new_state);
+state_t get_state(pid_t pid);
 void _trap_fork(void);
 pid_t fork(void);
 pid_t wait(int *stat_loc);
