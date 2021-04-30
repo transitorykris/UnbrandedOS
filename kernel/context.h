@@ -43,7 +43,7 @@ struct context_t {
     // Order shouldn't matter too much below this line
 
     state state;            // State of this process
-    error_t _errno;          // Last error reported by the kernel
+    error_t _errno;         // Last error reported by the kernel
 };
 
 extern void context_swap();
