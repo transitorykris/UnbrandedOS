@@ -23,7 +23,10 @@ SOFTWARE.
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
+#include <stdint.h>
+
 #define FORK    1           // this isn't correct, fixme
+#define REBOOT  2
 
 #define syscall_return(val) \
 {                           \

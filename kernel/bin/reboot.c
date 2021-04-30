@@ -21,7 +21,9 @@ SOFTWARE.
 
 #include <stdlib.h>
 
+#include "../syscall.h"
+
 /* Warm boots the system */
 int reboot(int argc, char *argv[]) {
-    exit(1);    // This crashes, implementation needs to be a trap!
+    syscall(REBOOT);
 }

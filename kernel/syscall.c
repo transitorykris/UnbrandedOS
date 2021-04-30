@@ -23,8 +23,9 @@ SOFTWARE.
 #include <stdint.h>
 #include <stdio.h>
 
-#include "system.h"
+#include "machine.h"
 
+#include "system.h"
 #include "syscall.h"
 #include "process.h"
 #include "fork.h"
@@ -47,6 +48,8 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
         case FORK:
             fork_handler();
             break;
+        case REBOOT:
+            _WARM_BOOT();
         default:
             break;
     }
