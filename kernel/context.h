@@ -42,7 +42,7 @@ struct context_t {
     struct context_t* next; // Next process to run
     // Order shouldn't matter too much below this line
 
-    state_t state;            // State of this process
+    state_t state;          // State of this process
     error_t _errno;         // Last error reported by the kernel
 };
 
