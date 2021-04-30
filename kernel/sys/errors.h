@@ -27,7 +27,8 @@ SOFTWARE.
 
 #define ERR_TOO_MANY_PROCS  -1
 
-// XXX this is a quick hack, errno needs to be process/thread specific
-int errno;              // Some calls will set errno on errors
+#define errno (current_process->_errno)
+
+typedef uint8_t error_t;    // error type used by errno
 
 #endif

@@ -23,6 +23,7 @@ SOFTWARE.
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
+#include "sys/errors.h"
 #include "users.h"
 
 #define SLEEPING    0
@@ -42,6 +43,7 @@ struct context_t {
     // Order shouldn't matter too much below this line
 
     state state;            // State of this process
+    error_t _errno;          // Last error reported by the kernel
 };
 
 extern void context_swap();
