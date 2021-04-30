@@ -20,6 +20,8 @@
 
     import current_process
 
+    export fork_handler
+
     section .text
 
 TICKER      = $40c
@@ -150,4 +152,15 @@ context_restore:
     move.l  current_process, a0     ; Fix up a0 one last time
     move.l  CP_A0(a0), a0           ; to restore a0
 context_restore_done:
+    rts
+
+; Handles a fork syscall
+; 1. Copy the current process
+; 2. Get a new stack for the child process
+; 3. Copy the parent's stack
+; 4. Adjust child's USP
+; 5. Set return value in parent's d0
+; 6. Set return value in child's d0
+fork_handler:
+fork_handler_done:
     rts

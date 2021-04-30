@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "syscall.h"
 #include "process.h"
+#include "context.h"
 
 inline void syscall(uint16_t num) {
     __asm__ __volatile__ (
@@ -44,7 +45,7 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     uint32_t num = d0;
     switch(num) {
         case FORK:
-            _trap_fork();
+            fork_handler();
             break;
         default:
             break;

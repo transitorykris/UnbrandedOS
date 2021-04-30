@@ -33,7 +33,7 @@ MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=musl/stdlib/atoi.o spinlock.o \
-		process.o common.o trap14.o syscall.o context.o \
+		process.o common.o trap14.o context.o syscall.o \
 		pages.o malloc.o fs.o users.o \
 		bin/kill.o bin/memplay.o bin/syscaller.o bin/dir.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \

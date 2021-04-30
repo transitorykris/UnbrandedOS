@@ -112,16 +112,6 @@ state get_state(pid_t pid) {
     return processes[pid].context->state;
 }
 
-// TO BE IMPLEMENTED
-// https://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
-// This is called in supervisor mode
-void _trap_fork(void) {
-    // Copy the process
-    // Set the new processes return register to the appropriate value
-    // Set the program counter to the re-entry point
-    // Return from this function with the appropriate value
-}
-
 pid_t fork(void) {
     syscall(FORK);
     return 0;   // XXX not what we want, quick hack
