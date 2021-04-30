@@ -142,7 +142,6 @@ int execvp(const char *file, char *const argv[]) {
             argc = i;
             break;
         }
-        printf("arg: %s\n\r", argv[i]);
     }
 
     // Find the file to execute
