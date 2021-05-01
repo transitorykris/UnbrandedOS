@@ -38,7 +38,7 @@ SOFTWARE.
     );                      \
 }
 
-void syscall(uint16_t num);
+uint32_t syscall(uint16_t num);
 uint32_t syscall_handler(void);
 
 #endif

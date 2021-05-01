@@ -30,7 +30,7 @@ SOFTWARE.
 #include "process.h"
 #include "fork.h"
 
-inline void syscall(uint16_t num) {
+inline uint32_t syscall(uint16_t num) {
     __asm__ __volatile__ (
         "move.l %0,%d0\n\t"
         "trap #0\n\t"       // syscalls are handled at trap 0
@@ -46,12 +46,11 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     uint32_t num = d0;
     switch(num) {
         case FORK:
-            fork_handler();
-            break;
+            return fork_handler();
         case REBOOT:
             _WARM_BOOT();
         default:
             break;
     }
-    return 0;
+    return -1;
 }

@@ -19,6 +19,7 @@
 ; SOFTWARE.
 
     import current_process
+    import malloc
 
     export fork_handler
 
@@ -54,15 +55,7 @@ CP_STATE  = CP_NEXT + 4
 SP_SR    = 0
 SP_PC    = 2
 
-; Handles a fork syscall
-; 1. Copy the current process
-; 1a. Malloc some
-; 2. Get a new stack for the child process
-; 3. Copy the parent's stack
-; 4. Adjust child's USP
-; 5. Set return value in parent's d0
-; 6. Set return value in child's d0
-; 7. Insert into the process linked list
+; First step in handling a fork syscall, save the current process's context
 fork_handler:
     ; Save the current context
     move.l  a0, -(sp)               ; Free up a0 to do some work
@@ -76,36 +69,6 @@ fork_handler:
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
-    ; Allocate a new context for the copy
-    ;struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
-    
-    ; Copy the entire current_process struct into the new context struct
-
-    ; Allocate a new stack for the new context
-    ;context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-
-    ; Insert the new context into the process linked list
-    ;context->next = current_process->next;
-    ;current_process->next = context;
-    
-    ; Find a free pid in the process table and assign appropriate values
-    ;int pid;
-    ;for (pid=0;pid<MAX_PROCESSES;pid++) {
-    ;    if (processes[pid].name == NULL) {
-    ;        processes[pid].name = name;
-    ;        processes[pid].context = context;
-    ;        processes[pid].owner = owner;
-    ;        break;
-    ;    }
-    ;}
-    
-    ; Note: we could run out of processes, error if so
-    ;if (pid == MAX_PROCESSES) {
-    ;    // We ran out!
-    ;    return ERR_TOO_MANY_PROCS;
-    ;}
-
-    ; Set d0 of current_process to 0
-    ; Set d0 of the new context to the value of pid
-fork_handler_done:
-    rts
+    ; Let's do the rest of the work in C
+    ; This is a tail call, _fork() performs the return
+    jmp _fork
