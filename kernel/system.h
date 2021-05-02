@@ -60,7 +60,7 @@ typedef unsigned int tick_t;
 
 unsigned int get_ticks();
 uint16_t get_status_register();
-__attribute__((gnu_inline)) void inline set_usp(uint32_t usp);
+__attribute__((gnu_inline)) void inline set_usp(uint32_t *usp);
 void delay(uint32_t duration);
 
 #endif

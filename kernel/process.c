@@ -47,7 +47,8 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
     struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
-    context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    context->usp = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    context->stack_base = context->usp;
     context->sr = 0x0000;
 
     // Initialize our registers to zero
@@ -125,13 +126,27 @@ void _fork(void) {
 
     // Copy current_process to new_context
     new_context->d[0] = 0;          // Child's return value is 0
-    current_process->d[0] = 123;    // Parent's return value is child's PID
+    current_process->d[0] = 0x123;    // Parent's return value is child's PID
     for (int i=1; i<20; i++) {
         new_context->d[i] = current_process->d[i];  // a little abusive
     }
+
+    // XXXX experiment!!
+    new_context->state = SLEEPING;
+
     // Allocate a new stack for the copy
     // Stacks grow downward! Start at the highest value in the stack
-    new_context->usp = (uint32_t)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    new_context->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+
+    // Copy the parent stack into the child stack -- stacks grow downard
+    int stack_size = current_process->stack_base - current_process->usp;
+    new_context->usp = new_context->stack_base - stack_size;
+    // the memcpy implementation in rosco's cstdlib I think is backwards?
+    memcpy(new_context->usp, current_process->usp, stack_size);
+
+    printf("%#x\t%#x\n\r", *current_process->stack_base, *current_process->usp);
+    printf("%#x\t%#x\n\r", *new_context->stack_base, *new_context->usp);
+    new_context->d[2] = 0x123;
     new_context->state = current_process->state;
     new_context->_errno = current_process->_errno;
 

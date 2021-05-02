@@ -83,8 +83,8 @@ void shell() {
                     // oh no, we failed to fork!
                     // todo: something!
                     printf("Fork failed!!\n\r");
-                } else if (rc == 0) {
-                    printf("Child!!\n\r");
+                //} else if (rc == 0) {
+                //    printf("Child!!\n\r");
                     // we're now in the child process
                     /*if (!execvp(buffer, argv)) {
                         goto done;  // Success
@@ -95,8 +95,8 @@ void shell() {
                     } else {
                         printf("unexpected error: %d\n\r", errno);
                     }*/
-loop:
-                    goto loop;
+//loop:
+//                    goto loop;
                 } else {
                     printf("Parent!!\n\r");
                     // we're in the parent process, wait for child to exit
