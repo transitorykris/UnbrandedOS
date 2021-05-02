@@ -19,7 +19,6 @@
 ; SOFTWARE.
 
     import current_process
-    import malloc
 
     export fork_handler
 
