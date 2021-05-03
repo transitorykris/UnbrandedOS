@@ -40,12 +40,10 @@ struct context_t {
     uint32_t pc;            // Program counter
 
     struct context_t* next; // Next process to run
-    // Order shouldn't matter too much below this line
-
-    uint32_t *stack_base;   // The highest address of this context's stack
 
     state_t state;          // State of this process
     error_t _errno;         // Last error reported by the kernel
+    uint32_t *stack_base;   // The highest address of this context's stack
 };
 
 extern void context_swap();
