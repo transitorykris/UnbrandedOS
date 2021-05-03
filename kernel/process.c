@@ -47,8 +47,8 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
     struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
     context->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
-    context->usp = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-    context->stack_base = context->usp;
+    context->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    context->usp = context->stack_base;
     context->sr = 0x0000;
 
     // Initialize our registers to zero
@@ -121,18 +121,23 @@ pid_t fork(void) {
 // The heavy lifting of fork is done here, called from fork_handler
 void _fork(void) {
     // Allocate a new context for the copy
-    printf("Hi from _fork\n\r");
     struct context_t *new_context = (struct context_t*)malloc(sizeof(struct context_t));
 
     // Copy current_process to new_context
-    new_context->d[0] = 0;          // Child's return value is 0
-    current_process->d[0] = 0x123;    // Parent's return value is child's PID
-    for (int i=1; i<20; i++) {
+    for (int i=0; i<8; i++) {
         new_context->d[i] = current_process->d[i];  // a little abusive
     }
+    for (int i=0; i<7; i++) {
+        new_context->a[i] = current_process->a[i];  // a little abusive
+    }
+    new_context->sr = current_process->sr;
+    new_context->pc = current_process->pc;
 
-    // XXXX experiment!!
-    new_context->state = SLEEPING;
+    //printf("nc->pc: %#x\n\r", new_context->pc);
+
+    // Set our return values
+    new_context->d[0] = 0;              // Child's return value is 0
+    current_process->d[0] = 0x123;      // Parent's return value is child's PID
 
     // Allocate a new stack for the copy
     // Stacks grow downward! Start at the highest value in the stack
@@ -141,34 +146,18 @@ void _fork(void) {
     // Copy the parent stack into the child stack -- stacks grow downard
     int stack_size = current_process->stack_base - current_process->usp;
     new_context->usp = new_context->stack_base - stack_size;
-    // the memcpy implementation in rosco's cstdlib I think is backwards?
     memcpy(new_context->usp, current_process->usp, stack_size);
 
-    printf("%#x\t%#x\n\r", *current_process->stack_base, *current_process->usp);
-    printf("%#x\t%#x\n\r", *new_context->stack_base, *new_context->usp);
-    new_context->d[2] = 0x123;
-    new_context->state = current_process->state;
+    for (int i=0;i<stack_size;i++) {
+        printf("%#x\t%#x\t%#x\n\r", current_process->usp+i, new_context->usp[i], current_process->usp[i]);
+    }
+
+    new_context->state = SLEEPING;
     new_context->_errno = current_process->_errno;
 
     // Insert into the linked list
     new_context->next = current_process->next;
     current_process->next = new_context;
-
-    printf("new_context: %#x\n\r", new_context);
-    printf("new_context->next: %#x\n\r", new_context->next);
-    printf("current_process: %#x\n\r", current_process);
-    printf("current_process->next: %#x\n\r", current_process->next);
-
-
-    printf("Parent:\n\r");
-    printf("d: %#x %#x %#x %#x %#x %#x %#x %#x \n\r", current_process->d[0], current_process->d[1], current_process->d[2], current_process->d[3], current_process->d[4], current_process->d[5], current_process->d[6], current_process->d[7]);
-    printf("a: %#x %#x %#x %#x %#x %#x %#x %#x \n\r", current_process->a[0], current_process->a[1], current_process->a[2], current_process->a[3], current_process->a[4], current_process->a[5], current_process->a[6], current_process->a[7]);
-    printf("usp: %#x sr: %#x pc: %#x\n\r", current_process->usp, current_process->sr, current_process->pc);
-
-    printf("\n\rChild:\n\r");
-    printf("d: %#x %#x %#x %#x %#x %#x %#x %#x \n\r", new_context->d[0], new_context->d[1], new_context->d[2], new_context->d[3], new_context->d[4], new_context->d[5], new_context->d[6], new_context->d[7]);
-    printf("a: %#x %#x %#x %#x %#x %#x %#x %#x \n\r", new_context->a[0], new_context->a[1], new_context->a[2], new_context->a[3], new_context->a[4], new_context->a[5], new_context->a[6], new_context->a[7]);
-    printf("usp: %#x sr: %#x pc: %#x\n\r\n\r", new_context->usp, new_context->sr, new_context->pc);
 }
 
 pid_t wait(int *stat_loc) {

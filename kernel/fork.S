@@ -20,9 +20,19 @@
 
     import current_process
 
-    export fork_handler
+    ;export fork_handler
+    export syscall_handler
 
     section .text
+
+TICKER      = $40c
+INT_ADDR    = $f80011
+CLEAR_INT   = ~$20
+IN_SWAP     = $800  ; arbitrary and probably a bad choice
+
+; Defined in context.h
+SLEEPING    = 0
+RUNNING     = 1
 
 CP_D0     = 0
 CP_D1     = CP_D0 + 4
@@ -55,19 +65,42 @@ SP_SR    = 0
 SP_PC    = 2
 
 ; First step in handling a fork syscall, save the current process's context
-fork_handler:
-    ; Save the current context
+syscall_handler:
+    ori.w #$0700,sr
+
     move.l  a0, -(sp)               ; Free up a0 to do some work
     move.l  usp, a0                 ; Push user stack pointer
     move.l  a0, -(sp)
+
     move.l  current_process,a0      ; Get our current_process
+
+    ; Save
     move.l  (sp)+, CP_SP(a0)
     move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
+
     movem.l d0-d7, CP_D0(a0)
     movem.l a1-a6, CP_A1(a0)
-    move.w  (sp), CP_SR(a0)         ; Save sr
+    move.l  (sp), CP_SR(a0)        ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
     ; Let's do the rest of the work in C
     ; This is a tail call, _fork() performs the return
-    jmp _fork
+    jsr _fork
+
+    ; Restore our process, really just d0 should have changed
+    move.l  current_process,a0      ; Get our current_process
+
+    move.l  CP_PC(a0), 2(sp)        ; Restore pc
+    move.w  CP_SR(a0), (sp)         ; Restore sr
+
+    movem.l CP_D0(a0), d0-d7
+    movem.l CP_A1(a0), a1-a6
+    move.l  CP_SP(a0), a0           ; Restore USP
+    move.l  a0, usp                 ; before we lose a0
+    move.l  current_process, a0     ; Fix up a0 one last time
+    move.l  CP_A0(a0), a0           ; to restore a0
+
+    ; Return
+    ;move.b  #~$20,INT_ADDR          ; Clear interrupt-in-service 
+    ;andi.w #$F0FF, sr
+    rte

@@ -55,8 +55,8 @@ void shell() {
     // Big TODO
     // Tokenize the user's input and pass the arguments
     // to the new process
-
     for(;;) {
+        printf("cp->pc: %#x\n\r", current_process->pc);
         printf(PROMPT);
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
@@ -78,13 +78,13 @@ void shell() {
                 // TODO: parse buffer, for now, no arguments
                 argv[0] = buffer;   // first argument is the process name
 
-                int rc = fork();
+                pid_t rc = fork();
                 if (rc < 0) {
                     // oh no, we failed to fork!
                     // todo: something!
                     printf("Fork failed!!\n\r");
-                //} else if (rc == 0) {
-                //    printf("Child!!\n\r");
+                } else if (rc == 0) {
+                    printf("Child!!\n\r");
                     // we're now in the child process
                     /*if (!execvp(buffer, argv)) {
                         goto done;  // Success
@@ -95,13 +95,13 @@ void shell() {
                     } else {
                         printf("unexpected error: %d\n\r", errno);
                     }*/
-//loop:
-//                    goto loop;
+//child_loop:
+//                    goto child_loop;
                 } else {
-                    printf("Parent!!\n\r");
+                    printf("PChild is %#x\n\r", rc);
                     // we're in the parent process, wait for child to exit
-parent_loop:
-                    goto parent_loop;
+//parent_loop:
+//                    goto parent_loop;
                     int rc_wait = wait(NULL);
                 }
             }

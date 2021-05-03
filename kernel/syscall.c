@@ -38,7 +38,7 @@ inline uint32_t syscall(uint16_t num) {
     );
 }
 
-__attribute__((interrupt)) uint32_t syscall_handler(void)  {
+/*__attribute__((interrupt)) void syscall_handler(void)  {
     disable_interrupts();
     // we get the syscall in d0 because user processes shouldn't
     // be monkeying with the supervisor's stack
@@ -46,11 +46,15 @@ __attribute__((interrupt)) uint32_t syscall_handler(void)  {
     uint32_t num = d0;
     switch(num) {
         case FORK:
-            return fork_handler();
+            fork_handler();
         case REBOOT:
             _WARM_BOOT();
         default:
             break;
     }
-    return -1;
-}
+    if (d0 == FORK) {
+        fork_handler();
+    }
+    printf("finished handling syscall\n\r");
+    //return -1;
+}*/
