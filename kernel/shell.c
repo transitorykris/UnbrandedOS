@@ -27,6 +27,7 @@ SOFTWARE.
 #include <string.h>
 
 #include "sys/errors.h"
+#include "spawn.h"
 
 #include "fs.h"
 
@@ -77,32 +78,15 @@ void shell() {
                 char *argv[MAX_ARGS] = {NULL};
                 // TODO: parse buffer, for now, no arguments
                 argv[0] = buffer;   // first argument is the process name
-
-                pid_t rc = fork();
-                if (rc < 0) {
-                    // oh no, we failed to fork!
-                    // todo: something!
-                    printf("Fork failed!!\n\r");
-                } else if (rc == 0) {
-                    printf("Child!!\n\r");
-                    // we're now in the child process
-                    /*if (!execvp(buffer, argv)) {
-                        goto done;  // Success
-                    }
-                    // Failure
-                    if (errno == ENOENT) {
-                        printf("command not found: %s\n\r", buffer);
-                    } else {
-                        printf("unexpected error: %d\n\r", errno);
-                    }*/
-//child_loop:
-//                    goto child_loop;
-                } else {
-                    printf("PChild is %#x\n\r", rc);
-                    // we're in the parent process, wait for child to exit
-//parent_loop:
-//                    goto parent_loop;
-                    int rc_wait = wait(NULL);
+                // Attempt to spawn the process
+                pid_t pid;
+                printf("spawning %s\n\r", argv[0]);
+                int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
+                if (err) {
+                    printf("posix_spawn returned %d\n\r", err);
+                }
+                if (pid) {
+                    printf("child pid %d\n\r", pid);
                 }
             }
 done:

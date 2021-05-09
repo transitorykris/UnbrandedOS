@@ -37,7 +37,7 @@ OBJECTS=musl/stdlib/atoi.o spinlock.o \
 		pages.o malloc.o fs.o users.o \
 		bin/kill.o bin/memplay.o bin/syscaller.o bin/dir.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \
-		system.o shell.o kmain.o
+		system.o spawn.o shell.o kmain.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
