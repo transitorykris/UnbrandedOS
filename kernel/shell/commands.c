@@ -20,13 +20,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SHELL_H
-#define SHELL_H
+#include <stdio.h>
+#include "../sys/types.h"
 
-#define BUFFER_LEN  80  // arbitrary value right now
+#include "../fs.h"
 
-char buffer[BUFFER_LEN];
+#include "commands.h"
 
-void shell();
-
-#endif
+/* List files in the root directory */
+void ls() {
+    for (int i=0;i<MAX_FILES;i++) {
+        char *filename = fs.root->files[i].name;
+        if (filename) {
+            printf("%s\n\r", filename);
+        }
+    }
+}

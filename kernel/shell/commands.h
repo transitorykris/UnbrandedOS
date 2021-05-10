@@ -20,13 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef SHELL_COMMANDS_H
+#define SHELL_COMMANDS_H
 
-#define BUFFER_LEN  80  // arbitrary value right now
-
-char buffer[BUFFER_LEN];
-
-void shell();
+void ls();
 
 #endif

@@ -33,6 +33,7 @@ SOFTWARE.
 #include "../fs.h"
 
 #include "shell.h"
+#include "commands.h"
 
 #define PROMPT  "/# "
 
@@ -92,16 +93,6 @@ void shell() {
             }
 done:
             break;
-        }
-    }
-}
-
-/* List files in the root directory */
-void ls() {
-    for (int i=0;i<MAX_FILES;i++) {
-        char *filename = fs.root->files[i].name;
-        if (filename) {
-            printf("%s\n\r", filename);
         }
     }
 }
