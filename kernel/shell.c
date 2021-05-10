@@ -57,7 +57,6 @@ void shell() {
     // Tokenize the user's input and pass the arguments
     // to the new process
     for(;;) {
-        printf("cp->pc: %#x\n\r", current_process->pc);
         printf(PROMPT);
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
@@ -84,9 +83,12 @@ void shell() {
                 int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
                 if (err) {
                     printf("posix_spawn returned %d\n\r", err);
-                }
-                if (pid) {
+                } else {
                     printf("child pid %d\n\r", pid);
+                    int *stat_loc;
+                    if(wait(stat_loc) == -1) {
+                        printf("Some error returning from wait()\n\r");
+                    }
                 }
             }
 done:

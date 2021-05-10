@@ -30,6 +30,8 @@ IN_SWAP     = $800  ; arbitrary and probably a bad choice
 ; Defined in context.h
 SLEEPING    = 0
 RUNNING     = 1
+EMBRYO      = 2
+ZOMBIE      = 3
 
 ;struct context_t {
 ;    // Order matters here
@@ -103,8 +105,9 @@ context_swap::
     ; Switch - note: something more clever should happen elsewhere
 next:
     move.l  CP_NEXT(a0), a0         ; Switch to next task
-    cmp     #SLEEPING, CP_STATE(a0) ; Check if sleeping
-    beq     next                    ; Yes, move to the next
+    move.l  #RUNNING, d0
+    cmp     CP_STATE(a0),d0         ; Check if runnable
+    beq     next                    ; No, move to the next
     move.l  a0, current_process
 
     ; Restore
