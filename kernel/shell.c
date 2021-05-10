@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "sys/errors.h"
 #include "spawn.h"
+#include "wait.h"
 
 #include "fs.h"
 

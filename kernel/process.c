@@ -164,20 +164,6 @@ void _fork(void) {
     current_process->next = new_context;
 }
 
-pid_t wait(int *stat_loc) {
-    return waitpid(-1, stat_loc, 0);
-}
-
-pid_t waitpid(pid_t pid, int *stat_loc, int options) {
-    // Add this process to the other process's "wait list"
-    // Also, create a waitlist for each process!
-    // Also, how does that work?
-    // return value when pid exits is stored in *stat_loc
-    // return value of waitpid is the process id of the child
-    // or -1 on error
-    return -1;
-}
-
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
 // Note: return value is likely not correct

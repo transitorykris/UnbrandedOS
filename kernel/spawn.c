@@ -29,8 +29,25 @@ SOFTWARE.
 
 #include "spawn.h"
 
+// Add a child PID to a parent's children list
+int _add_child(pid_t child) {
+    for(int i=0;i<MAX_CHILDREN;i++) {
+        if (current_process->children[i] == 0) {
+            current_process->children[i] = child;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+// TODO will need some way to remove children that are zombies
+
 // Spawned processes return here
 void _exit_spawn(void) {
+    // Wake up all the processes waiting on this pid
+    for (int i=0;i<MAX_WAIT_LIST;i++) {
+        // ???
+    }
     current_process->state = ZOMBIE;
     for(;;);    // Do nothing until we stop scheduling this task
 }
@@ -112,7 +129,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // Insert into the linked list
     context->next = current_process->next;
     current_process->next = context;
-
+    printf("---->%s\n\r",argv[0]);
     pid_t _pid;
     for (_pid=0;_pid<MAX_PROCESSES;_pid++) {
         if (processes[_pid].name == NULL) {
@@ -128,6 +145,12 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // XXX check this, does the for loop actually count this high?
     if (_pid == MAX_PROCESSES) {
         return ERR_TOO_MANY_PROCS;
+    }
+
+    // Add this child to parent's list
+    if(_add_child(_pid) == -1) {
+        context->state = ZOMBIE;    // Kill it!
+        return TOO_MANY_CHILDREN;
     }
 
     // We're runnable now!

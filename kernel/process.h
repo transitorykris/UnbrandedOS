@@ -49,7 +49,5 @@ state_t set_state(pid_t pid, state_t new_state);
 state_t get_state(pid_t pid);
 void _trap_fork(void);
 pid_t fork(void);
-pid_t wait(int *stat_loc);
-pid_t waitpid(pid_t pid, int *stat_loc, int options);
 
 #endif

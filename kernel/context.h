@@ -31,6 +31,9 @@ SOFTWARE.
 #define EMBRYO      2
 #define ZOMBIE      3
 
+#define MAX_CHILDREN    64
+#define MAX_WAIT_LIST   64
+
 typedef uint8_t state_t;
 
 struct context_t {
@@ -46,6 +49,9 @@ struct context_t {
     state_t state;          // State of this process
     error_t _errno;         // Last error reported by the kernel
     uint32_t *stack_base;   // The highest address of this context's stack
+
+    pid_t children[MAX_CHILDREN];   // List of all children spawned
+    pid_t wait_list[MAX_WAIT_LIST]; // Processes waiting on this process to exit
 };
 
 extern void context_swap();
