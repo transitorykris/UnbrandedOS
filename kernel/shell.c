@@ -79,12 +79,10 @@ void shell() {
                 argv[0] = buffer;   // first argument is the process name
                 // Attempt to spawn the process
                 pid_t pid;
-                printf("spawning %s\n\r", argv[0]);
                 int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
                 if (err) {
                     printf("posix_spawn returned %d\n\r", err);
                 } else {
-                    printf("child pid %d\n\r", pid);
                     int *stat_loc;
                     if(wait(stat_loc) == -1) {
                         printf("Some error returning from wait()\n\r");

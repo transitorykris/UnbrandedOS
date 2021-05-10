@@ -29,6 +29,12 @@ SOFTWARE.
 
 #include "spawn.h"
 
+// Spawned processes return here
+void _exit_spawn(void) {
+    current_process->state = ZOMBIE;
+    for(;;);    // Do nothing until we stop scheduling this task
+}
+
 /* posix_spawn
 pid - returns the child pid
 path - path to executable
@@ -67,27 +73,33 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
         return FILE_NOT_FOUND;
     }
 
-    // Get a fresh stack for this process
+    // Create a new context for the new process
     struct context_t *context = \
         (struct context_t*)malloc(sizeof(struct context_t));
-    context->pc = (uint32_t)entry;
+
+    // Initialize the new process's registers to zero
+    for (int i=0;i<8;i++) {
+        context->d[i] = 0x0000;
+        context->a[i] = 0x0000;
+    }
+
     // Stacks grow downward! Start at the highest value in the stack
     context->stack_base = \
         (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
     context->usp = context->stack_base;
+
+    // Clear SR
     context->sr = 0x0000;
 
-    // Place argc and argv on the stack
-    
+    // The scheduler will start the process at this entry point
+    context->pc = (uint32_t)entry;
 
-    // Initialize our registers to zero
-    for (int i=0;i<8;i++) {
-        context->d[i] = 0x0000;
-    }
-
-    for (int i=0;i<7;i++) {
-        context->a[i] = 0x0000;
-    }
+    // Place argv, arc, and return address on the stack
+    *(context->usp) = (uint32_t)argv;
+    context->usp--;
+    *(context->usp) = argc;
+    context->usp--;
+    *(context->usp) = (uint32_t)_exit_spawn;
 
     // Embryonic until we're ready for the scheduler to run this
     context->state = EMBRYO;

@@ -98,6 +98,10 @@ char * process_state(uint8_t state) {
             return "sleeping";
         case RUNNING:
             return "running";
+        case EMBRYO:
+            return "embryo";
+        case ZOMBIE:
+            return "zombie";
         default:
             return "unknown";
     }
