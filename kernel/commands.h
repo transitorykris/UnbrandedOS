@@ -32,5 +32,6 @@ int memplay(int argc, char *argv[]);
 int syscaller(int argc, char *argv[]);
 int dir(int argc, char *argv[]);
 int kill(int argc, char *argv[]);
+int argo(int argc, char *argv[]);
 
 #endif

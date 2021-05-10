@@ -38,15 +38,16 @@ void init_filesystem() {
     fs.root = &root;     // Set up the location of "/" aka root
 
     // Let's dump some uh "files" into it!
-    create_file("uptime",   FILE, (void *)uptime);
-    create_file("ps",       FILE, (void *)ps);
-    create_file("reboot",   FILE, (void *)reboot);
-    create_file("who",      FILE, (void *)who);
-    create_file("blinkd",   FILE, (void *)blinkd);
-    create_file("memplay",  FILE, (void *)memplay);
-    create_file("syscaller", FILE, (void *)syscaller);
-    create_file("dir",      FILE, (void *)dir);
-    create_file("kill",      FILE, (void *)kill);
+    create_file("uptime",       FILE, (void *)uptime);
+    create_file("ps",           FILE, (void *)ps);
+    create_file("reboot",       FILE, (void *)reboot);
+    create_file("who",          FILE, (void *)who);
+    create_file("blinkd",       FILE, (void *)blinkd);
+    create_file("memplay",      FILE, (void *)memplay);
+    create_file("syscaller",    FILE, (void *)syscaller);
+    create_file("dir",          FILE, (void *)dir);
+    create_file("kill",         FILE, (void *)kill);
+    create_file("argo",         FILE, (void *)argo);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {
