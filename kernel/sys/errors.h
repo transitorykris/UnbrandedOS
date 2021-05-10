@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef ERRORS_H
 #define ERRORS_H
 
+#include "types.h"
+
 #define ENOENT          2
 
 #define ERR_TOO_MANY_PROCS  -1
