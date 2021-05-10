@@ -77,6 +77,9 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     context->usp = context->stack_base;
     context->sr = 0x0000;
 
+    // Place argc and argv on the stack
+    
+
     // Initialize our registers to zero
     for (int i=0;i<8;i++) {
         context->d[i] = 0x0000;
