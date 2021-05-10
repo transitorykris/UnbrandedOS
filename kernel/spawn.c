@@ -86,9 +86,8 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
         context->a[i] = 0x0000;
     }
 
-    // Set to running
-    // XXX this should probably be embyonic until we're done?
-    context->state = RUNNING;
+    // Embryonic until we're ready for the scheduler to run this
+    context->state = EMBRYO;
 
     // Not pretty, but if this is the first process...
     if (processes[0].name == NULL) {
@@ -115,6 +114,9 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     if (_pid == MAX_PROCESSES) {
         return ERR_TOO_MANY_PROCS;
     }
+
+    // We're runnable now!
+    context->state = RUNNING;
 
     return 0;
 }

@@ -28,6 +28,8 @@ SOFTWARE.
 
 #define SLEEPING    0
 #define RUNNING     1
+#define EMBRYO      2
+#define ZOMBIE      3
 
 typedef uint8_t state_t;
 
