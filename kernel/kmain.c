@@ -44,7 +44,7 @@ SOFTWARE.
 #include "syscall.h"
 #include "users.h"
 
-#include "shell.h"
+#include "shell/shell.h"
 
 // We're going to reuse the vectors set up by firmware for the
 // bits in there I'm not ready to replace yet

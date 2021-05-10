@@ -21,16 +21,16 @@ SOFTWARE.
 */
 
 #include <stdio.h>
-#include "unistd.h"
+#include "../unistd.h"
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
 
-#include "sys/errors.h"
-#include "spawn.h"
-#include "wait.h"
+#include "../sys/errors.h"
+#include "../spawn.h"
+#include "../wait.h"
 
-#include "fs.h"
+#include "../fs.h"
 
 #include "shell.h"
 
