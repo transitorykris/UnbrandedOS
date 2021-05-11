@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include <stdbool.h>
+
 #include "sys/types.h"
 
 #include "context.h"

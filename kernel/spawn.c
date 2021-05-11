@@ -31,13 +31,14 @@ SOFTWARE.
 
 // Add a child PID to a parent's children list
 int _add_child(pid_t child) {
-    for(int i=0;i<MAX_CHILDREN;i++) {
+    /*for(int i=0;i<MAX_CHILDREN;i++) {
         if (current_process->children[i] == 0) {
             current_process->children[i] = child;
             return 0;
         }
     }
-    return -1;
+    return -1;*/
+    return 0;
 }
 
 // TODO will need some way to remove children that are zombies
@@ -129,14 +130,13 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // Insert into the linked list
     context->next = current_process->next;
     current_process->next = context;
-    printf("---->%s\n\r",argv[0]);
+
     pid_t _pid;
     for (_pid=0;_pid<MAX_PROCESSES;_pid++) {
         if (processes[_pid].name == NULL) {
-            processes[_pid].name = argv[0];
+            processes[_pid].name = "fixme";
             processes[_pid].context = context;
             processes[_pid].owner = 0;  // XXX fix me
-            *pid = _pid;    // Return pid to the caller
             break;
         }
         // Note: we rely on learning the pid # in this loop!
@@ -156,5 +156,6 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // We're runnable now!
     context->state = RUNNING;
 
+    *pid = _pid;    // Return pid to the caller
     return 0;
 }

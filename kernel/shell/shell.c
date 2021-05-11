@@ -82,12 +82,14 @@ void shell() {
                 // Attempt to spawn the process
                 pid_t pid;
                 int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
-                if (err) {
-                    printf("posix_spawn returned %d\n\r", err);
+                if (err == ERR_TOO_MANY_PROCS) {
+                    printf("posix_spawn: too many processes\n\r");
+                } else if (err == TOO_MANY_CHILDREN) {
+                    printf("posix_spawn: too many children\n\r");
                 } else {
                     int *stat_loc;
                     if(wait(stat_loc) == -1) {
-                        printf("Some error returning from wait()\n\r");
+                        printf("wait: error\n\r");
                     }
                 }
             }
