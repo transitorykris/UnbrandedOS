@@ -54,6 +54,39 @@ void _exit_spawn(void) {
     for(;;);    // Do nothing until we stop scheduling this task
 }
 
+// Return the number of elements in argv
+int arg_count(char *const argv[restrict]) {
+    int argc = 0;
+    for (int i=0;i<MAX_ARGS;i++) {
+        if (argv[i] == NULL) {
+            argc = i;
+            break;
+        }
+    }
+    return argc;
+}
+
+// Create a blank context
+struct context_t *new_context(void) {
+    struct context_t *context = \
+        (struct context_t*)malloc(sizeof(struct context_t));
+
+    // Initialize the new process's registers to zero
+    for (int i=0;i<8;i++) {
+        context->d[i] = 0x0000;
+        context->a[i] = 0x0000;
+    }
+
+    // Stacks grow downward! Start at the highest value in the stack
+    context->stack_base = \
+        (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    context->usp = context->stack_base;
+
+    // Clear SR
+    context->sr = 0x0000;
+    return context;
+}
+
 /* posix_spawn
 pid - returns the child pid
 path - path to executable
@@ -73,13 +106,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     void *entry;     // Entry point to the executable
 
     // Count the number of arguments
-    int argc = 0;
-    for (int i=0;i<MAX_ARGS;i++) {
-        if (argv[i] == NULL) {
-            argc = i;
-            break;
-        }
-    }
+    int argc = arg_count(argv);
 
     // Find the executable
     for (int i=0;i<MAX_FILES;i++) {
@@ -92,23 +119,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
         return FILE_NOT_FOUND;
     }
 
-    // Create a new context for the new process
-    struct context_t *context = \
-        (struct context_t*)malloc(sizeof(struct context_t));
-
-    // Initialize the new process's registers to zero
-    for (int i=0;i<8;i++) {
-        context->d[i] = 0x0000;
-        context->a[i] = 0x0000;
-    }
-
-    // Stacks grow downward! Start at the highest value in the stack
-    context->stack_base = \
-        (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-    context->usp = context->stack_base;
-
-    // Clear SR
-    context->sr = 0x0000;
+    struct context_t *context = new_context();
 
     // The scheduler will start the process at this entry point
     context->pc = (uint32_t)entry;
