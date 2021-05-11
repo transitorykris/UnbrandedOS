@@ -67,7 +67,7 @@ int arg_count(char *const argv[restrict]) {
 }
 
 // Create a blank context
-struct context_t *new_context(uint32_t entry) {
+struct context_t *new_context(uint32_t *entry) {
     struct context_t *context = \
         (struct context_t*)malloc(sizeof(struct context_t));
 
