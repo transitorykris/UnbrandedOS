@@ -67,7 +67,7 @@ int arg_count(char *const argv[restrict]) {
 }
 
 // Create a blank context
-struct context_t *new_context(void) {
+struct context_t *new_context(uint32_t entry) {
     struct context_t *context = \
         (struct context_t*)malloc(sizeof(struct context_t));
 
@@ -84,6 +84,10 @@ struct context_t *new_context(void) {
 
     // Clear SR
     context->sr = 0x0000;
+
+    // The scheduler will start the process at this entry point
+    context->pc = (uint32_t)entry;
+
     return context;
 }
 
@@ -119,10 +123,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
         return FILE_NOT_FOUND;
     }
 
-    struct context_t *context = new_context();
-
-    // The scheduler will start the process at this entry point
-    context->pc = (uint32_t)entry;
+    struct context_t *context = new_context(entry);
 
     // Push values for the call to the process's main()
     push(context->usp, (uint32_t)argv);
