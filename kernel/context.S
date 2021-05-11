@@ -104,11 +104,12 @@ context_swap::
 
     ; Switch - note: something more clever should happen elsewhere
 next:
-    move.l  CP_NEXT(a0), a0         ; Switch to next task
-    move.l  #RUNNING, d0
-    cmp     CP_STATE(a0),d0         ; Check if runnable
-    beq     next                    ; No, move to the next
-    move.l  a0, current_process
+    move.l CP_NEXT(a0), d0
+    move.l d0, current_process
+    move.l current_process, a0
+    move.b CP_STATE(a0), d0
+    cmp.b #RUNNING, d0
+    bne next
 
     ; Restore
     move.l  CP_PC(a0), 2(sp)        ; Restore pc
