@@ -26,6 +26,7 @@ SOFTWARE.
 #include "malloc.h"
 
 #include "fs.h"
+#include "stack.h"
 
 #include "spawn.h"
 
@@ -46,9 +47,9 @@ int _add_child(pid_t child) {
 // Spawned processes return here
 void _exit_spawn(void) {
     // Wake up all the processes waiting on this pid
-    for (int i=0;i<MAX_WAIT_LIST;i++) {
+    //for (int i=0;i<MAX_WAIT_LIST;i++) {
         // ???
-    }
+    //}
     current_process->state = ZOMBIE;
     for(;;);    // Do nothing until we stop scheduling this task
 }
@@ -112,12 +113,10 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // The scheduler will start the process at this entry point
     context->pc = (uint32_t)entry;
 
-    // Place argv, arc, and return address on the stack
-    *(context->usp) = (uint32_t)argv;
-    context->usp--;
-    *(context->usp) = argc;
-    context->usp--;
-    *(context->usp) = (uint32_t)_exit_spawn;
+    // Push values for the call to the process's main()
+    push(context->usp, (uint32_t)argv);
+    push(context->usp, argc);
+    push(context->usp, (uint32_t)_exit_spawn);
 
     // Embryonic until we're ready for the scheduler to run this
     context->state = EMBRYO;
@@ -156,6 +155,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // We're runnable now!
     context->state = RUNNING;
 
-    *pid = _pid;    // Return pid to the caller
+    // Return pid to the caller, no errors
+    *pid = _pid;
     return 0;
 }
