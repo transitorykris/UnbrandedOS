@@ -104,14 +104,7 @@ context_swap::
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
     ; Switch to next runnable task
-;next:
-    ;move.l CP_NEXT(a0), d0
-    ;move.l d0, current_process
-    ;move.l current_process, a0
-    ;move.b CP_STATE(a0), d0
-    ;cmp.b #RUNNING, d0
-    ;bne next
-    jsr next_runnable               ; Switch to next runnable task
+    jsr next_runnable
 
     ; Restore
     move.l  CP_PC(a0), 2(sp)        ; Restore pc
@@ -130,30 +123,3 @@ context_swap_done:
 context_swap_quick_done:
     move.b  #~$20,INT_ADDR          ; Clear interrupt-in-service
     rte                             ; Return to next task
-
-context_save::
-    move.l  a0, -(sp)               ; Free up a0 to do some work
-    move.l  usp, a0                 ; Push user stack pointer
-    move.l  a0, -(sp)
-    move.l  current_process,a0      ; Get our current_process
-    move.l  (sp)+, CP_SP(a0)
-    move.l  (sp)+, CP_A0(a0)        ; SSP now back to where it started
-    movem.l d0-d7, CP_D0(a0)
-    movem.l a1-a6, CP_A1(a0)
-    move.w  (sp), CP_SR(a0)         ; Save sr
-    move.l  2(sp), CP_PC(a0)        ; Save pc
-context_save_done:
-    rts
-
-; Restore the current context
-context_restore:
-    move.l  CP_PC(a0), 2(sp)        ; Restore pc
-    move.w  CP_SR(a0), (sp)         ; Restore sr
-    movem.l CP_D0(a0), d0-d7
-    movem.l CP_A1(a0), a1-a6
-    move.l  CP_SP(a0), a0           ; Restore USP
-    move.l  a0, usp                 ; before we lose a0
-    move.l  current_process, a0     ; Fix up a0 one last time
-    move.l  CP_A0(a0), a0           ; to restore a0
-context_restore_done:
-    rts

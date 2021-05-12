@@ -25,44 +25,6 @@ SOFTWARE.
 
 #include <stdint.h>
 
-#define SET_BYTE(v,l)           \
-{                               \
-    uint8_t *p = (uint8_t *)l;  \
-    *p = v;                     \
-}
-
-#define SET_WORD(v,l)           \
-{                               \
-    uint16_t *p = (uint16_t *)l;\
-    *p = v;                     \
-}
-
-#define SET_LONG(v,l)           \
-{                               \
-    uint32_t *p = (uint32_t *)l;\
-    *p = v;                     \
-}
-
-#define GET_BYTE(l) *(unsigned char *)l
-#define GET_WORD(l) *(unsigned int *)l
 #define GET_LONG(l) *(unsigned long *)l
-
-#define INC_BYTE(l)             \
-{                               \
-    uint8_t *v = (uint8_t *)l;  \
-    (*v)++;                     \
-}
-
-#define INC_WORD(l)                 \
-{                                   \
-    uint16_t *v = (uint16_t *)l;    \
-    (*v)++;                         \
-}
-
-#define INC_LONG(l)                 \
-{                                   \
-    uint32_t *v = (uint32_t *)l;    \
-    (*v)++;                         \
-}
 
 #endif
