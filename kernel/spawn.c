@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "malloc.h"
 
-#include "fs.h"
+#include "fs/fs.h"
 #include "stack.h"
 
 #include "spawn.h"

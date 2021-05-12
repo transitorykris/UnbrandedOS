@@ -34,7 +34,7 @@ SOFTWARE.
 #include "context.h"
 
 #include "process.h"
-#include "fs.h"
+#include "fs/fs.h"
 #include "syscall.h"
 
 // !!! This needs to be behind a trap

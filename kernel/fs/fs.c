@@ -26,9 +26,9 @@ SOFTWARE.
 
 #include "fs.h"
 
-#include "commands.h"
+#include "../commands.h"
 
-#include "process.h"
+#include "../process.h"
 
 void init_filesystem() {
     // Make sure this directory is empty

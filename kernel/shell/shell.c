@@ -30,7 +30,7 @@ SOFTWARE.
 #include "../spawn.h"
 #include "../wait.h"
 
-#include "../fs.h"
+#include "../fs/fs.h"
 
 #include "shell.h"
 #include "commands.h"

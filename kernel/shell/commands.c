@@ -23,7 +23,7 @@ SOFTWARE.
 #include <stdio.h>
 #include "../sys/types.h"
 
-#include "../fs.h"
+#include "../fs/fs.h"
 
 #include "commands.h"
 

@@ -38,7 +38,7 @@ SOFTWARE.
 #include "mfp.h"
 #include "trap14.h"
 #include "process.h"
-#include "fs.h"
+#include "fs/fs.h"
 #include "malloc.h"
 #include "syscall.h"
 #include "users.h"
