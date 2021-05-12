@@ -33,7 +33,6 @@ SOFTWARE.
 #include <sdfat.h>
 #endif
 
-#include "helpers.h"
 #include "context.h"
 #include "system.h"
 #include "mfp.h"
