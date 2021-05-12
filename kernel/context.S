@@ -19,6 +19,7 @@
 ; SOFTWARE.
 
     import current_process
+    import next_runnable
 
     section .text
 
@@ -102,14 +103,15 @@ context_swap::
     move.w  (sp), CP_SR(a0)         ; Save sr
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
-    ; Switch - note: something more clever should happen elsewhere
-next:
-    move.l CP_NEXT(a0), d0
-    move.l d0, current_process
-    move.l current_process, a0
-    move.b CP_STATE(a0), d0
-    cmp.b #RUNNING, d0
-    bne next
+    ; Switch to next runnable task
+;next:
+    ;move.l CP_NEXT(a0), d0
+    ;move.l d0, current_process
+    ;move.l current_process, a0
+    ;move.b CP_STATE(a0), d0
+    ;cmp.b #RUNNING, d0
+    ;bne next
+    jsr next_runnable               ; Switch to next runnable task
 
     ; Restore
     move.l  CP_PC(a0), 2(sp)        ; Restore pc
