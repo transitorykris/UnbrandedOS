@@ -30,17 +30,6 @@ tick_t get_ticks() {
 }
 
 /*
-Returns the value of the status register
-*/
-uint16_t get_status_register() {
-    uint16_t sr;
-    __asm__ __volatile__ (
-        "move.w %%sr,%0": "=r" (sr)
-    );
-    return sr;
-}
-
-/*
 Set the user stack pointer
 */
 __attribute__((gnu_inline)) void inline set_usp(uint32_t *usp) {
