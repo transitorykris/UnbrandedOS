@@ -25,7 +25,7 @@ SOFTWARE.
 
 #define SYS_TICKS 0x40C
 
-#include "easy68k/easy68k.h"
+#include "sys/types.h"
 
 /*
 Disable supervisor bit
