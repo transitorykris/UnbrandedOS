@@ -91,13 +91,13 @@ noreturn void kmain() {
     printf("Initializing storage\n\r");
     if (!SD_check_support()) {
         printf("ROM does not have SD support\n\r");
-        // TODO halt here
+        _WARM_BOOT();
     }
 
     printf("Initializing FAT\n\r");
     if (!SD_FAT_initialize()) {
         printf("Failed to initialize FAT\n\r");
-        // TODO halt here
+        _WARM_BOOT();
     }
 #endif
 
