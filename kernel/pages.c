@@ -45,6 +45,7 @@ void init_pages() {
     pages_start->next = pages_start + sizeof(struct page_list);
     pages_start->free = false;
     pages_last = pages_start;
+    spinlock_init(&pages_lock);
 }
 
 // Allocates a page of memory to the caller
