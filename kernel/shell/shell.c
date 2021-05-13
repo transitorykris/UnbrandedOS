@@ -55,11 +55,18 @@ void shell() {
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
 
+    // Get the hostname for the prompt
+    char name[HOST_NAME_MAX];
+    gethostname(name, HOST_NAME_MAX);
+
+    // Display a motd
+    printf("\n\rWelcome to %s\n\n\r", name);
+
     // Big TODO
     // Tokenize the user's input and pass the arguments
     // to the new process
     for(;;) {
-        printf(PROMPT);
+        printf("%s:%s", name, PROMPT);
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");

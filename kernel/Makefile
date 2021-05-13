@@ -32,7 +32,7 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=musl/stdlib/atoi.o spinlock.o \
+OBJECTS=unistd/host.o musl/stdlib/atoi.o spinlock.o \
 		process.o common.o trap14.o scheduler.o context.o fork.o syscall.o \
 		pages.o malloc.o fs/fs.o users.o wait.o stack.o \
 		shell/commands.o shell/shell.o \

@@ -29,11 +29,14 @@ SOFTWARE.
 //#define STDOUT_FILENO   1
 //#define STDERR_FILENO   2
 
+#define HOST_NAME_MAX   32
+
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
 int execvp(const char *file, char *const argv[]);
 void _exit(int status);
 pid_t fork(void);
+int gethostname(char *hostname, size_t len);
 
 //int access(const char *, int);
 //unsigned alarm(unsigned);
@@ -65,7 +68,6 @@ pid_t fork(void);
 //gid_t getgid(void);
 //int getgroups(int, gid_t []);
 //long gethostid(void);
-//int gethostname(char *, size_t);
 //char *getlogin(void);
 //int getlogin_r(char *, size_t);
 //int getopt(int, char * const [], const char *);
