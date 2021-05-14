@@ -165,7 +165,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     }
 
     // Save the pid in the context to make other lookups easier
-    current_process->pid = _pid;
+    context->pid = _pid;
 
     // We're runnable now!
     context->state = RUNNING;

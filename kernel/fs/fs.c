@@ -48,6 +48,7 @@ void init_filesystem() {
     create_file("dir",          FILE, (void *)dir);
     create_file("kill",         FILE, (void *)kill);
     create_file("argo",         FILE, (void *)argo);
+    create_file("whoami",       FILE, (void *)whoami);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {

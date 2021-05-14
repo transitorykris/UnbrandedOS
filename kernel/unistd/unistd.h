@@ -39,6 +39,7 @@ int execvp(const char *file, char *const argv[]);
 void _exit(int status);
 pid_t fork(void);
 int gethostname(char *hostname, size_t len);
+char *getlogin(void);
 uid_t getuid(void);
 void sync(void);
 
@@ -72,7 +73,6 @@ void sync(void);
 //gid_t getgid(void);
 //int getgroups(int, gid_t []);
 //long gethostid(void);
-//char *getlogin(void);
 //int getlogin_r(char *, size_t);
 //int getopt(int, char * const [], const char *);
 //pid_t getpgid(pid_t);

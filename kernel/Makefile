@@ -39,7 +39,7 @@ OBJECTS=musl/stdlib/atoi.o spinlock.o \
 		shell/commands.o shell/shell.o \
 		bin/kill.o bin/memplay.o bin/syscaller.o bin/dir.o \
 		bin/ps.o bin/reboot.o bin/uptime.o bin/who.o bin/blinkd.o \
-		bin/argo.o \
+		bin/argo.o bin/whoami.o \
 		system.o spawn.o kmain.o
 
 %.o : %.c

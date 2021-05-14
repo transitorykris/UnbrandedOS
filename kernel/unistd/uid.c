@@ -20,8 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
 #include "unistd.h"
 
+#include "../users.h"
+
+// Return the login name of the owner of the current process
+char *getlogin(void) {
+    return uid_lookup(getuid())->name;
+}
+
+// Return the owner's uid of the current process
 uid_t getuid(void) {
     return processes[current_process->pid].owner;
 }
