@@ -32,7 +32,7 @@ Currently prints the owner of each process
 int who(int argc, char *argv[]) {
     for (int pid=0;pid<MAX_PROCESSES;pid++) {
         if (get_state(pid) != ZOMBIE) {
-            printf("%s %d\n\r", uid_lookup(processes[pid].owner)->name, get_state(pid));
+            printf("%s\n\r", uid_lookup(processes[pid].owner)->name);
         }
     }
     return 0;
