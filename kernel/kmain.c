@@ -116,6 +116,9 @@ noreturn void kmain() {
     printf("Initializing user database\n\r");
     init_users();
     uid_t root_uid = create_user("root");   // This will always be 0
+    if (root_uid != 0) {
+        printf("WARNING: expected root uid to be 0 got %d\n\r", root_uid);
+    }
 
     printf("Creating idle process\n\r");
     int pid0 = create_process("idle", (uint32_t)idle, root_uid);

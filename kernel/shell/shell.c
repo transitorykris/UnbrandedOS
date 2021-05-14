@@ -21,7 +21,7 @@ SOFTWARE.
 */
 
 #include <stdio.h>
-#include "../unistd.h"
+#include "../unistd/unistd.h"
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
@@ -52,6 +52,10 @@ void shell() {
             .name = "ls",
             .func = ls,
         },
+        {
+            .name = "getuid",
+            .func = shell_getuid,
+        }
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
 

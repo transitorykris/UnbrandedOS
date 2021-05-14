@@ -50,6 +50,8 @@ struct context_t {
     error_t _errno;         // Last error reported by the kernel
     uint32_t *stack_base;   // The highest address of this context's stack
 
+    pid_t pid;              // Index for this task in the process table
+
     pid_t children[MAX_CHILDREN];   // List of all children spawned
     pid_t wait_list[MAX_WAIT_LIST]; // Processes waiting on this process to exit
 };

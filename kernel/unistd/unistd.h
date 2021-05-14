@@ -23,7 +23,9 @@ SOFTWARE.
 #ifndef UNISTD_H
 #define UNISTD_H
 
-#include "process.h"
+#include <ctype.h>
+
+#include "../process.h"
 
 //#define STDIN_FILENO    0
 //#define STDOUT_FILENO   1
@@ -37,6 +39,7 @@ int execvp(const char *file, char *const argv[]);
 void _exit(int status);
 pid_t fork(void);
 int gethostname(char *hostname, size_t len);
+uid_t getuid(void);
 
 //int access(const char *, int);
 //unsigned alarm(unsigned);
@@ -76,7 +79,6 @@ int gethostname(char *hostname, size_t len);
 //pid_t getpid(void);
 //pid_t getppid(void);
 //pid_t getsid(pid_t);
-//uid_t getuid(void);
 //int isatty(int);
 //int lchown(const char *, uid_t, gid_t);
 //int link(const char *, const char *);

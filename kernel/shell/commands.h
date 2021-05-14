@@ -24,5 +24,6 @@ SOFTWARE.
 #define SHELL_COMMANDS_H
 
 void ls();
+void shell_getuid();
 
 #endif

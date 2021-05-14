@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "../config.h"
 
-#include "../unistd.h"
+#include "unistd.h"
 
 int gethostname(char *name, size_t namelen) {
     strcpy(name, hostname);

@@ -89,6 +89,10 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
         // We ran out!
         return ERR_TOO_MANY_PROCS;
     }
+
+    // Save the pid in the context to make other lookups easier
+    context->pid = pid;
+
     return pid;
 }
 

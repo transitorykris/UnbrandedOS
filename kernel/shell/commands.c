@@ -22,6 +22,7 @@ SOFTWARE.
 
 #include <stdio.h>
 #include "../sys/types.h"
+#include "../unistd/unistd.h"
 
 #include "../fs/fs.h"
 
@@ -35,4 +36,9 @@ void ls() {
             printf("%s\n\r", filename);
         }
     }
+}
+
+/* Print out the current user's uid */
+void shell_getuid() {
+    printf("%d\n\r", getuid());
 }

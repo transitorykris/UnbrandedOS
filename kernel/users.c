@@ -31,7 +31,9 @@ struct user *users;
 uid_t create_user(char *name) {
     for(int i=0;i<MAX_USERS;i++) {
         if (users[i].name == null) {
+            users[i].uid = i;
             users[i].name = name;
+            break;
         }
     }
 }
