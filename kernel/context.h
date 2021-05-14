@@ -26,10 +26,10 @@ SOFTWARE.
 #include "sys/errors.h"
 #include "users.h"
 
-#define SLEEPING    0
-#define RUNNING     1
-#define EMBRYO      2
-#define ZOMBIE      3
+#define EMBRYO      1
+#define RUNNING     2
+#define SLEEPING    3
+#define ZOMBIE      0
 
 #define MAX_CHILDREN    64
 #define MAX_WAIT_LIST   64
