@@ -27,6 +27,13 @@ SOFTWARE.
 
 #include "unistd.h"
 
+// Return the host ID
+// In most systems this is a local IP address
+// Since we're not networked, we'll just claim host ID 1!
+long gethostid(void) {
+    return 1;
+}
+
 int gethostname(char *name, size_t namelen) {
     strcpy(name, hostname);
     return 0;
