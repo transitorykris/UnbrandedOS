@@ -38,6 +38,7 @@ SOFTWARE.
 int execvp(const char *file, char *const argv[]);
 void _exit(int status);
 pid_t fork(void);
+char *getcwd(char *buf, size_t size);
 int gethostname(char *hostname, size_t len);
 char *getlogin(void);
 uid_t getuid(void);
@@ -67,7 +68,6 @@ void sync(void);
 //long fpathconf(int, int);
 //int fsync(int);
 //int ftruncate(int, off_t);
-//char *getcwd(char *, size_t);
 //gid_t getegid(void);
 //uid_t geteuid(void);
 //gid_t getgid(void);

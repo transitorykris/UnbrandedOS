@@ -29,13 +29,14 @@ SOFTWARE.
 #include "../sys/errors.h"
 #include "../spawn.h"
 #include "../wait.h"
+#include "../malloc.h"
 
 #include "../fs/fs.h"
 
 #include "shell.h"
 #include "commands.h"
 
-#define PROMPT  "/# "
+#define PROMPT  "# "
 
 struct commands_t {
     char *name;
@@ -55,6 +56,10 @@ void shell() {
         {
             .name = "getuid",
             .func = shell_getuid,
+        },
+        {
+            .name = "pwd",
+            .func = shell_pwd,
         }
     };
     int command_count = sizeof commands / sizeof (struct commands_t);
@@ -70,7 +75,8 @@ void shell() {
     // Tokenize the user's input and pass the arguments
     // to the new process
     for(;;) {
-        printf("%s:%s", name, PROMPT);
+        char cwd[MAX_FILE_NAME_LEN];
+        printf("%s:%s%s", name, getcwd((char *)cwd, MAX_FILE_NAME_LEN), PROMPT);
         for (;;) {
             count = readline(buffer, BUFFER_LEN);
             printf("\n\r");

@@ -42,3 +42,9 @@ void ls() {
 void shell_getuid() {
     printf("%d\n\r", getuid());
 }
+
+/* Print the current working directory */
+void shell_pwd() {
+    char buf[MAX_FILE_NAME_LEN];
+    printf("%s\n\r", getcwd(buf, MAX_FILE_NAME_LEN));
+}

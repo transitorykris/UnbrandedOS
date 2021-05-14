@@ -25,5 +25,6 @@ SOFTWARE.
 
 void ls();
 void shell_getuid();
+void shell_pwd();
 
 #endif
