@@ -21,10 +21,10 @@ SOFTWARE.
 */
 
 #include <stdio.h>
-#include "../sys/types.h"
-#include "../unistd/unistd.h"
+#include "../../sys/types.h"
+#include "../../unistd/unistd.h"
 
-#include "../fs/fs.h"
+#include "../../fs/fs.h"
 
 #include "commands.h"
 

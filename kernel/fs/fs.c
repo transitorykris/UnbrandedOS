@@ -29,6 +29,7 @@ SOFTWARE.
 #include "../commands.h"
 
 #include "../process.h"
+#include "../bin/sh/sh.h"
 
 void init_filesystem() {
     // Make sure this directory is empty
@@ -49,6 +50,7 @@ void init_filesystem() {
     create_file("kill",         FILE, (void *)kill);
     create_file("argo",         FILE, (void *)argo);
     create_file("whoami",       FILE, (void *)whoami);
+    create_file("sh",           FILE, (void *)sh);
 }
 
 void create_file(char *name, uint8_t type, void (*inode_start)()) {

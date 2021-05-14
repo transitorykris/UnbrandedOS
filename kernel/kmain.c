@@ -22,6 +22,7 @@ SOFTWARE.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "spawn.h"
 
 #include "machine.h"
 
@@ -43,7 +44,7 @@ SOFTWARE.
 #include "syscall.h"
 #include "users.h"
 
-#include "shell/shell.h"
+#include "bin/sh/sh.h"
 
 // We're going to reuse the vectors set up by firmware for the
 // bits in there I'm not ready to replace yet
@@ -76,6 +77,18 @@ void init_scheduler() {
 }
 
 noreturn void idle() {
+    printf("Creating sh process\n\r");
+
+    char *argv[MAX_ARGS] = {NULL};
+    argv[0] = "sh";   // first argument is the process name
+    pid_t pid;
+    int err = posix_spawn(&pid, "sh", NULL, NULL, argv, NULL);
+    if (err) {
+        printf("ERROR: posix_spawn returned %d\n\r", err);
+    }
+
+    // Init can go to sleep now
+    set_state(current_process->pid, SLEEPING);
     for(;;);
 }
 
@@ -120,18 +133,12 @@ noreturn void kmain() {
         printf("WARNING: expected root uid to be 0 got %d\n\r", root_uid);
     }
 
-    printf("Creating idle process\n\r");
-    int pid0 = create_process("idle", (uint32_t)idle, root_uid);
+    printf("Creating init process\n\r");
+    int pid0 = create_process("init", (uint32_t)idle, root_uid);
     if (pid0 != 0) {
         printf("Expected to create pid0, got %d\n\r", pid0);
     }
-    set_state(pid0, SLEEPING);
-
-    printf("Setting up shell as PID1\n\r");
-    int pid1 = create_process("shell", (uint32_t)shell, root_uid);
-    if (pid1 != 1) {
-        printf("Expected to create pid1, got %d\n\r", pid1);
-    }
+    set_state(pid0, RUNNING);
 
     printf("Initializing interrupts\n\r");
     init_interrupts();

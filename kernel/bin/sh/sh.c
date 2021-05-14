@@ -21,19 +21,19 @@ SOFTWARE.
 */
 
 #include <stdio.h>
-#include "../unistd/unistd.h"
+#include "../../unistd/unistd.h"
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
 
-#include "../sys/errors.h"
-#include "../spawn.h"
-#include "../wait.h"
-#include "../malloc.h"
+#include "../../sys/errors.h"
+#include "../../spawn.h"
+#include "../../wait.h"
+#include "../../malloc.h"
 
-#include "../fs/fs.h"
+#include "../../fs/fs.h"
 
-#include "shell.h"
+#include "sh.h"
 #include "commands.h"
 
 #define PROMPT  "# "
