@@ -41,6 +41,7 @@ pid_t fork(void);
 char *getcwd(char *buf, size_t size);
 int gethostname(char *hostname, size_t len);
 char *getlogin(void);
+pid_t getpid(void);
 uid_t getuid(void);
 void sync(void);
 
@@ -77,7 +78,6 @@ void sync(void);
 //int getopt(int, char * const [], const char *);
 //pid_t getpgid(pid_t);
 //pid_t getpgrp(void);
-//pid_t getpid(void);
 //pid_t getppid(void);
 //pid_t getsid(pid_t);
 //int isatty(int);
