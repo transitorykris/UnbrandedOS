@@ -40,6 +40,7 @@ void _exit(int status);
 pid_t fork(void);
 int gethostname(char *hostname, size_t len);
 uid_t getuid(void);
+void sync(void);
 
 //int access(const char *, int);
 //unsigned alarm(unsigned);
@@ -108,7 +109,6 @@ uid_t getuid(void);
 //void swab(const void *restrict, void *restrict, ssize_t);
 //int symlink(const char *, const char *);
 //int symlinkat(const char *, int, const char *);
-//void sync(void);
 //long sysconf(int);
 //pid_t tcgetpgrp(int);
 //int tcsetpgrp(int, pid_t);
