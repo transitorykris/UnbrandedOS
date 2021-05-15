@@ -20,26 +20,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <stdio.h>
+
 #include "context.h"
 #include "process.h"
+#include "system.h"
 
 #include "wait.h"
 
 // Add's the current process to pid's wait list
-void _add_wait_list(pid_t pid) {
-
+int _add_wait_list(pid_t pid) {
+    struct context_t *child = processes[pid].context;
+    for(int i=0;i<MAX_WAIT_LIST;i++) {
+        if (child->wait_list[i] == 0) {
+            child->wait_list[i] = current_process->pid;
+            return 0;
+        }
+    }
+    return -1;
 }
 
 pid_t wait(int *stat_loc) {
+    // XXX feels like there is a race condition lurking around here
     return waitpid(-1, stat_loc, 0);
 }
 
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
-    // Add this process to the other process's "wait list"
-    // Also, create a waitlist for each process!
-    // Also, how does that work?
-    // return value when pid exits is stored in *stat_loc
-    // return value of waitpid is the process id of the child
-    // or -1 on error
-    return -1;
+    _add_wait_list(pid);
+    current_process->state = SLEEPING;  // child will wake us
+    // XXX we really need a wait to initiate a context swap
+    // this is a quick hack
+    delay(1000);
+    return pid;
 }

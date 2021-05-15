@@ -32,14 +32,13 @@ SOFTWARE.
 
 // Add a child PID to a parent's children list
 int _add_child(pid_t child) {
-    /*for(int i=0;i<MAX_CHILDREN;i++) {
+    for(int i=0;i<MAX_CHILDREN;i++) {
         if (current_process->children[i] == 0) {
             current_process->children[i] = child;
             return 0;
         }
     }
-    return -1;*/
-    return 0;
+    return -1;
 }
 
 // TODO will need some way to remove children that are zombies
@@ -47,9 +46,17 @@ int _add_child(pid_t child) {
 // Spawned processes return here
 void _exit_spawn(void) {
     // Wake up all the processes waiting on this pid
-    //for (int i=0;i<MAX_WAIT_LIST;i++) {
-        // ???
-    //}
+    struct context_t *parent;
+    for (int i=0;i<MAX_WAIT_LIST;i++) {
+        if (current_process->wait_list[i] != 0) {
+            parent = processes[current_process->wait_list[i]].context;
+            parent->state = RUNNING;    // Start'r up
+        }
+    }
+
+    // TODO remove ourselves from parent's children list
+
+    // Die
     current_process->state = ZOMBIE;
     for(;;);    // Do nothing until we stop scheduling this task
 }
@@ -77,6 +84,9 @@ struct context_t *new_context(uint32_t *entry) {
         context->a[i] = 0x0000;
     }
 
+    // Embryonic until we're ready for the scheduler to run this
+    context->state = EMBRYO;
+
     // Stacks grow downward! Start at the highest value in the stack
     context->stack_base = \
         (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
@@ -87,6 +97,15 @@ struct context_t *new_context(uint32_t *entry) {
 
     // The scheduler will start the process at this entry point
     context->pc = (uint32_t)entry;
+
+    // Clear out the children and wait_list
+    // Should really be using calloc
+    for (int i=0;i<MAX_CHILDREN;i++) {
+        context->children[i] = 0;
+    }
+    for (int i=0;i<MAX_WAIT_LIST;i++) {
+        context->wait_list[i] = 0;
+    }
 
     return context;
 }
@@ -129,9 +148,6 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     push(context->usp, (uint32_t)argv);
     push(context->usp, argc);
     push(context->usp, (uint32_t)_exit_spawn);
-
-    // Embryonic until we're ready for the scheduler to run this
-    context->state = EMBRYO;
 
     // Insert into the linked list
     context->next = current_process->next;
