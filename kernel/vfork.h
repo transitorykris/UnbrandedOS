@@ -23,6 +23,6 @@ SOFTWARE.
 #ifndef FORK_H
 #define FORK_H
 
-extern pid_t fork_handler();
+extern pid_t vfork_handler();
 
 #endif

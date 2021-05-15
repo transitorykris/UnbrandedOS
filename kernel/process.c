@@ -122,12 +122,12 @@ state_t get_state(pid_t pid) {
 }
 
 // Fork the current process creating an almost identical copy
-pid_t fork(void) {
-    syscall(FORK);
+pid_t vfork(void) {
+    syscall(VFORK);
 }
 
-// The heavy lifting of fork is done here, called from fork_handler
-void _fork(void) {
+// The heavy lifting of vfork is done here, called from vfork_handler
+void _vfork(void) {
     // Allocate a new context for the copy
     struct context_t *new_context = (struct context_t*)malloc(sizeof(struct context_t));
 

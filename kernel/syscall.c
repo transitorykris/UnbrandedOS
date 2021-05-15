@@ -28,7 +28,7 @@ SOFTWARE.
 #include "system.h"
 #include "syscall.h"
 #include "process.h"
-#include "fork.h"
+#include "vfork.h"
 
 inline uint32_t syscall(uint16_t num) {
     __asm__ __volatile__ (
@@ -45,15 +45,15 @@ inline uint32_t syscall(uint16_t num) {
     register uint32_t d0 __asm__ ("d0");
     uint32_t num = d0;
     switch(num) {
-        case FORK:
-            fork_handler();
+        case VFORK:
+            vfork_handler();
         case REBOOT:
             _WARM_BOOT();
         default:
             break;
     }
     if (d0 == FORK) {
-        fork_handler();
+        vfork_handler();
     }
     printf("finished handling syscall\n\r");
     //return -1;

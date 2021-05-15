@@ -20,7 +20,7 @@
 
     import current_process
 
-    ;export fork_handler
+    ;export vfork_handler
     export syscall_handler
 
     section .text
@@ -84,8 +84,7 @@ syscall_handler:
     move.l  2(sp), CP_PC(a0)        ; Save pc
 
     ; Let's do the rest of the work in C
-    ; This is a tail call, _fork() performs the return
-    jsr _fork
+    jsr _vfork
 
     ; Restore our process, really just d0 should have changed
     move.l  current_process,a0      ; Get our current_process
@@ -101,6 +100,4 @@ syscall_handler:
     move.l  CP_A0(a0), a0           ; to restore a0
 
     ; Return
-    ;move.b  #~$20,INT_ADDR          ; Clear interrupt-in-service 
-    ;andi.w #$F0FF, sr
     rte

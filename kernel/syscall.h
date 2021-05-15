@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include <stdint.h>
 
-#define FORK    1           // this isn't correct, fixme
+#define VFORK   1           // this isn't correct, fixme
 #define REBOOT  2
 
 #define syscall_return(val) \
