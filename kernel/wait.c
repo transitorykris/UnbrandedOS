@@ -50,6 +50,6 @@ pid_t waitpid(pid_t pid, int *stat_loc, int options) {
     current_process->state = SLEEPING;  // child will wake us
     // XXX we really need a wait to initiate a context swap
     // this is a quick hack
-    delay(1000);
+    delay(10000);
     return pid;
 }
