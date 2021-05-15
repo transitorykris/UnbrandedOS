@@ -145,7 +145,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     pid_t _pid;
     for (_pid=0;_pid<MAX_PROCESSES;_pid++) {
         if (processes[_pid].name == NULL) {
-            processes[_pid].name = "fixme";
+            processes[_pid].name = argv[0];
             processes[_pid].context = context;
             processes[_pid].owner = 0;  // XXX fix me
             break;
