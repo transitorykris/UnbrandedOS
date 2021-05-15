@@ -76,7 +76,7 @@ void init_scheduler() {
     install_vector_handler(VEC_TICK_HANDLER, (uint32_t)context_swap);
 }
 
-noreturn void idle() {
+noreturn void init() {
     printf("Creating sh process\n\r");
 
     char *argv[MAX_ARGS] = {NULL};
@@ -134,7 +134,7 @@ noreturn void kmain() {
     }
 
     printf("Creating init process\n\r");
-    int pid0 = create_process("init", (uint32_t)idle, root_uid);
+    int pid0 = create_process("init", (uint32_t)init, root_uid);
     if (pid0 != 0) {
         printf("Expected to create pid0, got %d\n\r", pid0);
     }
@@ -151,7 +151,6 @@ noreturn void kmain() {
     set_usp(processes[pid0].context->usp);  // leave the kernel stack
     disable_supervisor();                   // switch to user mode
 
-    // We never return, but we will also stop execution here after the
-    // first context switch
-    idle();
+    // Start init
+    init();
 }
