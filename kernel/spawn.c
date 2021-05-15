@@ -133,11 +133,6 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
     // Embryonic until we're ready for the scheduler to run this
     context->state = EMBRYO;
 
-    // Not pretty, but if this is the first process...
-    if (processes[0].name == NULL) {
-        current_process = context;
-        current_process->next = current_process;
-    }
     // Insert into the linked list
     context->next = current_process->next;
     current_process->next = context;
