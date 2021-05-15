@@ -27,7 +27,7 @@ SOFTWARE.
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
-typedef uint16_t pid_t; // Used for process IDs and process group IDs.
+typedef int16_t pid_t; // Used for process IDs and process group IDs.
 typedef uint16_t uid_t; // Used for user IDs.
 
 //blkcnt_t              // Used for file block counts
