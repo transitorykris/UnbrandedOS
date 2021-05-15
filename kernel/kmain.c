@@ -134,11 +134,11 @@ noreturn void kmain() {
     }
 
     printf("Creating init process\n\r");
-    int pid0 = create_process("init", (uint32_t)init, root_uid);
-    if (pid0 != 0) {
-        printf("Expected to create pid0, got %d\n\r", pid0);
+    int init_pid = create_process("init", (uint32_t)init, root_uid);
+    if (init_pid != 0) {
+        printf("Expected to create pid0, got %d\n\r", init_pid);
     }
-    set_state(pid0, RUNNING);
+    set_state(init_pid, RUNNING);
 
     printf("Initializing interrupts\n\r");
     init_interrupts();
@@ -148,7 +148,7 @@ noreturn void kmain() {
     init_scheduler();
 
     // Ready to go
-    set_usp(processes[pid0].context->usp);  // leave the kernel stack
+    set_usp(processes[init_pid].context->usp);  // leave the kernel stack
     disable_supervisor();                   // switch to user mode
 
     // Start init
