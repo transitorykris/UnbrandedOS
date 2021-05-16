@@ -20,9 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <string.h>
 #include "unistd.h"
 
 char *getcwd(char *buf, size_t size) {
-    *buf = '/';         // We only have 1 directoy right now!
+    strcpy(buf, "/blah/etc/");
     return buf;
 }
