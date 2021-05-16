@@ -44,8 +44,8 @@ int _add_child(pid_t child) {
 
 // Remove a child's PID from parent's children list
 int _remove_child(pid_t child) {
-    struct context_t *parent;
-    parent = processes[current_process->parent].context;
+    struct pcb_t *parent;
+    parent = processes[current_process->parent].pcb;
     for(int i=0;i<MAX_CHILDREN;i++) {
         if(parent->children[i] == current_process->pid) {
             parent->children[i] = 0;
@@ -58,10 +58,10 @@ int _remove_child(pid_t child) {
 // Spawned processes return here
 void _exit_spawn(void) {
     // Wake up all the processes waiting on this pid
-    struct context_t *parent;
+    struct pcb_t *parent;
     for (int i=0;i<MAX_WAIT_LIST;i++) {
         if (current_process->wait_list[i] != 0) {
-            parent = processes[current_process->wait_list[i]].context;
+            parent = processes[current_process->wait_list[i]].pcb;
             if (parent->state == SLEEPING) {
                 parent->state = RUNNING;    // Start'r up
             }
@@ -90,41 +90,41 @@ int arg_count(char *const argv[restrict]) {
     return argc;
 }
 
-// Create a blank context
-struct context_t *new_context(uint32_t *entry) {
-    struct context_t *context = \
-        (struct context_t*)malloc(sizeof(struct context_t));
+// Create a blank pcb
+struct pcb_t *new_pcb(uint32_t *entry) {
+    struct pcb_t *pcb = \
+        (struct pcb_t*)malloc(sizeof(struct pcb_t));
 
     // Initialize the new process's registers to zero
     for (int i=0;i<8;i++) {
-        context->d[i] = 0x0000;
-        context->a[i] = 0x0000;
+        pcb->d[i] = 0x0000;
+        pcb->a[i] = 0x0000;
     }
 
     // Embryonic until we're ready for the scheduler to run this
-    context->state = EMBRYO;
+    pcb->state = EMBRYO;
 
     // Stacks grow downward! Start at the highest value in the stack
-    context->stack_base = \
+    pcb->stack_base = \
         (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-    context->usp = context->stack_base;
+    pcb->usp = pcb->stack_base;
 
     // Clear SR
-    context->sr = 0x0000;
+    pcb->sr = 0x0000;
 
     // The scheduler will start the process at this entry point
-    context->pc = (uint32_t)entry;
+    pcb->pc = (uint32_t)entry;
 
     // Clear out the children and wait_list
     // Should really be using calloc
     for (int i=0;i<MAX_CHILDREN;i++) {
-        context->children[i] = 0;
+        pcb->children[i] = 0;
     }
     for (int i=0;i<MAX_WAIT_LIST;i++) {
-        context->wait_list[i] = 0;
+        pcb->wait_list[i] = 0;
     }
 
-    return context;
+    return pcb;
 }
 
 /* posix_spawn
@@ -159,22 +159,22 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
         return FILE_NOT_FOUND;
     }
 
-    struct context_t *context = new_context(entry);
+    struct pcb_t *pcb = new_pcb(entry);
 
     // Push values for the call to the process's main()
-    push(context->usp, (uint32_t)argv);
-    push(context->usp, argc);
-    push(context->usp, (uint32_t)_exit_spawn);
+    push(pcb->usp, (uint32_t)argv);
+    push(pcb->usp, argc);
+    push(pcb->usp, (uint32_t)_exit_spawn);
 
     // Insert into the linked list
-    context->next = current_process->next;
-    current_process->next = context;
+    pcb->next = current_process->next;
+    current_process->next = pcb;
 
     pid_t _pid;
     for (_pid=0;_pid<MAX_PROCESSES;_pid++) {
         if (processes[_pid].name == NULL) {
             processes[_pid].name = argv[0];
-            processes[_pid].context = context;
+            processes[_pid].pcb = pcb;
             processes[_pid].owner = 0;  // XXX fix me
             break;
         }
@@ -188,18 +188,18 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
 
     // Add this child to parent's list
     if(_add_child(_pid) == -1) {
-        context->state = ZOMBIE;    // Kill it!
+        pcb->state = ZOMBIE;    // Kill it!
         return TOO_MANY_CHILDREN;
     }
 
-    // Save the pid in the context to make other lookups easier
-    context->pid = _pid;
+    // Save the pid in the pcb to make other lookups easier
+    pcb->pid = _pid;
 
     // Save the parent's PID in the child
-    context->parent = current_process->pid;
+    pcb->parent = current_process->pid;
 
     // We're runnable now!
-    context->state = RUNNING;
+    pcb->state = RUNNING;
 
     // Return pid to the caller, no errors
     *pid = _pid;

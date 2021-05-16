@@ -30,7 +30,7 @@ SOFTWARE.
 
 // Add's the current process to pid's wait list
 int _add_wait_list(pid_t pid) {
-    struct context_t *child = processes[pid].context;
+    struct pcb_t *child = processes[pid].pcb;
     for(int i=0;i<MAX_WAIT_LIST;i++) {
         if (child->wait_list[i] == 0) {
             child->wait_list[i] = current_process->pid;

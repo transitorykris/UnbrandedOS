@@ -53,7 +53,7 @@ uint32_t *vectors = 0x0;
 void init_processes() {
     for (int i=0;i<MAX_PROCESSES;i++) {
         processes[i].name = NULL;
-        processes[i].context = NULL;
+        processes[i].pcb = NULL;
     }
 }
 
@@ -148,7 +148,7 @@ noreturn void kmain() {
     init_scheduler();
 
     // Ready to go
-    set_usp(processes[init_pid].context->usp);  // leave the kernel stack
+    set_usp(processes[init_pid].pcb->usp);  // leave the kernel stack
     disable_supervisor();                   // switch to user mode
 
     // Start init

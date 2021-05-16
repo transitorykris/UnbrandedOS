@@ -36,11 +36,11 @@ SOFTWARE.
 // Process Control Block
 typedef struct {
     char *name;                 // name used to create this process
-    struct context_t *context;  // Complete state
+    struct pcb_t *pcb;  // Complete state
     uid_t owner;                // Owner of this process
 } pcb_t;
 
-struct context_t *current_process;  // Currently executing task
+struct pcb_t *current_process;  // Currently executing task
 
 // Pre-allocate all the processes we can run
 pcb_t processes[MAX_PROCESSES];

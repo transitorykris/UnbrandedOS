@@ -31,14 +31,14 @@ int ps(int argc, char *argv[]) {
     printf("%s %13s %13s %15s %15s %15s\n\r", "PID", "User", "CMD", "State", "Stack", "PC");
     for(int pid=0;pid<MAX_PROCESSES;pid++) {
         if (processes[pid].name != NULL && \
-            processes[pid].context->state != ZOMBIE) {
+            processes[pid].pcb->state != ZOMBIE) {
             printf("%d %15s %15s %15s %#15x %#15x\n\r",
                 pid,
                 uid_lookup(processes[pid].owner)->name,
                 processes[pid].name,
                 process_state(get_state(pid)),
-                processes[pid].context->usp,
-                processes[pid].context->pc
+                processes[pid].pcb->usp,
+                processes[pid].pcb->pc
             );
         }
     }

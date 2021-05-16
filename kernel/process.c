@@ -44,40 +44,40 @@ SOFTWARE.
 // the entry point in memory
 // Returns the pid of the process or -1 if it failed
 int create_process(char *name, uint32_t entry, uid_t owner) {
-    struct context_t *context = (struct context_t*)malloc(sizeof(struct context_t));
-    context->pc = entry;
+    struct pcb_t *pcb = (struct pcb_t*)malloc(sizeof(struct pcb_t));
+    pcb->pc = entry;
     // Stacks grow downward! Start at the highest value in the stack
-    context->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
-    context->usp = context->stack_base;
-    context->sr = 0x0000;
+    pcb->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    pcb->usp = pcb->stack_base;
+    pcb->sr = 0x0000;
 
     // Initialize our registers to zero
     for (int i=0;i<8;i++) {
-        context->d[i] = 0x0000;
+        pcb->d[i] = 0x0000;
     }
 
     for (int i=0;i<7;i++) {
-        context->a[i] = 0x0000;
+        pcb->a[i] = 0x0000;
     }
 
     // Set to running
-    context->state = RUNNING;
+    pcb->state = RUNNING;
 
     // Not pretty, but if this is the first process...
     if (processes[0].name == NULL) {
-        current_process = context;
+        current_process = pcb;
         current_process->next = current_process;
     }
     // Insert into the linked list
-    context->next = current_process->next;
-    current_process->next = context;
+    pcb->next = current_process->next;
+    current_process->next = pcb;
 
     // Add it to our process list
     int pid;
     for (pid=0;pid<MAX_PROCESSES;pid++) {
         if (processes[pid].name == NULL) {
             processes[pid].name = name;
-            processes[pid].context = context;
+            processes[pid].pcb = pcb;
             processes[pid].owner = owner;
             break;
         }
@@ -90,8 +90,8 @@ int create_process(char *name, uint32_t entry, uid_t owner) {
         return ERR_TOO_MANY_PROCS;
     }
 
-    // Save the pid in the context to make other lookups easier
-    context->pid = pid;
+    // Save the pid in the pcb to make other lookups easier
+    pcb->pid = pid;
 
     return pid;
 }
@@ -112,13 +112,13 @@ char * process_state(uint8_t state) {
 }
 
 state_t set_state(pid_t pid, state_t new_state) {
-    state_t prev = processes[pid].context->state;
-    processes[pid].context->state = new_state;
+    state_t prev = processes[pid].pcb->state;
+    processes[pid].pcb->state = new_state;
     return prev;
 }
 
 state_t get_state(pid_t pid) {
-    return processes[pid].context->state;
+    return processes[pid].pcb->state;
 }
 
 // Fork the current process creating an almost identical copy
@@ -128,44 +128,42 @@ pid_t vfork(void) {
 
 // The heavy lifting of vfork is done here, called from vfork_handler
 void _vfork(void) {
-    // Allocate a new context for the copy
-    struct context_t *new_context = (struct context_t*)malloc(sizeof(struct context_t));
+    // Allocate a new pcb for the copy
+    struct pcb_t *new_pcb = (struct pcb_t*)malloc(sizeof(struct pcb_t));
 
-    // Copy current_process to new_context
+    // Copy current_process to new_pcb
     for (int i=0; i<8; i++) {
-        new_context->d[i] = current_process->d[i];  // a little abusive
+        new_pcb->d[i] = current_process->d[i];  // a little abusive
     }
     for (int i=0; i<7; i++) {
-        new_context->a[i] = current_process->a[i];  // a little abusive
+        new_pcb->a[i] = current_process->a[i];  // a little abusive
     }
-    new_context->sr = current_process->sr;
-    new_context->pc = current_process->pc;
-
-    //printf("nc->pc: %#x\n\r", new_context->pc);
+    new_pcb->sr = current_process->sr;
+    new_pcb->pc = current_process->pc;
 
     // Set our return values
-    new_context->d[0] = 0;              // Child's return value is 0
+    new_pcb->d[0] = 0;              // Child's return value is 0
     current_process->d[0] = 0x123;      // Parent's return value is child's PID
 
     // Allocate a new stack for the copy
     // Stacks grow downward! Start at the highest value in the stack
-    new_context->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
+    new_pcb->stack_base = (uint32_t *)malloc(DEFAULT_STACK_SIZE) + DEFAULT_STACK_SIZE;
 
     // Copy the parent stack into the child stack -- stacks grow downard
     int stack_size = current_process->stack_base - current_process->usp;
-    new_context->usp = new_context->stack_base - stack_size;
-    memcpy(new_context->usp, current_process->usp, stack_size);
+    new_pcb->usp = new_pcb->stack_base - stack_size;
+    memcpy(new_pcb->usp, current_process->usp, stack_size);
 
     for (int i=0;i<stack_size;i++) {
-        printf("%#x\t%#x\t%#x\n\r", current_process->usp+i, new_context->usp[i], current_process->usp[i]);
+        printf("%#x\t%#x\t%#x\n\r", current_process->usp+i, new_pcb->usp[i], current_process->usp[i]);
     }
 
-    new_context->state = SLEEPING;
-    new_context->_errno = current_process->_errno;
+    new_pcb->state = SLEEPING;
+    new_pcb->_errno = current_process->_errno;
 
     // Insert into the linked list
-    new_context->next = current_process->next;
-    current_process->next = new_context;
+    new_pcb->next = current_process->next;
+    current_process->next = new_pcb;
 }
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
