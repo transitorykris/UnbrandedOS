@@ -77,49 +77,47 @@ int sh(int argc, char *argv[]) {
     for(;;) {
         char cwd[MAX_FILE_NAME_LEN];
         printf("%s:%s%s", name, getcwd((char *)cwd, MAX_FILE_NAME_LEN), PROMPT);
-        for (;;) {
-            count = readline(buffer, BUFFER_LEN);
-            printf("\n\r");
-            if (count > 0) {
-                // Check built in commands first
-                for(int i=0;i<command_count;i++) {
-                    if (!strcmp(buffer, commands[i].name)) {
-                        commands[i].func();
-                        goto done;
-                    }
-                }
-                // Check our local directory next
-                // XXX probably not how we want to do this (leaning on
-                // exec to tell us if the executable exists..)
-                // fork() somewhere here
-                // NULL is required after last argument
-                char *argv[MAX_ARGS] = {NULL};
-                // TODO: parse buffer, for now, no arguments
-                argv[0] = buffer;   // first argument is the process name
-                // Attempt to spawn the process
-                pid_t pid;
-                int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
-                int *stat_loc;
-                switch(err) {
-                    case ERR_TOO_MANY_PROCS:
-                        printf("posix_spawn: too many processes\n\r");
-                        break;
-                    case TOO_MANY_CHILDREN:
-                        printf("posix_spawn: too many children\n\r");
-                        break;
-                    case FILE_NOT_FOUND:
-                        printf("command not found\n\r");
-                        break;
-                    default:
-                        //int err = waitpid(pid, stat_loc, 0);
-                        err = wait(stat_loc);
-                        if(err == -1) {
-                            printf("waitpid: error %d\n\r", err);
-                        }
+        count = readline(buffer, BUFFER_LEN);
+        printf("\n\r");
+        if (count > 0) {
+            // Check built in commands first
+            for(int i=0;i<command_count;i++) {
+                if (!strcmp(buffer, commands[i].name)) {
+                    commands[i].func();
+                    goto done;
                 }
             }
-done:
-            break;
+            // Check our local directory next
+            // XXX probably not how we want to do this (leaning on
+            // exec to tell us if the executable exists..)
+            // fork() somewhere here
+            // NULL is required after last argument
+            char *argv[MAX_ARGS] = {NULL};
+            // TODO: parse buffer, for now, no arguments
+            argv[0] = buffer;   // first argument is the process name
+            // Attempt to spawn the process
+            pid_t pid;
+            int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
+            int *stat_loc;
+            switch(err) {
+                case ERR_TOO_MANY_PROCS:
+                    printf("posix_spawn: too many processes\n\r");
+                    break;
+                case TOO_MANY_CHILDREN:
+                    printf("posix_spawn: too many children\n\r");
+                    break;
+                case FILE_NOT_FOUND:
+                    printf("command not found\n\r");
+                    break;
+                default:
+                    //int err = waitpid(pid, stat_loc, 0);
+                    err = wait(stat_loc);
+                    if(err == -1) {
+                        printf("waitpid: error %d\n\r", err);
+                    }
+            }
         }
+done:
+        continue;
     }
 }
