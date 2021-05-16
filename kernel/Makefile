@@ -34,6 +34,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=musl/stdlib/atoi.o spinlock.o \
 		unistd/process.o unistd/fs.o unistd/sync.o unistd/uid.o unistd/host.o \
+		signal.o \
 		process.o common.o trap14.o scheduler.o context.o vfork.o syscall.o \
 		pages.o malloc.o fs/fs.o users.o wait.o stack.o \
 		bin/sh/commands.o bin/sh/sh.o \

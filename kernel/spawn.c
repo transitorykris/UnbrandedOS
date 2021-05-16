@@ -24,6 +24,7 @@ SOFTWARE.
 #include <string.h>
 
 #include "malloc.h"
+#include "signal.h"
 
 #include "fs/fs.h"
 #include "stack.h"
@@ -90,6 +91,39 @@ int arg_count(char *const argv[restrict]) {
     return argc;
 }
 
+// Sets the default signal handlers for every signal
+void set_default_signal_handlers(struct pcb_t *pcb) {
+    pcb->signal_handler[SIGNULL]    = default_ignore_handler;
+    pcb->signal_handler[SIGABRT]    = default_abnormal_handler;
+    pcb->signal_handler[SIGALRM]    = default_stop_handler;
+    pcb->signal_handler[SIGBUS]     = default_abnormal_handler;
+    pcb->signal_handler[SIGCHLD]    = default_ignore_handler;
+    pcb->signal_handler[SIGCONT]    = default_continue_handler;
+    pcb->signal_handler[SIGFP]      = default_abnormal_handler;
+    pcb->signal_handler[SIGHUP]     = default_stop_handler;
+    pcb->signal_handler[SIGILL]     = default_abnormal_handler;
+    pcb->signal_handler[SIGINT]     = default_stop_handler;
+    pcb->signal_handler[SIGKILL]    = default_stop_handler;
+    pcb->signal_handler[SIGPIPE]    = default_stop_handler;
+    pcb->signal_handler[SIGQUIT]    = default_abnormal_handler;
+    pcb->signal_handler[SIGSEGV]    = default_abnormal_handler;
+    pcb->signal_handler[SIGSTOP]    = default_continue_handler;
+    pcb->signal_handler[SIGTERM]    = default_stop_handler;
+    pcb->signal_handler[SIGTSTP]    = default_continue_handler;
+    pcb->signal_handler[SIGTTIN]    = default_continue_handler;
+    pcb->signal_handler[SIGTTOU]    = default_continue_handler;
+    pcb->signal_handler[SIGUSR1]    = default_stop_handler;
+    pcb->signal_handler[SIGUSR2]    = default_stop_handler;
+    pcb->signal_handler[SIGPOLL]    = default_stop_handler;
+    pcb->signal_handler[SIGPROF]    = default_stop_handler;
+    pcb->signal_handler[SIGSYS]     = default_abnormal_handler;
+    pcb->signal_handler[SIGTRAP]    = default_abnormal_handler;
+    pcb->signal_handler[SIGURG]     = default_ignore_handler;
+    pcb->signal_handler[SIGVTALRM]  = default_stop_handler;
+    pcb->signal_handler[SIGXCPU]    = default_abnormal_handler;
+    pcb->signal_handler[SIGXFSZ]    = default_abnormal_handler;
+}
+
 // Create a blank pcb
 struct pcb_t *new_pcb(uint32_t *entry) {
     struct pcb_t *pcb = \
@@ -123,6 +157,9 @@ struct pcb_t *new_pcb(uint32_t *entry) {
     for (int i=0;i<MAX_WAIT_LIST;i++) {
         pcb->wait_list[i] = 0;
     }
+
+    // Set up the default signal handlers
+    set_default_signal_handlers(pcb);
 
     return pcb;
 }
