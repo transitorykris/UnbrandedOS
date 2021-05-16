@@ -23,6 +23,8 @@ SOFTWARE.
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
+#include "sys/types.h"
+
 #define SIGNAL_COUNT    29  // for allocating the signal handler table
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
@@ -65,7 +67,8 @@ void default_ignore_handler(void);
 void default_stop_handler(void);
 void default_continue_handler(void);
 
-//int kill(pid_t, int);
+int kill(pid_t pid, int sig);
+
 //int killpg(pid_t, int);
 //void psiginfo(const siginfo_t *, const char *);
 //void psignal(int, const char *);

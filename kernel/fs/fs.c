@@ -47,7 +47,7 @@ void init_filesystem() {
     create_file("memplay",      FILE, (void *)memplay);
     create_file("syscaller",    FILE, (void *)syscaller);
     create_file("dir",          FILE, (void *)dir);
-    create_file("kill",         FILE, (void *)kill);
+    create_file("kill",         FILE, (void *)killer);
     create_file("argo",         FILE, (void *)argo);
     create_file("whoami",       FILE, (void *)whoami);
     create_file("sh",           FILE, (void *)sh);

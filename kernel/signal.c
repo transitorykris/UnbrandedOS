@@ -24,6 +24,10 @@ SOFTWARE.
 
 #include "signal.h"
 
+#include "process.h"
+#include "context.h"
+#include "stack.h"
+
 void default_abnormal_handler(void) {
     printf("in abnormal signal handler\n\r");
 }
@@ -38,4 +42,14 @@ void default_stop_handler(void) {
 
 void default_continue_handler(void) {
     printf("in continue signal handler\n\r");
+}
+
+int kill(pid_t pid, int sig) {
+    struct pcb_t *pcb = processes[pid].pcb;
+
+    // Push the current PC onto the process's stack as a return value
+    push (pcb->usp, pcb->pc);
+
+    // Adjust the program counter to the start of the signal handler
+    pcb->pc = (uint32_t)pcb->signal_handler[sig];
 }

@@ -33,17 +33,17 @@ SOFTWARE.
 #define DEFAULT_STACK_SIZE  65536
 #define MAX_ARGS            32  // XXX I don't know if this is right
 
-// Process Control Block
+// Contains the process control block with metadata
 typedef struct {
     char *name;                 // name used to create this process
-    struct pcb_t *pcb;  // Complete state
+    struct pcb_t *pcb;          // Complete state
     uid_t owner;                // Owner of this process
-} pcb_t;
+} process_t;
 
 struct pcb_t *current_process;  // Currently executing task
 
 // Pre-allocate all the processes we can run
-pcb_t processes[MAX_PROCESSES];
+process_t processes[MAX_PROCESSES];
 
 int create_process(char *name, uint32_t entry, uid_t owner);
 char * process_state(uint8_t state);

@@ -33,7 +33,7 @@ kill a process (really just put it to sleep for now..)
 
 argv[1] contains the pid
 */
-int kill(int argc, char *argv[]) {
+int killer(int argc, char *argv[]) {
     if (argc != 1) {
         printf("%s: not enough arguments", argv[0]);
         return -1;
