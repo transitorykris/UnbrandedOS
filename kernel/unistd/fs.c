@@ -24,6 +24,6 @@ SOFTWARE.
 #include "unistd.h"
 
 char *getcwd(char *buf, size_t size) {
-    strcpy(buf, "/blah/etc/");
+    strcpy(buf, "/");   // still just 1 directory to work with :)
     return buf;
 }
