@@ -39,4 +39,6 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
        const posix_spawnattr_t *restrict attrp,
        char *const argv[restrict], char *const envp[restrict]);
 
+void _exit_spawn(void);
+
 #endif

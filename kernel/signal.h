@@ -61,13 +61,16 @@ SOFTWARE.
 
 // A first crappy signal handling implmentation
 typedef void (*signal_handler_t)();
+typedef void (*sig_t)(int);
 
-void default_abnormal_handler(void);
-void default_ignore_handler(void);
-void default_stop_handler(void);
-void default_continue_handler(void);
+void default_abnormal_handler(int sig);
+void default_ignore_handler(int sig);
+void default_stop_handler(int sig);
+void default_continue_handler(int sig);
 
 int kill(pid_t pid, int sig);
+//Rewriting void (*signal(int, void (*)(int)))(int); to be more convenient
+sig_t signal(int sig, sig_t func);
 
 //int killpg(pid_t, int);
 //void psiginfo(const siginfo_t *, const char *);
@@ -87,7 +90,6 @@ int kill(pid_t pid, int sig);
 //int sigignore(int);
 //int siginterrupt(int, int);
 //int sigismember(const sigset_t *, int);
-//void (*signal(int, void (*)(int)))(int);
 //int sigpause(int);
 //int sigpending(sigset_t *);
 //int sigprocmask(int, const sigset_t *restrict, sigset_t *restrict);

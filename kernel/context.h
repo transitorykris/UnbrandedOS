@@ -52,7 +52,7 @@ struct pcb_t {
     error_t _errno;         // Last error reported by the kernel
     uint32_t *stack_base;   // The highest address of this context's stack
 
-    signal_handler_t signal_handler[SIGNAL_COUNT];  // pointers to sig handler funcs
+    sig_t signal_handler[SIGNAL_COUNT];  // pointers to sig handler funcs
 
     pid_t pid;              // Index for this task in the process table
     pid_t parent;

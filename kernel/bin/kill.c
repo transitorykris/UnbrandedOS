@@ -22,6 +22,8 @@ SOFTWARE.
 #include <stdio.h>
 #include <machine.h>
 
+#include "../signal.h"
+
 #include "../musl/include/stdlib.h"
 
 #include "../users.h"
@@ -34,13 +36,15 @@ kill a process (really just put it to sleep for now..)
 argv[1] contains the pid
 */
 int killer(int argc, char *argv[]) {
-    if (argc != 1) {
-        printf("%s: not enough arguments", argv[0]);
-        return -1;
-    }
-    unsigned int pid = atoi(argv[1]);
+    //if (argc != 1) {
+    //    printf("%s: not enough arguments", argv[0]);
+    //    return -1;
+    //}
+    //unsigned int pid = atoi(argv[1]);
     
-    set_state(pid, SLEEPING);
+    //set_state(pid, SLEEPING);
+
+    kill(1, SIGKILL);
 
     return 0;
 }

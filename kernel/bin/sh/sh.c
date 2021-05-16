@@ -25,6 +25,7 @@ SOFTWARE.
 #include <machine.h>
 #include <basicio.h>
 #include <string.h>
+#include "../../signal.h"
 
 #include "../../sys/errors.h"
 #include "../../spawn.h"
@@ -43,9 +44,16 @@ struct commands_t {
     void (*func)();
 };
 
+void signal_handler(int sig) {
+    printf("Please don't kill the shell\n\r");
+}
+
 int sh(int argc, char *argv[]) {
     int count = 0;
     printf("Starting shell\n\n\r");
+
+    // Setting a signal handler for experimentation purposes
+    signal(SIGKILL, signal_handler);
     
     // These are commands built into the shell
     struct commands_t commands[] = {

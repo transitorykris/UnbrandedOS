@@ -27,20 +27,21 @@ SOFTWARE.
 #include "process.h"
 #include "context.h"
 #include "stack.h"
+#include "spawn.h"
 
-void default_abnormal_handler(void) {
+void default_abnormal_handler(int sig) {
     printf("in abnormal signal handler\n\r");
 }
 
-void default_ignore_handler(void) {
+void default_ignore_handler(int sig) {
     printf("in ignore signal handler\n\r");
 }
 
-void default_stop_handler(void) {
-    printf("in stop signal handler\n\r");
+void default_stop_handler(int sig) {
+    _exit_spawn();  // XXX doesn't feel _quite_ right
 }
 
-void default_continue_handler(void) {
+void default_continue_handler(int sig) {
     printf("in continue signal handler\n\r");
 }
 
@@ -48,8 +49,12 @@ int kill(pid_t pid, int sig) {
     struct pcb_t *pcb = processes[pid].pcb;
 
     // Push the current PC onto the process's stack as a return value
-    push (pcb->usp, pcb->pc);
+    push(pcb->usp, pcb->pc);
 
     // Adjust the program counter to the start of the signal handler
     pcb->pc = (uint32_t)pcb->signal_handler[sig];
+}
+
+sig_t signal(int sig, sig_t func) {
+    current_process->signal_handler[sig] = func;
 }
