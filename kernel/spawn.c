@@ -41,6 +41,19 @@ int _add_child(pid_t child) {
     return -1;
 }
 
+// Remove a child's PID from parent's children list
+int _remove_child(pid_t child) {
+    struct context_t *parent;
+    parent = processes[current_process->parent].context;
+    for(int i=0;i<MAX_CHILDREN;i++) {
+        if(parent->children[i] == current_process->pid) {
+            parent->children[i] = 0;
+            return 0;
+        }
+    }
+    return -1;
+}
+
 // TODO will need some way to remove children that are zombies
 
 // Spawned processes return here
@@ -54,7 +67,10 @@ void _exit_spawn(void) {
         }
     }
 
-    // TODO remove ourselves from parent's children list
+    // Remove ourselves from the parent
+    if (_remove_child(current_process->pid)) {
+        printf("_exit_spawn: failed to remove child\n\r");
+    }
 
     // Die
     current_process->state = ZOMBIE;
@@ -177,6 +193,9 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
 
     // Save the pid in the context to make other lookups easier
     context->pid = _pid;
+
+    // Save the parent's PID in the child
+    context->parent = current_process->pid;
 
     // We're runnable now!
     context->state = RUNNING;
