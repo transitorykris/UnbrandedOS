@@ -29,35 +29,35 @@ SOFTWARE.
 
 // https://pubs.opengroup.org/onlinepubs/9699919799/
 
-#define SIGNULL     0   // A placeholder because I miscounted
-#define SIGABRT     1   // A Process abort signal.
-#define SIGALRM     2   // T Alarm clock.
-#define SIGBUS      3   // A Access to an undefined portion of a memory object.
-#define SIGCHLD     4   // I Child process terminated, stopped,
-#define SIGCONT     5   // C Continue executing, if stopped.
-#define SIGFP       6   // A Erroneous arithmetic operation.
-#define SIGHUP      7   // T Hangup.
-#define SIGILL      8   // A Illegal instruction.
-#define SIGINT      9   // T Terminal interrupt signal.
-#define SIGKILL     10  // T Kill (cannot be caught or ignored).
-#define SIGPIPE     11  // T Write on a pipe with no one to read it.
-#define SIGQUIT     12  // A Terminal quit signal.
-#define SIGSEGV     13  // A Invalid memory reference.
-#define SIGSTOP     14  // S Stop executing (cannot be caught or ignored).
-#define SIGTERM     15  // T Termination signal.
-#define SIGTSTP     16  // S Terminal stop signal.
-#define SIGTTIN     17  // S Background process attempting read.
-#define SIGTTOU     18  // S Background process attempting write.
-#define SIGUSR1     19  // T User-defined signal 1.
-#define SIGUSR2     20  // T User-defined signal 2.
-#define SIGPOLL     21  // T Pollable event. [Option End]
-#define SIGPROF     22  // T Profiling timer expired. [Option End]
-#define SIGSYS      23  // A Bad system call. [Option End]
-#define SIGTRAP     24  // A Trace/breakpoint trap. [Option End]
-#define SIGURG      25  // I High bandwidth data is available at a socket.
-#define SIGVTALRM   26  // T Virtual timer expired.
-#define SIGXCPU     27  // A CPU time limit exceeded.
-#define SIGXFSZ     28  // A File size limit exceeded.
+#define SIGNULL     0   // Placeholder because I miscounted
+#define SIGABRT     1   // Process abort signal.
+#define SIGALRM     2   // Alarm clock.
+#define SIGBUS      3   // Access to an undefined portion of a memory object.
+#define SIGCHLD     4   // Child process terminated, stopped,
+#define SIGCONT     5   // Continue executing, if stopped.
+#define SIGFP       6   // Erroneous arithmetic operation.
+#define SIGHUP      7   // Hangup.
+#define SIGILL      8   // Illegal instruction.
+#define SIGINT      9   // Terminal interrupt signal.
+#define SIGKILL     10  // Kill (cannot be caught or ignored).
+#define SIGPIPE     11  // Write on a pipe with no one to read it.
+#define SIGQUIT     12  // Terminal quit signal.
+#define SIGSEGV     13  // Invalid memory reference.
+#define SIGSTOP     14  // Stop executing (cannot be caught or ignored).
+#define SIGTERM     15  // Termination signal.
+#define SIGTSTP     16  // Terminal stop signal.
+#define SIGTTIN     17  // Background process attempting read.
+#define SIGTTOU     18  // Background process attempting write.
+#define SIGUSR1     19  // User-defined signal 1.
+#define SIGUSR2     20  // User-defined signal 2.
+#define SIGPOLL     21  // Pollable event.
+#define SIGPROF     22  // Profiling timer expired.
+#define SIGSYS      23  // Bad system call.
+#define SIGTRAP     24  // Trace/breakpoint trap.
+#define SIGURG      25  // High bandwidth data is available at a socket.
+#define SIGVTALRM   26  // Virtual timer expired.
+#define SIGXCPU     27  // CPU time limit exceeded.
+#define SIGXFSZ     28  // File size limit exceeded.
 
 typedef void (*sig_t)(int);
 
