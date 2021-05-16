@@ -55,8 +55,6 @@ int _remove_child(pid_t child) {
     return -1;
 }
 
-// TODO will need some way to remove children that are zombies
-
 // Spawned processes return here
 void _exit_spawn(void) {
     // Wake up all the processes waiting on this pid
