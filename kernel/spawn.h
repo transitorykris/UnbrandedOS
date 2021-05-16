@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "process.h"
 
-#define FILE_NOT_FOUND      -1
+#define FILE_NOT_FOUND      -3
 #define TOO_MANY_CHILDREN   -2
 
 // To be implemented

@@ -143,7 +143,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
        const posix_spawnattr_t *restrict attrp,
        char *const argv[restrict], char *const envp[restrict]) {
     
-    void *entry;     // Entry point to the executable
+    void *entry = 0;     // Entry point to the executable
 
     // Count the number of arguments
     int argc = arg_count(argv);

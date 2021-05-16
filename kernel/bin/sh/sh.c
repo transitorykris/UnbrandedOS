@@ -99,17 +99,23 @@ int sh(int argc, char *argv[]) {
                 // Attempt to spawn the process
                 pid_t pid;
                 int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
-                if (err == ERR_TOO_MANY_PROCS) {
-                    printf("posix_spawn: too many processes\n\r");
-                } else if (err == TOO_MANY_CHILDREN) {
-                    printf("posix_spawn: too many children\n\r");
-                } else {
-                    int *stat_loc;
-                    //int err = waitpid(pid, stat_loc, 0);
-                    int err = wait(stat_loc);
-                    if(err == -1) {
-                        printf("waitpid: error %d\n\r", err);
-                    }
+                int *stat_loc;
+                switch(err) {
+                    case ERR_TOO_MANY_PROCS:
+                        printf("posix_spawn: too many processes\n\r");
+                        break;
+                    case TOO_MANY_CHILDREN:
+                        printf("posix_spawn: too many children\n\r");
+                        break;
+                    case FILE_NOT_FOUND:
+                        printf("command not found\n\r");
+                        break;
+                    default:
+                        //int err = waitpid(pid, stat_loc, 0);
+                        err = wait(stat_loc);
+                        if(err == -1) {
+                            printf("waitpid: error %d\n\r", err);
+                        }
                 }
             }
 done:
