@@ -59,8 +59,6 @@ SOFTWARE.
 #define SIGXCPU     27  // A CPU time limit exceeded.
 #define SIGXFSZ     28  // A File size limit exceeded.
 
-// A first crappy signal handling implmentation
-typedef void (*signal_handler_t)();
 typedef void (*sig_t)(int);
 
 void default_abnormal_handler(int sig);
