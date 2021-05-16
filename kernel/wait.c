@@ -46,10 +46,20 @@ pid_t wait(int *stat_loc) {
 }
 
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
-    _add_wait_list(pid);
+    if (pid == -1) {
+        // We are going to wait on any child to exit
+        for (int i=0;i<MAX_CHILDREN;i++) {
+            if (current_process->children[i] != 0) {
+                _add_wait_list(current_process->children[i]);
+            }
+        }
+    } else {
+        _add_wait_list(pid);
+    }
     current_process->state = SLEEPING;  // child will wake us
     // XXX we really need a wait to initiate a context swap
     // this is a quick hack
     delay(10000);
-    return pid;
+    // TODO this needs to be the returning child's pid
+    return 0;
 }

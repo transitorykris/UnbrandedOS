@@ -32,6 +32,7 @@ SOFTWARE.
 
 // Add a child PID to a parent's children list
 int _add_child(pid_t child) {
+    // TODO a couple calls to wait() can create duplicates, check
     for(int i=0;i<MAX_CHILDREN;i++) {
         if (current_process->children[i] == 0) {
             current_process->children[i] = child;
@@ -63,7 +64,9 @@ void _exit_spawn(void) {
     for (int i=0;i<MAX_WAIT_LIST;i++) {
         if (current_process->wait_list[i] != 0) {
             parent = processes[current_process->wait_list[i]].context;
-            parent->state = RUNNING;    // Start'r up
+            if (parent->state == SLEEPING) {
+                parent->state = RUNNING;    // Start'r up
+            }
         }
     }
 

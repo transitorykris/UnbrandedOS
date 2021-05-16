@@ -105,7 +105,8 @@ int sh(int argc, char *argv[]) {
                     printf("posix_spawn: too many children\n\r");
                 } else {
                     int *stat_loc;
-                    int err = waitpid(pid, stat_loc, 0);
+                    //int err = waitpid(pid, stat_loc, 0);
+                    int err = wait(stat_loc);
                     if(err == -1) {
                         printf("waitpid: error %d\n\r", err);
                     }
