@@ -135,7 +135,6 @@ int sh(int argc, char *argv[]) {
                     printf("command not found\n\r");
                     break;
                 default:
-                    //int err = waitpid(pid, stat_loc, 0);
                     err = wait(stat_loc);
                     if(err == -1) {
                         printf("waitpid: error %d\n\r", err);

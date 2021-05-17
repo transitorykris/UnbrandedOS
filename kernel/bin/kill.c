@@ -36,15 +36,18 @@ kill a process (really just put it to sleep for now..)
 argv[1] contains the pid
 */
 int killer(int argc, char *argv[]) {
-    //if (argc != 1) {
-    //    printf("%s: not enough arguments", argv[0]);
-    //    return -1;
-    //}
-    //unsigned int pid = atoi(argv[1]);
-    
-    //set_state(pid, SLEEPING);
+    if (argc != 2) {
+        printf("%s: not enough arguments\n\r", argv[0]);
+        return -1;
+    }
 
-    kill(1, SIGKILL);
+    unsigned int pid = atoi(argv[1]);
+    if (pid == 0 || pid >= MAX_PROCESSES) {
+        printf("%d is not a valid PID\n\r");
+        return -2;
+    }
+
+    kill(pid, SIGKILL);
 
     return 0;
 }
