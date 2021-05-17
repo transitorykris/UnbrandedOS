@@ -81,14 +81,9 @@ void _exit_spawn(void) {
 
 // Return the number of elements in argv
 int arg_count(char *const argv[restrict]) {
-    int argc = 0;
-    for (int i=0;i<MAX_ARGS;i++) {
-        if (argv[i] == NULL) {
-            argc = i;
-            break;
-        }
-    }
-    return argc;
+    int i;
+    for (i=0;argv[i+1]!=NULL;i++);
+    return i+1;
 }
 
 // Sets the default signal handlers for every signal
@@ -184,7 +179,7 @@ int posix_spawn(pid_t *restrict pid, const char *restrict path,
 
     // Count the number of arguments
     int argc = arg_count(argv);
-
+    
     // Find the executable
     for (int i=0;i<MAX_FILES;i++) {
         if (!strcmp(fs.root->files[i].name, path)) {

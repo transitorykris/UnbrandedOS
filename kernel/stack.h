@@ -25,6 +25,9 @@ SOFTWARE.
 
 #include "sys/types.h"
 
-void push(uint32_t *stack, uint32_t value);
+#define push(s,v)   \
+{                   \
+    *--s=v;         \
+}
 
 #endif

@@ -48,6 +48,29 @@ void signal_handler(int sig) {
     printf("Please don't kill the shell\n\r");
 }
 
+#define MAX_ARG_LEN 64
+
+// Bad but good enough for now
+char **create_argv(char *str) {
+    char **argv = (char **)malloc(MAX_ARGS);
+    for (int i=0;i<MAX_ARGS;i++) {
+        argv[i] = NULL;
+    }
+    int start = 0;
+    int cur_arg = 0;
+    for (int i=0;str[i]!='\0';i++) {
+        if (str[i] == ' ') {
+            str[i] = '\0';
+            argv[cur_arg] = &str[start];
+            start = i+1;
+            cur_arg++;
+        }
+    }
+    argv[cur_arg] = &str[start];
+    argv[cur_arg+1] = NULL;
+    return argv;
+}
+
 int sh(int argc, char *argv[]) {
     int count = 0;
     printf("Starting shell\n\n\r");
@@ -95,17 +118,11 @@ int sh(int argc, char *argv[]) {
                     goto done;
                 }
             }
-            // Check our local directory next
-            // XXX probably not how we want to do this (leaning on
-            // exec to tell us if the executable exists..)
-            // fork() somewhere here
-            // NULL is required after last argument
-            char *argv[MAX_ARGS] = {NULL};
-            // TODO: parse buffer, for now, no arguments
-            argv[0] = buffer;   // first argument is the process name
-            // Attempt to spawn the process
+
+            // Not a built in, try the filesystem next
+            char **argv = create_argv(buffer);
             pid_t pid;
-            int err = posix_spawn(&pid, buffer, NULL, NULL, argv, NULL);
+            int err = posix_spawn(&pid, argv[0], NULL, NULL, argv, NULL);
             int *stat_loc;
             switch(err) {
                 case ERR_TOO_MANY_PROCS:

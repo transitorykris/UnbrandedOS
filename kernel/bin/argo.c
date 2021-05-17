@@ -23,6 +23,7 @@ SOFTWARE.
 
 /* Dump argc and argv */
 int argo(int argc, char *argv[]) {
+    printf("arrrr go fuck yourself %d argc\n\r", argc);
     for(int i=0;i<argc;i++) {
         printf("%d\t%s\n\r", i, argv[i]);
     }
