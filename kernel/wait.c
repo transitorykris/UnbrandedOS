@@ -45,6 +45,8 @@ pid_t wait(int *stat_loc) {
     return waitpid(-1, stat_loc, 0);
 }
 
+// XXX there's a race condition here!! child could exit and attempt
+// to wake parent before parent sleeps!
 pid_t waitpid(pid_t pid, int *stat_loc, int options) {
     if (pid == -1) {
         // We are going to wait on any child to exit
